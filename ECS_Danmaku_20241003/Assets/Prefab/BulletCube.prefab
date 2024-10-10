@@ -119,4 +119,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _moveParam:
-    _speed: 1
+    _speed: 2.5

@@ -1,7 +1,12 @@
+using System.Collections;
+using System.Collections.Generic;
 using Unity.Entities;
 using UnityEngine;
 using static DanmakuJobs;
 
+/// <summary>
+/// ’e–‹‚ğŒÄ‚Ño‚·
+/// </summary>
 public partial struct DanmakuSystem : ISystem
 {
     private SystemHandle _ecbSystemHandle;
