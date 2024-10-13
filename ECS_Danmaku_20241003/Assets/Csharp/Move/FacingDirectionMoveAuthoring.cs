@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Entities;
 using UnityEngine;
+using static BulletHelper;
 using static MoveHelper;
 
 public struct FacingDirectionMoveData : IComponentData
@@ -23,10 +24,12 @@ public class FacingDirectionMoveAuthoring : MonoBehaviour
     {
         public override void Bake(FacingDirectionMoveAuthoring src)
         {
+            var entity = GetEntity(TransformUsageFlags.Dynamic);
+
             var facingDirectionMove = new FacingDirectionMoveData(src._moveParam);
 
-            AddComponent(GetEntity(TransformUsageFlags.Dynamic), facingDirectionMove);
-            AddComponent(GetEntity(TransformUsageFlags.Dynamic), new MoveTag());
+            AddComponent(entity, facingDirectionMove);
+            AddComponent(entity, new MoveTag());
         }
     }
 }

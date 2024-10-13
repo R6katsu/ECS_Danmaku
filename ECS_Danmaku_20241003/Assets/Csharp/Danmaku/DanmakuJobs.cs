@@ -5,6 +5,7 @@ using Unity.Entities;
 using Unity.Transforms;
 using Unity.Mathematics;
 using UnityEngine;
+using static BulletHelper;
 
 static public partial class DanmakuJobs
 {
