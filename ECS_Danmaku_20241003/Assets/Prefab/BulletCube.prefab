@@ -13,7 +13,8 @@ GameObject:
   - component: {fileID: 1951781366228549565}
   - component: {fileID: 8214997911264923717}
   - component: {fileID: -1328516906165857662}
-  - component: {fileID: -3537145656593975720}
+  - component: {fileID: -881125232694975567}
+  - component: {fileID: -3138097004257213577}
   m_Layer: 0
   m_Name: BulletCube
   m_TagString: Untagged
@@ -121,7 +122,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _moveParam:
     _speed: 2.5
---- !u!54 &-3537145656593975720
+--- !u!114 &-881125232694975567
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1889188815213087021}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d2bd1687ee92d4b4fb29425555499ea3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!54 &-3138097004257213577
 Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

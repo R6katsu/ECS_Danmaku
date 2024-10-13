@@ -2,17 +2,27 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Entities;
 using UnityEngine;
+using static HealthHelper;
 using static MoveHelper;
 
 static public class BulletHelper
 {
-    public struct BulletSpawnerData : IComponentData
-    {
-        public readonly Entity bulletPrefab;
+    /// <summary>
+    /// íe
+    /// </summary>
+    public struct BulletTag : IComponentData { }
 
-        public BulletSpawnerData(Entity bulletPrefab)
+    /// <summary>
+    /// íeÇÃIDealDamageèÓïÒ
+    /// </summary>
+    public struct BulletIDealDamageData : IComponentData, IDealDamage
+    {
+        // IDealDamage
+        public void DealDamage(IHealthPoint healthPoint)
         {
-            this.bulletPrefab = bulletPrefab;
+            Debug.Log("IHealthPointÇ÷É_ÉÅÅ[ÉWÇó^Ç¶ÇÈ");
+
+            healthPoint.DamageHP(1.0f);
         }
     }
 }
