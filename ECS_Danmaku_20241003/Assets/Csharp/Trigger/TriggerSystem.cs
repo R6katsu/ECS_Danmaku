@@ -3,15 +3,8 @@ using Unity.Entities;
 using Unity.Jobs;
 using UnityEngine;
 using Unity.Physics;
-using System.Collections.Generic;
 using static TriggerJobs;
 using static PlayerHelper;
-using static HealthHelper;
-using static PlayerAuthoring;
-using Unity.Collections;
-using static UnityEngine.InputSystem.HID.HID;
-using static DanmakuJobs;
-using static EnemyHelper;
 using static BulletHelper;
 
 /// <summary>
@@ -20,13 +13,20 @@ using static BulletHelper;
 [BurstCompile]
 public partial struct TriggerSystem : ISystem
 {
+
     public void OnUpdate(ref SystemState state)
     {
+        var currentTime = SystemAPI.Time.ElapsedTime;
+
+        var healthPointLookup = state.GetComponentLookup<PlayerHealthPointData>(false);
+        var dealDamageLookup = state.GetComponentLookup<BulletIDealDamageData>(false);
+
         // PLに弾が当たった時の処理を呼び出す
         var triggerJob = new PlayerDamageTriggerJob()
         {
-            healthPointLookup = state.GetComponentLookup<PlayerHealthPointData>(false),
-            dealDamageLookup = state.GetComponentLookup<BulletIDealDamageData>(false)
+            healthPointLookup = healthPointLookup,
+            dealDamageLookup = dealDamageLookup,
+            currentTime = currentTime
         };
 
         // 前のジョブを完了する

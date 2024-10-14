@@ -15,7 +15,7 @@ public class BulletAuthoring : MonoBehaviour
             var entity = GetEntity(TransformUsageFlags.Dynamic);
 
             AddComponent(entity, new BulletTag());
-            AddComponent(entity, new BulletIDealDamageData());
+            AddComponent(entity, new BulletIDealDamageData(1.0f));
         }
     }
 }

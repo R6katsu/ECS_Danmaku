@@ -46,7 +46,7 @@ static public partial class DanmakuJobs
             // ”­Ë‚·‚é’e‚Ì‰ŠúŠp“x
             float startAngle = -fanAngle / 2f;
             // 1‚Â‚Ì’e‚²‚Æ‚ÌŠp“x‚Ì‘‰Á
-            float angleStep = fanAngle / (amountBullets - 1);
+            float angleStep = fanAngle / (amountBullets);
 
             for (int i = 0; i < amountBullets; i++)
             {
@@ -58,11 +58,14 @@ static public partial class DanmakuJobs
 
                 Entity bulletEntity = commandBuffer.Instantiate(index, n_Way_DanmakuData.bulletPrefab);
 
+                // ³‹K‰»
+                quaternion normalizedRotation = math.normalize(localTfm.Rotation);
+
                 // Transform‚ğ‘ã“ü
                 commandBuffer.SetComponent(index, bulletEntity, new LocalTransform
                 {
                     Position = localTfm.Position,
-                    Rotation = math.mul(localTfm.Rotation, rotation),
+                    Rotation = math.mul(normalizedRotation, rotation),
                     Scale = 0.1f
                 });
             }

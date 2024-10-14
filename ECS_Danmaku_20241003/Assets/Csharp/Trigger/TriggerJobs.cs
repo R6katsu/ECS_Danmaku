@@ -9,6 +9,7 @@ using static EnemyHelper;
 using static HealthHelper;
 using static PlayerAuthoring;
 using static PlayerHelper;
+using static TriggerHelper;
 
 /// <summary>
 /// 接触した際の処理
@@ -23,17 +24,27 @@ static public partial class TriggerJobs
         public ComponentLookup<PlayerHealthPointData> healthPointLookup;
         public ComponentLookup<BulletIDealDamageData> dealDamageLookup;
 
+        public double currentTime;
+
         public void Execute(TriggerEvent triggerEvent)
         {
             var entityA = triggerEvent.EntityA; // 接触対象
             var entityB = triggerEvent.EntityB; // isTriggerを有効にしている方
 
+            // entityAがBulletIDealDamageDataを有していない。
+            // あるいは、entityBがPlayerHealthPointDataを有していない
             if (!dealDamageLookup.HasComponent(entityA) || !healthPointLookup.HasComponent(entityB)) { return; }
 
-            var dealDamage = dealDamageLookup[entityA];
+            // entityBからPlayerHealthPointDataを取得
             var healthPoint = healthPointLookup[entityB];
 
-            dealDamage.DealDamage(healthPoint);
+            // 前回被弾した時間から無敵時間の長さを経過していない
+            if (currentTime - healthPoint.lastHitTime <= healthPoint.isInvincibleTime) { return; }
+
+            // entityAからBulletIDealDamageDataを取得
+            var dealDamage = dealDamageLookup[entityA];
+
+            healthPointLookup[entityB] = dealDamage.DealDamage(healthPoint, currentTime);
         }
     }
 }
