@@ -1,0 +1,12 @@
+using System.Collections;
+using System.Collections.Generic;
+using Unity.Entities;
+using UnityEngine;
+
+/// <summary>
+/// èdÇ»ÇË
+/// </summary>
+static public class TriggerHelper
+{
+
+}

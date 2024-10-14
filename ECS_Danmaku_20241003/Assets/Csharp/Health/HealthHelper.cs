@@ -33,13 +33,18 @@ static public class HealthHelper
         /// ダメージを受ける
         /// </summary>
         /// <param name="damage">被ダメージ</param>
-        public void DamageHP(float damage);
+        public void DamageHP(float damage, double currentTime);
 
         /// <summary>
         /// HPを回復する
         /// </summary>
         /// <param name="heal">回復量</param>
         public void HealHP(float heal);
+
+        /// <summary>
+        /// 倒れる
+        /// </summary>
+        public void Down();
     }
 
     /// <summary>
@@ -51,6 +56,7 @@ static public class HealthHelper
         /// IHealthPointへダメージを与える
         /// </summary>
         /// <param name="healthPoint">実装されたHP</param>
-        public void DealDamage(IHealthPoint healthPoint);
+        /// <returns>変更を適用したインスタンス</returns>
+        public T DealDamage<T>(T healthPoint, double currentTime) where T : IHealthPoint;
     }
 }

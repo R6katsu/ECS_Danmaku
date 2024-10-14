@@ -17,12 +17,18 @@ static public class BulletHelper
     /// </summary>
     public struct BulletIDealDamageData : IComponentData, IDealDamage
     {
-        // IDealDamage
-        public void DealDamage(IHealthPoint healthPoint)
-        {
-            Debug.Log("IHealthPointÇ÷É_ÉÅÅ[ÉWÇó^Ç¶ÇÈ");
+        public readonly float damageAmount;
 
-            healthPoint.DamageHP(1.0f);
+        public BulletIDealDamageData(float damageAmount)
+        {
+            this.damageAmount = damageAmount;
+        }
+
+        // IDealDamage
+        public T DealDamage<T>(T healthPoint, double currentTime) where T : IHealthPoint
+        {
+            healthPoint.DamageHP(damageAmount, currentTime);
+            return healthPoint;
         }
     }
 }
