@@ -21,9 +21,11 @@ static public partial class TriggerJobs
     /// </summary>
     public partial struct PlayerDamageTriggerJob : ITriggerEventsJob
     {
+        // インスタンスの取得に必要な変数
         public ComponentLookup<PlayerHealthPointData> healthPointLookup;
         public ComponentLookup<BulletIDealDamageData> dealDamageLookup;
 
+        // 現在の時刻
         public double currentTime;
 
         public void Execute(TriggerEvent triggerEvent)
@@ -32,7 +34,7 @@ static public partial class TriggerJobs
             var entityB = triggerEvent.EntityB; // isTriggerを有効にしている方
 
             // entityAがBulletIDealDamageDataを有していない。
-            // あるいは、entityBがPlayerHealthPointDataを有していない
+            // あるいは、entityBがPlayerHealthPointDataを有していなければ切り上げる
             if (!dealDamageLookup.HasComponent(entityA) || !healthPointLookup.HasComponent(entityB)) { return; }
 
             // entityBからPlayerHealthPointDataを取得
@@ -44,6 +46,7 @@ static public partial class TriggerJobs
             // entityAからBulletIDealDamageDataを取得
             var dealDamage = dealDamageLookup[entityA];
 
+            // ダメージを与え、変更されたインスタンスを反映する
             healthPointLookup[entityB] = dealDamage.DealDamage(healthPoint, currentTime);
         }
     }

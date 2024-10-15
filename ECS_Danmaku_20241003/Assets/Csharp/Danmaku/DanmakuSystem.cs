@@ -5,7 +5,7 @@ using UnityEngine;
 using static DanmakuJobs;
 
 /// <summary>
-/// ’e–‹‚ğŒÄ‚Ño‚·
+/// ’e–‹‚ğ¶¬‚·‚éˆ—‚ğŒÄ‚Ño‚·
 /// </summary>
 public partial struct DanmakuSystem : ISystem
 {
@@ -25,7 +25,7 @@ public partial struct DanmakuSystem : ISystem
         var ecbSystem = state.World.GetExistingSystemManaged<EndSimulationEntityCommandBufferSystem>();
         var ecb = ecbSystem.CreateCommandBuffer().AsParallelWriter();
 
-        // Job‚ÅÀ‘•‚µ‚Ä’e–‹ˆ—‚ğŒÄ‚Ño‚·
+        // ’e–‹‚ğ¶¬‚·‚éˆ—‚ğŒÄ‚Ño‚·
         var jobHandle = new N_WayJob
         {
             commandBuffer = ecb,

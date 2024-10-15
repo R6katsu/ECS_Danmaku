@@ -5,11 +5,16 @@ using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using static PlayerHelper;
-using static UnityEditor.Searcher.SearcherWindow.Alignment;
 
+/// <summary>
+/// PL‚Ìˆ—
+/// </summary>
 public partial class PlayerSystem : SystemBase
 {
+    // InputSystem
     private PlayerControls _playerInput;
+
+    // “ü—Í
     private float _horizontalValue;
     private float _verticalValue;
 
@@ -23,14 +28,17 @@ public partial class PlayerSystem : SystemBase
         var shot = _playerInput.Player.Shot;
         shot.started += Shot;
 
+        // Horizontal‚ÉŠ„‚è“–‚Ä‚é
         var horizontal = _playerInput.Player.Horizontal;
         horizontal.started += Horizontal;
         horizontal.canceled += Horizontal;
 
+        // Vertical‚ÉŠ„‚è“–‚Ä‚é
         var vertical = _playerInput.Player.Vertical;
         vertical.started += Vertical;
         vertical.canceled += Vertical;
 
+        // AileronRoll‚ÉŠ„‚è“–‚Ä‚é
         var aileronRoll = _playerInput.Player.AileronRoll;
         aileronRoll.started += AileronRoll;
         aileronRoll.canceled += AileronRoll;
@@ -38,10 +46,9 @@ public partial class PlayerSystem : SystemBase
 
     protected override void OnUpdate()
     {
-        if (_horizontalValue == 0.0f && _verticalValue == 0.0f) { return; }
-
         var delta = SystemAPI.Time.DeltaTime;
 
+        // ˆÚ“®ˆ—
         foreach (var (playerTag, playerData, localTfm) in
             SystemAPI.Query<
                 RefRO<PlayerTag>, 
@@ -58,7 +65,7 @@ public partial class PlayerSystem : SystemBase
             currentPosition.x += _horizontalValue * speed;
 
             // ‚’¼“ü—Í‚ğ‚’¼•ûŒü‚É‰ÁZ‘ã“ü
-            currentPosition.y += _verticalValue * speed;
+            currentPosition.z += _verticalValue * speed;
 
             // ”½‰f
             localTfm.ValueRW.Position = currentPosition;
@@ -73,7 +80,7 @@ public partial class PlayerSystem : SystemBase
 
     private void Shot(InputAction.CallbackContext context)
     {
-        // ¡ŒãÀ‘•‚·‚é‚©‚à
+        Debug.Log("–¢À‘•");
     }
 
     private void Horizontal(InputAction.CallbackContext context)
@@ -93,6 +100,6 @@ public partial class PlayerSystem : SystemBase
     /// <param name="context"></param>
     private void AileronRoll(InputAction.CallbackContext context)
     {
-        // ¡ŒãÀ‘•—\’è
+        Debug.Log("–¢À‘•");
     }
 }

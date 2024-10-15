@@ -4,6 +4,9 @@ using Unity.Entities;
 using UnityEngine;
 using static HealthHelper;
 
+/// <summary>
+/// PLの補助
+/// </summary>
 static public class PlayerHelper
 {
     /// <summary>
@@ -16,12 +19,13 @@ static public class PlayerHelper
     /// </summary>
     public struct PlayerHealthPointData : IComponentData, IHealthPoint
     {
-
+        [Tooltip("最大体力")]
         public readonly float maxHP;
 
         [Tooltip("無敵時間の長さ")]
         public readonly float isInvincibleTime;
 
+        [Tooltip("現存体力")]
         private float _currentHP;
 
         [Tooltip("無敵中か")]
@@ -36,7 +40,7 @@ static public class PlayerHelper
         public float MaxHP => maxHP;
 
         /// <summary>
-        /// 残量体力
+        /// 現存体力
         /// </summary>
         public float CurrentHP => _currentHP;
 
@@ -49,6 +53,7 @@ static public class PlayerHelper
             this.maxHP = maxHP;
             this.isInvincibleTime = isInvincibleTime;
 
+            // 初期化
             _currentHP = this.maxHP;
             isInvincible = false;
             lastHitTime = 0.0f;
@@ -57,8 +62,10 @@ static public class PlayerHelper
         // IHealthPoint
         public void DamageHP(float damage, double currentTime)
         {
+            Debug.Log("試験的なコードの為、後で直す");
             _currentHP -= damage;
             lastHitTime = currentTime;
+
             Debug.Log($"{damage}ダメージを受けた。残りHP{_currentHP}");
 
             // HPが 0以下なら倒れる
@@ -69,7 +76,6 @@ static public class PlayerHelper
         // IHealthPoint
         public void HealHP(float heal)
         {
-            // HPについて、Dataを作る度に作り直すことになってしまう
             Debug.Log("HPを回復する");
         }
 

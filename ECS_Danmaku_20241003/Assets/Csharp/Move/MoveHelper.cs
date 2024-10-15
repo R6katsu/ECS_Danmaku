@@ -5,6 +5,9 @@ using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 
+/// <summary>
+/// ˆÚ“®‚Ì•â•
+/// </summary>
 static public class MoveHelper
 {
     /// <summary>
@@ -12,11 +15,13 @@ static public class MoveHelper
     /// </summary>
     public enum DirectionTravelType
     {
-        Stop,   // ’â~
-        Up,     // ã
-        Down,   // ‰º
-        Left,   // ¶
-        Right   // ‰E
+        [Tooltip("’â~")] Stop,
+        [Tooltip("ã")] Up,
+        [Tooltip("‰º")] Down,
+        [Tooltip("¶")] Left,
+        [Tooltip("‰E")] Right,
+        [Tooltip("‘O")] Forward,
+        [Tooltip("Œã")] Back
     }
 
     /// <summary>
@@ -48,16 +53,33 @@ static public class MoveHelper
 
                 case DirectionTravelType.Right:
                     return Vector3.right;
+
+                case DirectionTravelType.Forward:
+                    return Vector3.forward;
+
+                case DirectionTravelType.Back:
+                    return Vector3.back;
             }
         }
     }
 
+    /// <summary>
+    /// ˆÚ“®
+    /// </summary>
     public struct MoveTag : IComponentData { }
 
+    /// <summary>
+    /// ˆÚ“®•ûŒü‚Ìí—Ş‚Ìî•ñ
+    /// </summary>
     public struct DirectionTravelData : IComponentData
     {
+        [Tooltip("ˆÚ“®•ûŒü‚Ìí—Ş")]
         public readonly DirectionTravelType directionTravelType;
 
+        /// <summary>
+        /// ˆÚ“®•ûŒü‚Ìí—Ş‚Ìî•ñ
+        /// </summary>
+        /// <param name="directionTravelType">ˆÚ“®•ûŒü‚Ìí—Ş</param>
         public DirectionTravelData(DirectionTravelType directionTravelType)
         {
             this.directionTravelType = directionTravelType;

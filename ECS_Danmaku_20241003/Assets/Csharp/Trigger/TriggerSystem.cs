@@ -13,11 +13,11 @@ using static BulletHelper;
 [BurstCompile]
 public partial struct TriggerSystem : ISystem
 {
-
     public void OnUpdate(ref SystemState state)
     {
         var currentTime = SystemAPI.Time.ElapsedTime;
 
+        // インスタンスを取得する為の変数
         var healthPointLookup = state.GetComponentLookup<PlayerHealthPointData>(false);
         var dealDamageLookup = state.GetComponentLookup<BulletIDealDamageData>(false);
 
