@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -5,22 +6,10 @@ using Unity.Entities;
 using UnityEngine;
 using static HealthHelper;
 using static PlayerAuthoring;
-
-#if false
-using System.Collections.ObjectModel;
-using static UnityEngine.EventSystems.EventTrigger;
-using Unity.VisualScripting;
-using static System.Collections.Specialized.BitVector32;
-using static UnityEngine.GraphicsBuffer;
-using static UnityEngine.Rendering.DebugUI;
-using System.Reflection;
-using UnityEditor;
-using Unity.VisualScripting;
-using static System.Collections.Specialized.BitVector32;
 #endif
 
 /// <summary>
-/// HP
+/// HPの補助
 /// </summary>
 static public class HealthHelper
 {
@@ -55,7 +44,9 @@ static public class HealthHelper
         /// <summary>
         /// IHealthPointへダメージを与える
         /// </summary>
+        /// <typeparam name="T">IHealthPointを継承した型</typeparam>
         /// <param name="healthPoint">実装されたHP</param>
+        /// <param name="currentTime">現在の時刻</param>
         /// <returns>変更を適用したインスタンス</returns>
         public T DealDamage<T>(T healthPoint, double currentTime) where T : IHealthPoint;
     }

@@ -5,8 +5,10 @@ using Unity.Entities;
 using Unity.Transforms;
 using Unity.Mathematics;
 using UnityEngine;
-using static BulletHelper;
 
+/// <summary>
+/// 弾幕のJobSystem
+/// </summary>
 static public partial class DanmakuJobs
 {
     /// <summary>
@@ -24,12 +26,13 @@ static public partial class DanmakuJobs
             LocalTransform localTfm,
             [EntityIndexInQuery] int index)
         {
+            // 経過時間を加算代入
             n_Way_DanmakuData.elapsedTime += deltaTime;
 
             // 発射するための時間が経過していない場合は切り上げる
             if (n_Way_DanmakuData.elapsedTime < n_Way_DanmakuData.firingInterval) 
             {
-                // 更新内容を再設定
+                // 更新を反映
                 commandBuffer.SetComponent(index, entity, n_Way_DanmakuData);
 
                 return; 
@@ -37,7 +40,7 @@ static public partial class DanmakuJobs
 
             n_Way_DanmakuData.elapsedTime = 0.0f;
 
-            // 更新内容を再設定
+            // 更新を反映
             commandBuffer.SetComponent(index, entity, n_Way_DanmakuData);
 
             float fanAngle = n_Way_DanmakuData.fanAngle;
@@ -45,17 +48,18 @@ static public partial class DanmakuJobs
 
             // 発射する弾の初期角度
             float startAngle = -fanAngle / 2f;
+
             // 1つの弾ごとの角度の増加
             float angleStep = fanAngle / (amountBullets);
 
+            // n-Way弾を生成する
             for (int i = 0; i < amountBullets; i++)
             {
-                var magicNumberAngle = 90.0f;   // 修正必須、向きを変える為のマジックナンバー
-
                 // 弾の発射角度を計算
                 float angle = startAngle + angleStep * i;
-                quaternion rotation = (quaternion)Quaternion.Euler(angle, magicNumberAngle, magicNumberAngle);
+                quaternion rotation = (quaternion)Quaternion.Euler(0.0f, angle, 0.0f);
 
+                // 弾を生成
                 Entity bulletEntity = commandBuffer.Instantiate(index, n_Way_DanmakuData.bulletPrefab);
 
                 // 正規化
@@ -66,7 +70,7 @@ static public partial class DanmakuJobs
                 {
                     Position = localTfm.Position,
                     Rotation = math.mul(normalizedRotation, rotation),
-                    Scale = 0.1f
+                    Scale = n_Way_DanmakuData.bulletLocalScale
                 });
             }
         }

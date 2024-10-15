@@ -5,6 +5,9 @@ using UnityEngine;
 using static BulletHelper;
 using static MoveHelper;
 
+/// <summary>
+/// 向いている方向に移動する為の情報
+/// </summary>
 public struct FacingDirectionMoveData : IComponentData
 {
     public readonly MoveParameter moveParam;
@@ -15,6 +18,9 @@ public struct FacingDirectionMoveData : IComponentData
     }
 }
 
+/// <summary>
+/// 向いている方向に移動する為の設定
+/// </summary>
 public class FacingDirectionMoveAuthoring : MonoBehaviour
 {
     [SerializeField]
@@ -26,8 +32,10 @@ public class FacingDirectionMoveAuthoring : MonoBehaviour
         {
             var entity = GetEntity(TransformUsageFlags.Dynamic);
 
+            // 向いている方向に移動する為の情報を作成
             var facingDirectionMove = new FacingDirectionMoveData(src._moveParam);
 
+            // Dataをアタッチ
             AddComponent(entity, facingDirectionMove);
             AddComponent(entity, new MoveTag());
         }

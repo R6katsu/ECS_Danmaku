@@ -5,6 +5,9 @@ using UnityEngine;
 using static HealthHelper;
 using static MoveHelper;
 
+/// <summary>
+/// ’e‚Ì•â•
+/// </summary>
 static public class BulletHelper
 {
     /// <summary>
@@ -19,6 +22,10 @@ static public class BulletHelper
     {
         public readonly float damageAmount;
 
+        /// <summary>
+        /// ’e‚ÌIDealDamageî•ñ
+        /// </summary>
+        /// <param name="damageAmount">ƒ_ƒ[ƒW—Ê</param>
         public BulletIDealDamageData(float damageAmount)
         {
             this.damageAmount = damageAmount;

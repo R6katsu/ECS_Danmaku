@@ -6,12 +6,16 @@ using Unity.Mathematics;
 using UnityEngine;
 using static MoveHelper;
 
+/// <summary>
+/// ’¼iˆÚ“®‚Ìˆ—
+/// </summary>
 public partial struct StraightMoveSystem : ISystem
 {
     public void OnUpdate(ref SystemState state)
     {
         var delta = SystemAPI.Time.DeltaTime;
 
+        // ’¼iˆÚ“®‚Ìˆ—
         foreach (var (straightMove, directionTravel, localTfm) in
                  SystemAPI.Query<RefRO<StraightMoveData>,
                                  RefRO<DirectionTravelData>,

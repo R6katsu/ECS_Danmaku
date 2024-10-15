@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Entities;
+using Unity.Mathematics;
 using UnityEngine;
 using static DanmakuHelper;
 
@@ -21,6 +22,9 @@ public struct N_Way_DanmakuData : IComponentData
     [Tooltip("íeÇÃPrefab")]
     public readonly Entity bulletPrefab;
 
+    [Tooltip("íeÇÃPrefabÇÃëÂÇ´Ç≥")]
+    public readonly float bulletLocalScale;
+
     [Tooltip("åoâﬂéûä‘")]
     public float elapsedTime;
 
@@ -31,12 +35,13 @@ public struct N_Way_DanmakuData : IComponentData
     /// <param name="amountBullets">íeÇÃó </param>
     /// <param name="firingInterval">î≠éÀä‘äu</param>
     /// <param name="bulletPrefab">íeÇÃPrefab</param>
-    public N_Way_DanmakuData(int fanAngle, int amountBullets, float firingInterval, Entity bulletPrefab)
+    public N_Way_DanmakuData(int fanAngle, int amountBullets, float firingInterval, Entity bulletPrefab, float bulletLocalScale)
     {
         this.fanAngle = fanAngle;
         this.amountBullets = amountBullets;
         this.firingInterval = firingInterval;
         this.bulletPrefab = bulletPrefab;
+        this.bulletLocalScale = bulletLocalScale;
         elapsedTime = 0.0f;
     }
 }
@@ -88,12 +93,17 @@ public class N_Way_DanmakuAuthoring : MonoBehaviour, IDanmakuAuthoring
         {
             var bulletEntity = GetEntity(src.BulletPrefab, TransformUsageFlags.Dynamic);
 
+            // LocalTransformÇÃScaleÇ™floatÇ≈Ç†ÇÈà◊ÅAàÍî‘ëÂÇ´Ç¢é≤ÇãÅÇﬂÇÈÇ±Ç∆Ç…ÇµÇΩ
+            var localScale = src.BulletPrefab.localScale;
+            var localScaleMax = Mathf.Max(localScale.x, localScale.y, localScale.z);
+
             var n_Way_DanmakuData = new N_Way_DanmakuData
                 (
                     src.FanAngle,
                     src.AmountBullets,
                     src.FiringInterval,
-                    bulletEntity
+                    bulletEntity,
+                    localScaleMax
                 );
 
             AddComponent(GetEntity(TransformUsageFlags.Dynamic), n_Way_DanmakuData);
