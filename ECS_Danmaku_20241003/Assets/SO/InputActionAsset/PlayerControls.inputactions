@@ -33,9 +33,9 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "AileronRoll",
+                    "name": "Slowdown",
                     "type": "Button",
-                    "id": "d138bd0e-8398-4ece-81e2-843b297434f0",
+                    "id": "0376a916-451c-4248-94da-a8a5e29466d1",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -210,12 +210,12 @@
                 },
                 {
                     "name": "",
-                    "id": "830f90d6-921d-4dbc-b61f-71854f7d4198",
+                    "id": "18bface7-5d80-45a8-988f-2f3e39604ffe",
                     "path": "<Keyboard>/shift",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "AileronRoll",
+                    "action": "Slowdown",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

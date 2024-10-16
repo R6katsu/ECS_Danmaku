@@ -25,14 +25,29 @@ using Unity.Collections;
 public struct PlayerData : IComponentData
 {
     public readonly float moveSpeed;
+    public readonly float slowMoveSpeed;
+    public readonly float firingInterval;
+    public readonly Entity playerBulletEntity;
+
+    public double lastShotTime;
+    public bool isSlowdown;
 
     /// <summary>
     /// PL‚Ìî•ñ
     /// </summary>
     /// <param name="moveSpeed">ˆÚ“®‘¬“x</param>
-    public PlayerData(float moveSpeed)
+    /// <param name="moveSlowSpeed">Œ¸‘¬’†‚ÌˆÚ“®‘¬“x</param>
+    /// <param name="firingInterval">ËŒ‚ŠÔŠu</param>
+    /// <param name="playerBulletEntity">PL‚Ì’e‚ÌEntity</param>
+    public PlayerData(float moveSpeed, float moveSlowSpeed, float firingInterval, Entity playerBulletEntity)
     {
         this.moveSpeed = moveSpeed;
+        this.slowMoveSpeed = moveSlowSpeed;
+        this.firingInterval = firingInterval;
+        this.playerBulletEntity = playerBulletEntity;
+
+        lastShotTime = 0.0f;
+        isSlowdown = false;
     }
 }
 
@@ -44,11 +59,20 @@ public class PlayerAuthoring : MonoBehaviour
     [SerializeField,Min(0.0f), Header("ˆÚ“®‘¬“x")]
     private float _moveSpeed = 0.0f;
 
+    [SerializeField, Min(0.0f), Header("Œ¸‘¬’†‚ÌˆÚ“®‘¬“x")]
+    private float _slowMoveSpeed = 0.0f;
+
     [SerializeField, Min(0.0f), Header("Å‘å‘Ì—Í")]
     private float _maxHP = 0.0f;
 
+    [SerializeField, Min(0.0f), Header("ËŒ‚ŠÔŠu")]
+    private float _firingInterval = 0.0f;
+
     [SerializeField, Min(0.0f), Header("–³“GŠÔ‚Ì’·‚³")]
     private float _isInvincibleTime = 0.0f;
+
+    [SerializeField, Header("PL‚Ì’e‚ÌPrefab")]
+    private Transform _playerBulletPrefab = null;
 
     /// <summary>
     /// ˆÚ“®‘¬“x
@@ -56,24 +80,41 @@ public class PlayerAuthoring : MonoBehaviour
     public float MoveSpeed => _moveSpeed;
 
     /// <summary>
-    /// –³“GŠÔ‚Ì’·‚³
+    /// Œ¸‘¬’†‚ÌˆÚ“®‘¬“x
     /// </summary>
-    public float IsInvincibleTime => _isInvincibleTime;
+    public float SlowMoveSpeed => _slowMoveSpeed;
 
     /// <summary>
     /// Å‘å‘Ì—Í
     /// </summary>
     public float MaxHP => _maxHP;
 
+    /// <summary>
+    /// ËŒ‚ŠÔŠu
+    /// </summary>
+    public float FiringInterval => _firingInterval;
+
+    /// <summary>
+    /// –³“GŠÔ‚Ì’·‚³
+    /// </summary>
+    public float IsInvincibleTime => _isInvincibleTime;
+
+    /// <summary>
+    /// PL‚Ì’e‚ÌPrefab
+    /// </summary>
+    public Transform PlayerBulletPrefab => _playerBulletPrefab;
+
     public class Baker : Baker<PlayerAuthoring>
     {
         public override void Bake(PlayerAuthoring src)
         {
             var entity = GetEntity(TransformUsageFlags.Dynamic);
+            var PlayerBulletEntity = GetEntity(src.PlayerBulletPrefab, TransformUsageFlags.Dynamic);
 
             // Data‚ğƒAƒ^ƒbƒ`
-            AddComponent(entity, new PlayerData(src.MoveSpeed));
+            AddComponent(entity, new PlayerData(src.MoveSpeed, src.SlowMoveSpeed, src.FiringInterval, PlayerBulletEntity));
             AddComponent(entity, new PlayerTag());
+            AddComponent(entity, new DestroyableData());
             AddComponent(entity, new PlayerHealthPointData(src.MaxHP, src.IsInvincibleTime));
         }
     }

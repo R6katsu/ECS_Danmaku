@@ -14,6 +14,7 @@ using static MoveHelper;
 /// <summary>
 /// “G‚Ì¶¬ˆ—
 /// </summary>
+[BurstCompile]
 public partial struct EnemySpawnerSystem : ISystem
 {
     private float _delta;

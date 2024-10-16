@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Burst;
 using Unity.Entities;
 using UnityEngine;
 using static DanmakuJobs;
@@ -7,6 +8,7 @@ using static DanmakuJobs;
 /// <summary>
 /// ’e–‹‚ğ¶¬‚·‚éˆ—‚ğŒÄ‚Ño‚·
 /// </summary>
+[BurstCompile]
 public partial struct DanmakuSystem : ISystem
 {
     private SystemHandle _ecbSystemHandle;

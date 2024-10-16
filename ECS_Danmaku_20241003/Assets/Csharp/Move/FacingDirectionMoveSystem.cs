@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
@@ -8,6 +9,7 @@ using UnityEngine;
 /// <summary>
 /// Œü‚¢‚Ä‚¢‚é•ûŒü‚ÉˆÚ“®‚·‚éˆ—
 /// </summary>
+[BurstCompile]
 public partial struct FacingDirectionMoveSystem : ISystem
 {
     public void OnUpdate(ref SystemState state)

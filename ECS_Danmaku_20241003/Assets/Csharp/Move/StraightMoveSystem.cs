@@ -5,10 +5,12 @@ using Unity.Transforms;
 using Unity.Mathematics;
 using UnityEngine;
 using static MoveHelper;
+using Unity.Burst;
 
 /// <summary>
 /// ’¼iˆÚ“®‚Ìˆ—
 /// </summary>
+[BurstCompile]
 public partial struct StraightMoveSystem : ISystem
 {
     public void OnUpdate(ref SystemState state)

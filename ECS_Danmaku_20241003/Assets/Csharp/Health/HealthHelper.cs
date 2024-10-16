@@ -22,7 +22,7 @@ static public class HealthHelper
         /// ダメージを受ける
         /// </summary>
         /// <param name="damage">被ダメージ</param>
-        public void DamageHP(float damage, double currentTime);
+        public void DamageHP(float damage);
 
         /// <summary>
         /// HPを回復する
@@ -46,8 +46,7 @@ static public class HealthHelper
         /// </summary>
         /// <typeparam name="T">IHealthPointを継承した型</typeparam>
         /// <param name="healthPoint">実装されたHP</param>
-        /// <param name="currentTime">現在の時刻</param>
         /// <returns>変更を適用したインスタンス</returns>
-        public T DealDamage<T>(T healthPoint, double currentTime) where T : IHealthPoint;
+        public T DealDamage<T>(T healthPoint) where T : IHealthPoint;
     }
 }

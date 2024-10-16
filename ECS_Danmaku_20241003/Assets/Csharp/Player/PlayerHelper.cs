@@ -34,6 +34,9 @@ static public class PlayerHelper
         [Tooltip("前回被弾した時間")]
         public double lastHitTime;
 
+        [Tooltip("削除フラグ")]
+        public bool isKilled;
+
         /// <summary>
         /// 最大体力
         /// </summary>
@@ -57,14 +60,15 @@ static public class PlayerHelper
             _currentHP = this.maxHP;
             isInvincible = false;
             lastHitTime = 0.0f;
+            isKilled = false;
         }
 
         // IHealthPoint
-        public void DamageHP(float damage, double currentTime)
+        public void DamageHP(float damage)
         {
             Debug.Log("試験的なコードの為、後で直す");
             _currentHP -= damage;
-            lastHitTime = currentTime;
+            lastHitTime = World.DefaultGameObjectInjectionWorld.Time.ElapsedTime;
 
             Debug.Log($"{damage}ダメージを受けた。残りHP{_currentHP}");
 
@@ -82,7 +86,7 @@ static public class PlayerHelper
         // IHealthPoint
         public void Down()
         {
-            Debug.Log("倒れる");
+            isKilled = true;
         }
     }
 }
