@@ -55,9 +55,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""AileronRoll"",
+                    ""name"": ""Slowdown"",
                     ""type"": ""Button"",
-                    ""id"": ""d138bd0e-8398-4ece-81e2-843b297434f0"",
+                    ""id"": ""0376a916-451c-4248-94da-a8a5e29466d1"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -232,12 +232,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
-                    ""id"": ""830f90d6-921d-4dbc-b61f-71854f7d4198"",
+                    ""id"": ""18bface7-5d80-45a8-988f-2f3e39604ffe"",
                     ""path"": ""<Keyboard>/shift"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""AileronRoll"",
+                    ""action"": ""Slowdown"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -251,7 +251,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Player_Shot = m_Player.FindAction("Shot", throwIfNotFound: true);
         m_Player_Horizontal = m_Player.FindAction("Horizontal", throwIfNotFound: true);
         m_Player_Vertical = m_Player.FindAction("Vertical", throwIfNotFound: true);
-        m_Player_AileronRoll = m_Player.FindAction("AileronRoll", throwIfNotFound: true);
+        m_Player_Slowdown = m_Player.FindAction("Slowdown", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -316,7 +316,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Shot;
     private readonly InputAction m_Player_Horizontal;
     private readonly InputAction m_Player_Vertical;
-    private readonly InputAction m_Player_AileronRoll;
+    private readonly InputAction m_Player_Slowdown;
     public struct PlayerActions
     {
         private @PlayerControls m_Wrapper;
@@ -324,7 +324,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         public InputAction @Shot => m_Wrapper.m_Player_Shot;
         public InputAction @Horizontal => m_Wrapper.m_Player_Horizontal;
         public InputAction @Vertical => m_Wrapper.m_Player_Vertical;
-        public InputAction @AileronRoll => m_Wrapper.m_Player_AileronRoll;
+        public InputAction @Slowdown => m_Wrapper.m_Player_Slowdown;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -343,9 +343,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Vertical.started += instance.OnVertical;
             @Vertical.performed += instance.OnVertical;
             @Vertical.canceled += instance.OnVertical;
-            @AileronRoll.started += instance.OnAileronRoll;
-            @AileronRoll.performed += instance.OnAileronRoll;
-            @AileronRoll.canceled += instance.OnAileronRoll;
+            @Slowdown.started += instance.OnSlowdown;
+            @Slowdown.performed += instance.OnSlowdown;
+            @Slowdown.canceled += instance.OnSlowdown;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -359,9 +359,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Vertical.started -= instance.OnVertical;
             @Vertical.performed -= instance.OnVertical;
             @Vertical.canceled -= instance.OnVertical;
-            @AileronRoll.started -= instance.OnAileronRoll;
-            @AileronRoll.performed -= instance.OnAileronRoll;
-            @AileronRoll.canceled -= instance.OnAileronRoll;
+            @Slowdown.started -= instance.OnSlowdown;
+            @Slowdown.performed -= instance.OnSlowdown;
+            @Slowdown.canceled -= instance.OnSlowdown;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -384,6 +384,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         void OnShot(InputAction.CallbackContext context);
         void OnHorizontal(InputAction.CallbackContext context);
         void OnVertical(InputAction.CallbackContext context);
-        void OnAileronRoll(InputAction.CallbackContext context);
+        void OnSlowdown(InputAction.CallbackContext context);
     }
 }

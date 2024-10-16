@@ -21,20 +21,22 @@ static public class BulletHelper
     public struct BulletIDealDamageData : IComponentData, IDealDamage
     {
         public readonly float damageAmount;
+        public readonly CampsType campsType;
 
         /// <summary>
         /// íeÇÃIDealDamageèÓïÒ
         /// </summary>
         /// <param name="damageAmount">É_ÉÅÅ[ÉWó </param>
-        public BulletIDealDamageData(float damageAmount)
+        public BulletIDealDamageData(float damageAmount, CampsType campsType)
         {
             this.damageAmount = damageAmount;
+            this.campsType = campsType;
         }
 
         // IDealDamage
-        public T DealDamage<T>(T healthPoint, double currentTime) where T : IHealthPoint
+        public T DealDamage<T>(T healthPoint) where T : IHealthPoint
         {
-            healthPoint.DamageHP(damageAmount, currentTime);
+            healthPoint.DamageHP(damageAmount);
             return healthPoint;
         }
     }
