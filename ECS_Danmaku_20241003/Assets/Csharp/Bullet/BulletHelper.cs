@@ -34,9 +34,9 @@ static public class BulletHelper
         }
 
         // IDealDamage
-        public T DealDamage<T>(T healthPoint) where T : IHealthPoint
+        public T DealDamage<T>(T healthPoint, Entity entity) where T : IHealthPoint
         {
-            healthPoint.DamageHP(damageAmount);
+            healthPoint.DamageHP(damageAmount, entity);
             return healthPoint;
         }
     }

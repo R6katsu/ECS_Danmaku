@@ -79,6 +79,12 @@ public partial class PlayerSystem : SystemBase
 
         if (_isShot)
         {
+            // PlayerTag‚Ì•t‚¢‚½Shooter‚Å”­Ë‚·‚é
+            // AutoShooter‚ÍShot‚ğ‰Ÿ‚³‚È‚­‚Ä‚àŸè‚ÉËŒ‚‚·‚é
+            // “G‚É‚Â‚¢‚Ä‚àA“G‚©‚ç’¼Ú”­Ë‚·‚é‚Ì‚Å‚Í‚È‚­ShooterPrefab‚©‚ç”­Ë‚·‚é‚æ‚¤‚ÉİŒv‚·‚é
+
+
+
             // ËŒ‚ˆ—
             foreach (var (playerTag, playerData, localTfm) in
                 SystemAPI.Query<
