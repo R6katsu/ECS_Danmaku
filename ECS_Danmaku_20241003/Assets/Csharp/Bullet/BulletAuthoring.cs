@@ -7,16 +7,6 @@ using static EnemyHelper;
 using static HealthHelper;
 
 /// <summary>
-/// w‰c‚Ìí—Ş
-/// </summary>
-public enum CampsType
-{
-    Unknown,
-    Enemy,
-    Player
-}
-
-/// <summary>
 /// ’e‚Ìİ’è
 /// </summary>
 public class BulletAuthoring : MonoBehaviour
@@ -24,7 +14,7 @@ public class BulletAuthoring : MonoBehaviour
     [SerializeField, Min(0.0f), Header("ƒ_ƒ[ƒW—Ê")]
     private float _damageAmount = 0.0f;
 
-    [SerializeField, Header("w‰c‚Ìí—Ş")]   // ‘¼‚ÌêŠ‚É‚àg‚¦‚é‚©‚à
+    [SerializeField, Header("w‰c‚Ìí—Ş")]
     private CampsType _campsType = 0;
 
     /// <summary>
@@ -35,7 +25,7 @@ public class BulletAuthoring : MonoBehaviour
     /// <summary>
     /// w‰c‚Ìí—Ş
     /// </summary>
-    public CampsType MyCampsType => _campsType;
+    public CampsType CampsType => _campsType;
 
     public class Baker : Baker<BulletAuthoring>
     {
@@ -44,7 +34,7 @@ public class BulletAuthoring : MonoBehaviour
             var entity = GetEntity(TransformUsageFlags.Dynamic);
 
             AddComponent(entity, new BulletTag());
-            AddComponent(entity, new BulletIDealDamageData(src.DamageAmount, src.MyCampsType));
+            AddComponent(entity, new BulletIDealDamageData(src.DamageAmount, src.CampsType));
         }
     }
 }

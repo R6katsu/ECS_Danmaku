@@ -1,3 +1,7 @@
+using NUnit.Framework;
+using System.Collections.Generic;
+using System.Security.Cryptography;
+using Unity.Collections;
 using Unity.Core;
 using Unity.Entities;
 using UnityEngine;
@@ -56,11 +60,13 @@ static public class EnemyHelper
     /// </summary>
     public struct EnemyHealthPointData : IComponentData, IHealthPoint
     {
+        // 値型の構造体でNativeListを使うとメモリ解放が面倒
+
         [Tooltip("最大体力")]
         public readonly float maxHP;
 
         [Tooltip("無敵時間の長さ")]
-        public readonly float isInvincibleTime;     // 敵には無敵時間は必要ない、ただ連続して同じ弾が当たらないようにする
+        public readonly float isInvincibleTime;
 
         [Tooltip("現存体力")]
         private float _currentHP;
@@ -74,6 +80,12 @@ static public class EnemyHelper
         [Tooltip("削除フラグ")]
         public bool isKilled;
 
+        [Tooltip("現在の識別番号")]
+        static private int currentNumber;
+
+        [Tooltip("自身の識別番号")]
+        private int _myNumber;
+
         /// <summary>
         /// 最大体力
         /// </summary>
@@ -85,11 +97,38 @@ static public class EnemyHelper
         public float CurrentHP => _currentHP;
 
         /// <summary>
+        /// 自身の識別番号
+        /// </summary>
+        private int MyNumber
+        {
+            get
+            {
+                // 初期状態のままだった
+                if (_myNumber == 0)
+                {
+                    // 識別番号を更新し、取得する
+                    currentNumber++;
+                    _myNumber = currentNumber;
+                }
+
+                return _myNumber;
+            }
+        }
+
+        /// <summary>
         /// EnemyのIHealthPoint情報
         /// </summary>
         /// <param name="maxHP">最大体力</param>
         public EnemyHealthPointData(float maxHP, float isInvincibleTime)
         {
+            // 敵には無敵時間は必要ない、ただ連続して同じ弾が当たらないようにする
+            // これにより、HPを1から増やしても問題なくなる
+            // PLの弾にホーミング弾を追加し、攻撃力に差を付けて敵を倒しやすくする
+            // 既に接触した弾（Entity）を記録し、Exitになるまで接触対象から除外する？
+            // Listを使えるのかは不明。一回試しても良さそう
+
+
+
             this.maxHP = maxHP;
             this.isInvincibleTime = isInvincibleTime;
 
@@ -98,11 +137,25 @@ static public class EnemyHelper
             isInvincible = false;
             lastHitTime = 0.0f;
             isKilled = false;
+            currentNumber++;
+            _myNumber = 0;
         }
 
         // IHealthPoint
-        public void DamageHP(float damage)
+        public void DamageHP(float damage, Entity entity)
         {
+            // まだKeyが含まれていなければ自身を追加する
+            if (!EnemyHealthPointDataDic.entitys.ContainsKey(MyNumber))
+            {
+                EnemyHealthPointDataDic.entitys.Add(MyNumber, new());
+            }
+
+            // 既にListに含まれているEntityだったら切り上げる
+            if (EnemyHealthPointDataDic.entitys[MyNumber].Contains(entity)) { return; }
+
+            // まだ接触していないEntityだったのでListに追加する
+            EnemyHealthPointDataDic.entitys[MyNumber].Add(entity);
+
             Debug.Log("試験的なコードの為、後で直す");
             Debug.Log("敵にダメージを与えた");
             _currentHP -= damage;
@@ -114,7 +167,7 @@ static public class EnemyHelper
         }
 
         // IHealthPoint
-        public void HealHP(float heal)
+        public void HealHP(float heal, Entity entity)
         {
             Debug.Log("HPを回復する");
         }
@@ -124,5 +177,10 @@ static public class EnemyHelper
         {
             isKilled = true;
         }
+    }
+
+    public class EnemyHealthPointDataDic
+    {
+        static public Dictionary<int, List<Entity>> entitys = new();
     }
 }

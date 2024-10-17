@@ -22,13 +22,15 @@ static public class HealthHelper
         /// ダメージを受ける
         /// </summary>
         /// <param name="damage">被ダメージ</param>
-        public void DamageHP(float damage);
+        /// <param name="entity">相手</param>
+        public void DamageHP(float damage, Entity entity);
 
         /// <summary>
         /// HPを回復する
         /// </summary>
         /// <param name="heal">回復量</param>
-        public void HealHP(float heal);
+        /// <param name="entity">相手</param>
+        public void HealHP(float heal, Entity entity);
 
         /// <summary>
         /// 倒れる
@@ -46,7 +48,8 @@ static public class HealthHelper
         /// </summary>
         /// <typeparam name="T">IHealthPointを継承した型</typeparam>
         /// <param name="healthPoint">実装されたHP</param>
+        /// <param name="entity">自身</param>
         /// <returns>変更を適用したインスタンス</returns>
-        public T DealDamage<T>(T healthPoint) where T : IHealthPoint;
+        public T DealDamage<T>(T healthPoint, Entity entity) where T : IHealthPoint;
     }
 }

@@ -64,13 +64,13 @@ static public class PlayerHelper
         }
 
         // IHealthPoint
-        public void DamageHP(float damage)
+        public void DamageHP(float damage, Entity entity)
         {
             Debug.Log("試験的なコードの為、後で直す");
             _currentHP -= damage;
             lastHitTime = World.DefaultGameObjectInjectionWorld.Time.ElapsedTime;
 
-            Debug.Log($"{damage}ダメージを受けた。残りHP{_currentHP}");
+            //Debug.Log($"{damage}ダメージを受けた。残りHP{_currentHP}");
 
             // HPが 0以下なら倒れる
             if (_currentHP <= 0)
@@ -78,7 +78,7 @@ static public class PlayerHelper
         }
 
         // IHealthPoint
-        public void HealHP(float heal)
+        public void HealHP(float heal, Entity entity)
         {
             Debug.Log("HPを回復する");
         }

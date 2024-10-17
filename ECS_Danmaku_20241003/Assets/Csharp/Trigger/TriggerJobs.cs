@@ -70,7 +70,7 @@ static public partial class TriggerJobs
             if (dealDamage.campsType == CampsType.Player) { return; }
 
             // ダメージを与え、変更されたインスタンスを反映する
-            healthPoint = dealDamage.DealDamage(healthPoint);
+            healthPoint = dealDamage.DealDamage(healthPoint, entityA);
             healthPointLookup[entityB] = healthPoint;
 
             // 攻撃を受けた対象が削除にDestroyableDataを有していなければ切り上げる
@@ -115,7 +115,7 @@ static public partial class TriggerJobs
             if (dealDamage.campsType == CampsType.Enemy) { return; }
 
             // ダメージを与え、変更されたインスタンスを反映する
-            healthPoint = dealDamage.DealDamage(healthPoint);
+            healthPoint = dealDamage.DealDamage(healthPoint, entityA);
             healthPointLookup[entityB] = healthPoint;
 
             // 攻撃を受けた対象が削除にDestroyableDataを有していなければ切り上げる
