@@ -10,6 +10,10 @@ using static HealthHelper;
 using static PlayerAuthoring;
 using static PlayerHelper;
 using static TriggerHelper;
+using static EntityCampsHelper;
+
+using static EntityCategoryHelper;
+
 #if UNITY_EDITOR
 using static UnityEngine.EventSystems.EventTrigger;
 using Unity.VisualScripting.FullSerializer;
@@ -74,6 +78,12 @@ public class PlayerAuthoring : MonoBehaviour
     [SerializeField, Header("PL‚Ì’e‚ÌPrefab")]
     private Transform _playerBulletPrefab = null;
 
+    [SerializeField, Header("w‰c‚Ìí—Ş")]
+    private EntityCampsType _campsType = 0;
+
+    [SerializeField, Header("Entity‚ÌƒJƒeƒSƒŠ")]
+    private EntityCategory _entityCategory = 0;
+
     /// <summary>
     /// ˆÚ“®‘¬“x
     /// </summary>
@@ -104,6 +114,16 @@ public class PlayerAuthoring : MonoBehaviour
     /// </summary>
     public Transform PlayerBulletPrefab => _playerBulletPrefab;
 
+    /// <summary>
+    /// w‰c‚Ìí—Ş
+    /// </summary>
+    public EntityCampsType CampsType => _campsType;
+
+    /// <summary>
+    /// Entity‚ÌƒJƒeƒSƒŠ
+    /// </summary>
+    public EntityCategory EntityCategory => _entityCategory;
+
     public class Baker : Baker<PlayerAuthoring>
     {
         public override void Bake(PlayerAuthoring src)
@@ -116,6 +136,10 @@ public class PlayerAuthoring : MonoBehaviour
             AddComponent(entity, new PlayerTag());
             AddComponent(entity, new DestroyableData());
             AddComponent(entity, new PlayerHealthPointData(src.MaxHP, src.IsInvincibleTime));
+
+            // w‰c‚ÆƒJƒeƒSƒŠ‚ÌTag‚ğƒAƒ^ƒbƒ`
+            AddComponent(entity, EntityCampsHelper.GetCampsTagType(src.CampsType));
+            AddComponent(entity, EntityCategoryHelper.GetCampsTagType(src.EntityCategory));
         }
     }
 }

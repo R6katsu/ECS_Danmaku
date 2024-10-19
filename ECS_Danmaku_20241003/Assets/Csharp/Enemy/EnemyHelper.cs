@@ -60,8 +60,6 @@ static public class EnemyHelper
     /// </summary>
     public struct EnemyHealthPointData : IComponentData, IHealthPoint
     {
-        // 値型の構造体でNativeListを使うとメモリ解放が面倒
-
         [Tooltip("最大体力")]
         public readonly float maxHP;
 
@@ -121,14 +119,6 @@ static public class EnemyHelper
         /// <param name="maxHP">最大体力</param>
         public EnemyHealthPointData(float maxHP, float isInvincibleTime)
         {
-            // 敵には無敵時間は必要ない、ただ連続して同じ弾が当たらないようにする
-            // これにより、HPを1から増やしても問題なくなる
-            // PLの弾にホーミング弾を追加し、攻撃力に差を付けて敵を倒しやすくする
-            // 既に接触した弾（Entity）を記録し、Exitになるまで接触対象から除外する？
-            // Listを使えるのかは不明。一回試しても良さそう
-
-
-
             this.maxHP = maxHP;
             this.isInvincibleTime = isInvincibleTime;
 
@@ -181,6 +171,8 @@ static public class EnemyHelper
 
     public class EnemyHealthPointDataDic
     {
+        // あとで修正する。とりあえずの奴
+
         static public Dictionary<int, List<Entity>> entitys = new();
     }
 }

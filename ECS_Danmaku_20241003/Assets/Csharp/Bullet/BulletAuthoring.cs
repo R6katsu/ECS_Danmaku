@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using Unity.Entities;
 using UnityEngine;
 using static BulletHelper;
+using static EntityCampsHelper;
 using static EnemyHelper;
 using static HealthHelper;
+using static EntityCategoryHelper;
 
 /// <summary>
 /// ’e‚Ìİ’è
@@ -15,7 +17,10 @@ public class BulletAuthoring : MonoBehaviour
     private float _damageAmount = 0.0f;
 
     [SerializeField, Header("w‰c‚Ìí—Ş")]
-    private CampsType _campsType = 0;
+    private EntityCampsType _campsType = 0;
+
+    [SerializeField, Header("Entity‚ÌƒJƒeƒSƒŠ")]
+    private EntityCategory _entityCategory = 0;
 
     /// <summary>
     /// ƒ_ƒ[ƒW—Ê
@@ -25,7 +30,12 @@ public class BulletAuthoring : MonoBehaviour
     /// <summary>
     /// w‰c‚Ìí—Ş
     /// </summary>
-    public CampsType CampsType => _campsType;
+    public EntityCampsType CampsType => _campsType;
+
+    /// <summary>
+    /// Entity‚ÌƒJƒeƒSƒŠ
+    /// </summary>
+    public EntityCategory EntityCategory => _entityCategory;
 
     public class Baker : Baker<BulletAuthoring>
     {
@@ -35,6 +45,10 @@ public class BulletAuthoring : MonoBehaviour
 
             AddComponent(entity, new BulletTag());
             AddComponent(entity, new BulletIDealDamageData(src.DamageAmount, src.CampsType));
+
+            // w‰c‚ÆƒJƒeƒSƒŠ‚ÌTag‚ğƒAƒ^ƒbƒ`
+            AddComponent(entity, EntityCampsHelper.GetCampsTagType(src.CampsType));
+            AddComponent(entity, EntityCategoryHelper.GetCampsTagType(src.EntityCategory));
         }
     }
 }
