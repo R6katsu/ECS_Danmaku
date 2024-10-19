@@ -124,8 +124,10 @@ MonoBehaviour:
   _maxHP: 10000
   _firingInterval: 0.1
   _isInvincibleTime: 1
-  _playerBulletPrefab: {fileID: 7237458100123338237, guid: d2d0ae358a1edec4c843ea0295c0cef7,
+  _playerBulletPrefab: {fileID: 8241895751977177836, guid: c5545609a78e8174fbdbb76728053993,
     type: 3}
+  _campsType: 2
+  _entityCategory: 4
 --- !u!1001 &8800672082083486789
 PrefabInstance:
   m_ObjectHideFlags: 0

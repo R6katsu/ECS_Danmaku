@@ -136,6 +136,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _damageAmount: 1
   _campsType: 1
+  _entityCategory: 3
 --- !u!54 &6194915054689506407
 Rigidbody:
   m_ObjectHideFlags: 0

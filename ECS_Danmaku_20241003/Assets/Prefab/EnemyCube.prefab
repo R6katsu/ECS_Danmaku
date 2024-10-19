@@ -167,3 +167,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _maxHP: 5
   _isInvincibleTime: 0
+  _campsType: 1
+  _entityCategory: 4

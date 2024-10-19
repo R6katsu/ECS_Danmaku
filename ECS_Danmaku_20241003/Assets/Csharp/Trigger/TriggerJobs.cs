@@ -5,6 +5,7 @@ using Unity.Entities;
 using Unity.Physics;
 using UnityEngine;
 using static BulletHelper;
+using static EntityCampsHelper;
 using static EnemyHelper;
 using static HealthHelper;
 using static PlayerAuthoring;
@@ -67,7 +68,7 @@ static public partial class TriggerJobs
             var dealDamage = dealDamageLookup[entityA];
 
             // ダメージ源の陣営の種類がPlayerだったら切り上げる
-            if (dealDamage.campsType == CampsType.Player) { return; }
+            if (dealDamage.campsType == EntityCampsType.Player) { return; }
 
             // ダメージを与え、変更されたインスタンスを反映する
             healthPoint = dealDamage.DealDamage(healthPoint, entityA);
@@ -112,7 +113,7 @@ static public partial class TriggerJobs
             var dealDamage = dealDamageLookup[entityA];
 
             // ダメージ源の陣営の種類がEnemyだったら切り上げる
-            if (dealDamage.campsType == CampsType.Enemy) { return; }
+            if (dealDamage.campsType == EntityCampsType.Enemy) { return; }
 
             // ダメージを与え、変更されたインスタンスを反映する
             healthPoint = dealDamage.DealDamage(healthPoint, entityA);
