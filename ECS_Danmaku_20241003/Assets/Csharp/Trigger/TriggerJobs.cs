@@ -11,6 +11,7 @@ using static HealthHelper;
 using static PlayerAuthoring;
 using static PlayerHelper;
 using static TriggerHelper;
+using System;
 
 /// <summary>
 /// 接触した際の処理
@@ -45,6 +46,7 @@ static public partial class TriggerJobs
         public ComponentLookup<PlayerHealthPointData> healthPointLookup;
         public ComponentLookup<BulletIDealDamageData> dealDamageLookup;
         public ComponentLookup<DestroyableData> destroyableLookup;
+        public ComponentLookup<RemainingPierceCountData> remainingPierceCountLookup;
 
         // 現在の時刻
         public double currentTime;
@@ -74,16 +76,38 @@ static public partial class TriggerJobs
             healthPoint = dealDamage.DealDamage(healthPoint, entityA);
             healthPointLookup[entityB] = healthPoint;
 
-            // 攻撃を受けた対象が削除にDestroyableDataを有していなければ切り上げる
-            if (!destroyableLookup.HasComponent(entityB)) { return; }
+            // ダメージ源がRemainingPierceCountDataを有していた
+            if (remainingPierceCountLookup.HasComponent(entityA))
+            {
+                // 残り貫通回数をデクリメント
+                var remainingPierceCount = remainingPierceCountLookup[entityA];
+                remainingPierceCount.remainingPierceCount--;
+                remainingPierceCountLookup[entityA] = remainingPierceCount;
 
-            var destroyable = destroyableLookup[entityB];
+                // 攻撃を受けた対象がDestroyableDataを有していた
+                if (destroyableLookup.HasComponent(entityA))
+                {
+                    var destroyable = destroyableLookup[entityA];
 
-            // HPの削除フラグを代入する
-            destroyable.isKilled = healthPoint.isKilled;
+                    // 残り貫通回数が0以下か
+                    destroyable.isKilled = (remainingPierceCount.remainingPierceCount <= 0) ? true : false;
 
-            // 変更を反映
-            destroyableLookup[entityB] = destroyable;
+                    // 変更を反映
+                    destroyableLookup[entityA] = destroyable;
+                }
+            }
+
+            // 攻撃を受けた対象がDestroyableDataを有していた
+            if (destroyableLookup.HasComponent(entityB))
+            {
+                var destroyable = destroyableLookup[entityB];
+
+                // HPの削除フラグを代入する
+                destroyable.isKilled = healthPoint.isKilled;
+
+                // 変更を反映
+                destroyableLookup[entityB] = destroyable;
+            }
         }
     }
 
@@ -96,6 +120,7 @@ static public partial class TriggerJobs
         public ComponentLookup<EnemyHealthPointData> healthPointLookup;
         public ComponentLookup<BulletIDealDamageData> dealDamageLookup;
         public ComponentLookup<DestroyableData> destroyableLookup;
+        public ComponentLookup<RemainingPierceCountData> remainingPierceCountLookup;
 
         public void Execute(TriggerEvent triggerEvent)
         {
@@ -119,16 +144,38 @@ static public partial class TriggerJobs
             healthPoint = dealDamage.DealDamage(healthPoint, entityA);
             healthPointLookup[entityB] = healthPoint;
 
-            // 攻撃を受けた対象が削除にDestroyableDataを有していなければ切り上げる
-            if (!destroyableLookup.HasComponent(entityB)) { return; }
+            // ダメージ源がRemainingPierceCountDataを有していた
+            if (remainingPierceCountLookup.HasComponent(entityA))
+            {
+                // 残り貫通回数をデクリメント
+                var remainingPierceCount = remainingPierceCountLookup[entityA];
+                remainingPierceCount.remainingPierceCount--;
+                remainingPierceCountLookup[entityA] = remainingPierceCount;
 
-            var destroyable = destroyableLookup[entityB];
+                // 攻撃を受けた対象がDestroyableDataを有していた
+                if (destroyableLookup.HasComponent(entityA))
+                {
+                    var destroyable = destroyableLookup[entityA];
 
-            // HPの削除フラグを代入する
-            destroyable.isKilled = healthPoint.isKilled;
+                    // 残り貫通回数が0以下か
+                    destroyable.isKilled = (remainingPierceCount.remainingPierceCount <= 0) ? true : false;
 
-            // 変更を反映
-            destroyableLookup[entityB] = destroyable;
+                    // 変更を反映
+                    destroyableLookup[entityA] = destroyable;
+                }
+            }
+
+            // 攻撃を受けた対象がDestroyableDataを有していた
+            if (destroyableLookup.HasComponent(entityB))
+            {
+                var destroyable = destroyableLookup[entityB];
+
+                // HPの削除フラグを代入する
+                destroyable.isKilled = healthPoint.isKilled;
+
+                // 変更を反映
+                destroyableLookup[entityB] = destroyable;
+            }
         }
     }
 }
