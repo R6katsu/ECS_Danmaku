@@ -135,6 +135,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _damageAmount: 1
+  _remainingPierceCount: -1
   _campsType: 2
   _entityCategory: 3
 --- !u!54 &-3138097004257213577

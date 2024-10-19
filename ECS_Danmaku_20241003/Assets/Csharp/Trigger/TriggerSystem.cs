@@ -23,6 +23,7 @@ public partial struct TriggerSystem : ISystem
         var enemyHealthPointLookup = state.GetComponentLookup<EnemyHealthPointData>(false);
         var dealDamageLookup = state.GetComponentLookup<BulletIDealDamageData>(false);
         var destroyableLookup = state.GetComponentLookup<DestroyableData>(false);
+        var remainingPierceCountLookup = state.GetComponentLookup<RemainingPierceCountData>(false);
 
         // PLに弾が当たった時の処理を呼び出す
         var playerDamage = new PlayerDamageTriggerJob()
@@ -30,6 +31,7 @@ public partial struct TriggerSystem : ISystem
             healthPointLookup = playerHealthPointLookup,
             dealDamageLookup = dealDamageLookup,
             destroyableLookup = destroyableLookup,
+            remainingPierceCountLookup = remainingPierceCountLookup,
             currentTime = currentTime
         };
 
@@ -46,7 +48,8 @@ public partial struct TriggerSystem : ISystem
         {
             healthPointLookup = enemyHealthPointLookup,
             dealDamageLookup = dealDamageLookup,
-            destroyableLookup = destroyableLookup
+            destroyableLookup = destroyableLookup,
+            remainingPierceCountLookup = remainingPierceCountLookup
         };
 
         // 前のジョブを完了する
