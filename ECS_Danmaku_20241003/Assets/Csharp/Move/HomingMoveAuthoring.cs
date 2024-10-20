@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
+using static BulletHelper;
 using static EntityCampsHelper;
 using static EntityCategoryHelper;
 using static MoveHelper;

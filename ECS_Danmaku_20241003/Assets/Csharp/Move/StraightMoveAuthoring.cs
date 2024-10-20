@@ -1,8 +1,13 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Entities;
 using UnityEngine;
 using static MoveHelper;
+
+#if UNITY_EDITOR
+using System.Collections;
+using System.Collections.Generic;
+using static BulletHelper;
+using static UnityEngine.EventSystems.EventTrigger;
+#endif
 
 /// <summary>
 /// 直進移動の情報
@@ -33,20 +38,17 @@ public class StraightMoveAuthoring : MonoBehaviour
     [SerializeField]
     private MoveParameter _moveParam = new();
 
-    /// <summary>
-    /// 移動の設定値
-    /// </summary>
-    public MoveParameter MoveParam => _moveParam;
-
     public class Baker : Baker<StraightMoveAuthoring>
     {
         public override void Bake(StraightMoveAuthoring src)
         {
-            var straightMove = new StraightMoveData(src.MoveParam);
+            var entity = GetEntity(TransformUsageFlags.Dynamic);
+
+            var straightMove = new StraightMoveData(src._moveParam);
 
             // Dataをアタッチ
-            AddComponent(GetEntity(TransformUsageFlags.Dynamic), straightMove);
-            AddComponent(GetEntity(TransformUsageFlags.Dynamic), new MoveTag());
+            AddComponent(entity, straightMove);
+            AddComponent(entity, new MoveTag());
         }
     }
 }

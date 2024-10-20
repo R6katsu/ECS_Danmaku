@@ -84,62 +84,22 @@ public class PlayerAuthoring : MonoBehaviour
     [SerializeField, Header("Entityのカテゴリ")]
     private EntityCategory _entityCategory = 0;
 
-    /// <summary>
-    /// 移動速度
-    /// </summary>
-    public float MoveSpeed => _moveSpeed;
-
-    /// <summary>
-    /// 減速中の移動速度
-    /// </summary>
-    public float SlowMoveSpeed => _slowMoveSpeed;
-
-    /// <summary>
-    /// 最大体力
-    /// </summary>
-    public float MaxHP => _maxHP;
-
-    /// <summary>
-    /// 射撃間隔
-    /// </summary>
-    public float FiringInterval => _firingInterval;
-
-    /// <summary>
-    /// 無敵時間の長さ
-    /// </summary>
-    public float IsInvincibleTime => _isInvincibleTime;
-
-    /// <summary>
-    /// PLの弾のPrefab
-    /// </summary>
-    public Transform PlayerBulletPrefab => _playerBulletPrefab;
-
-    /// <summary>
-    /// 陣営の種類
-    /// </summary>
-    public EntityCampsType CampsType => _campsType;
-
-    /// <summary>
-    /// Entityのカテゴリ
-    /// </summary>
-    public EntityCategory EntityCategory => _entityCategory;
-
     public class Baker : Baker<PlayerAuthoring>
     {
         public override void Bake(PlayerAuthoring src)
         {
             var entity = GetEntity(TransformUsageFlags.Dynamic);
-            var PlayerBulletEntity = GetEntity(src.PlayerBulletPrefab, TransformUsageFlags.Dynamic);
+            var PlayerBulletEntity = GetEntity(src._playerBulletPrefab, TransformUsageFlags.Dynamic);
 
             // Dataをアタッチ
-            AddComponent(entity, new PlayerData(src.MoveSpeed, src.SlowMoveSpeed, src.FiringInterval, PlayerBulletEntity));
+            AddComponent(entity, new PlayerData(src._moveSpeed, src._slowMoveSpeed, src._firingInterval, PlayerBulletEntity));
             AddComponent(entity, new PlayerTag());
             AddComponent(entity, new DestroyableData());
-            AddComponent(entity, new PlayerHealthPointData(src.MaxHP, src.IsInvincibleTime));
+            AddComponent(entity, new PlayerHealthPointData(src._maxHP, src._isInvincibleTime));
 
             // 陣営とカテゴリのTagをアタッチ
-            AddComponent(entity, EntityCampsHelper.GetCampsTagType(src.CampsType));
-            AddComponent(entity, EntityCategoryHelper.GetCampsTagType(src.EntityCategory));
+            AddComponent(entity, EntityCampsHelper.GetCampsTagType(src._campsType));
+            AddComponent(entity, EntityCategoryHelper.GetCampsTagType(src._entityCategory));
         }
     }
 }

@@ -1,9 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Entities;
-using Unity.Mathematics;
 using UnityEngine;
 using static DanmakuHelper;
+
+#if UNITY_EDITOR
+using System.Collections;
+using System.Collections.Generic;
+using Unity.Mathematics;
+#endif
 
 /// <summary>
 /// n-Wayíe
@@ -67,41 +70,21 @@ public class N_Way_DanmakuAuthoring : MonoBehaviour, IDanmakuAuthoring
     [SerializeField, Header("íeÇÃPrefab")]
     private Transform _bulletPrefab = null;
 
-    /// <summary>
-    /// êÓÇÃëÂÇ´Ç≥
-    /// </summary>
-    public int FanAngle => _fanAngle;
-
-    /// <summary>
-    /// íeÇÃó 
-    /// </summary>
-    public int AmountBullets => _amountBullets;
-
-    /// <summary>
-    /// î≠éÀä‘äu
-    /// </summary>
-    public float FiringInterval => _firingInterval;
-
-    /// <summary>
-    /// íeÇÃPrefab
-    /// </summary>
-    public Transform BulletPrefab => _bulletPrefab;
-
     public class Baker : Baker<N_Way_DanmakuAuthoring>
     {
         public override void Bake(N_Way_DanmakuAuthoring src)
         {
-            var bulletEntity = GetEntity(src.BulletPrefab, TransformUsageFlags.Dynamic);
+            var bulletEntity = GetEntity(src._bulletPrefab, TransformUsageFlags.Dynamic);
 
             // LocalTransformÇÃScaleÇ™floatÇ≈Ç†ÇÈà◊ÅAàÍî‘ëÂÇ´Ç¢é≤ÇãÅÇﬂÇÈÇ±Ç∆Ç…ÇµÇΩ
-            var localScale = src.BulletPrefab.localScale;
+            var localScale = src._bulletPrefab.localScale;
             var localScaleMax = Mathf.Max(localScale.x, localScale.y, localScale.z);
 
             var n_Way_DanmakuData = new N_Way_DanmakuData
                 (
-                    src.FanAngle,
-                    src.AmountBullets,
-                    src.FiringInterval,
+                    src._fanAngle,
+                    src._amountBullets,
+                    src._firingInterval,
                     bulletEntity,
                     localScaleMax
                 );

@@ -14,7 +14,8 @@ static public class DanmakuHelper
     public enum DanmakuType
     {
         None,
-        N_Way,
+        [Tooltip("n-Way’e")] N_Way,
+        [Tooltip("ƒ^ƒbƒvŒ‚‚¿")] TapShooting
     }
 
     /// <summary>
