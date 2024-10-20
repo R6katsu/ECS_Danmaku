@@ -9,6 +9,7 @@ using UnityEngine;
 /// <summary>
 /// 弾幕のJobSystem
 /// </summary>
+[BurstCompile]
 static public partial class DanmakuJobs
 {
     /// <summary>
@@ -73,6 +74,60 @@ static public partial class DanmakuJobs
                     Scale = n_Way_DanmakuData.bulletLocalScale
                 });
             }
+        }
+    }
+
+    /// <summary>
+    /// タップ撃ち弾幕を生成
+    /// </summary>
+    [BurstCompile]
+    public partial struct TapShootingJob : IJobEntity
+    {
+        public EntityCommandBuffer.ParallelWriter commandBuffer;
+        public double elapsedTime;
+
+        public void Execute(
+            Entity entity,
+            TapShooting_DanmakuData tapShooting_DanmakuData,
+            LocalTransform localTfm,
+            [EntityIndexInQuery] int index)
+        {
+            // 現在の時刻が次回のワンセット開始時刻未満だった
+            if (elapsedTime < tapShooting_DanmakuData.singleSetNextTime) { return; }
+
+            // 現在の時刻が次回の射撃時刻未満だった
+            if (elapsedTime < tapShooting_DanmakuData.firingNextTime) { return; }
+
+            // 弾を生成
+            Entity bulletEntity = commandBuffer.Instantiate(index, tapShooting_DanmakuData.bulletEntity);
+
+            // Transformを代入
+            commandBuffer.SetComponent(index, bulletEntity, new LocalTransform
+            {
+                Position = localTfm.Position,
+                Rotation = localTfm.Rotation,
+                Scale = 1.0f
+            });
+
+            // 現在の射撃回数をインクリメント
+            tapShooting_DanmakuData.currentShotCount++;
+
+            // 現在の射撃回数がワンセットの射撃回数以上だった
+            if (tapShooting_DanmakuData.currentShotCount >= tapShooting_DanmakuData.shootNSingleSet)
+            {
+                //現在の射撃回数をリセット
+                tapShooting_DanmakuData.currentShotCount = 0;
+
+                // 次回のワンセット開始時刻を更新する
+                tapShooting_DanmakuData.singleSetNextTime = elapsedTime + tapShooting_DanmakuData.singleSetRestTimeAfter;
+
+                // 次回の射撃時刻を更新する
+                // 次回のワンセット開始時刻 + （射撃間隔 * 現在の射撃回数） = 次回の射撃時刻
+                tapShooting_DanmakuData.firingNextTime = tapShooting_DanmakuData.singleSetNextTime + tapShooting_DanmakuData.firingInterval * tapShooting_DanmakuData.currentShotCount;
+            }
+
+            // 更新を反映
+            commandBuffer.SetComponent(index, entity, tapShooting_DanmakuData);
         }
     }
 }

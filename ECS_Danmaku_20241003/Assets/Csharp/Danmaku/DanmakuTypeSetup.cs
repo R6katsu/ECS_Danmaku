@@ -100,17 +100,29 @@ public sealed class DanmakuTypeSetup : MonoBehaviour
                 break;
 
             case DanmakuType.N_Way:
-                // ランタイム中なら追加、elseなら遅延後に追加
-                if (Application.isPlaying)
-                    gameObject.AddComponent<N_Way_DanmakuAuthoring>();
-                else
-                    EditorApplication.delayCall += () =>
-                    {
-                        if (this != null)
-                            gameObject.AddComponent<N_Way_DanmakuAuthoring>();
-                    };
+                AddComponent<N_Way_DanmakuAuthoring>();
+                break;
+            case DanmakuType.TapShooting:
+                AddComponent<TapShooting_DanmakuAuthoring>();
                 break;
         }
+    }
+
+    /// <summary>
+    /// ランタイム中か否かの判定を含んだAddComponent
+    /// </summary>
+    /// <typeparam name="T">AddComponentする型</typeparam>
+    private void AddComponent<T>() where T : MonoBehaviour
+    {
+        // ランタイム中なら追加、elseなら遅延後に追加
+        if (Application.isPlaying)
+            gameObject.AddComponent<T>();
+        else
+            EditorApplication.delayCall += () =>
+            {
+                if (this != null)
+                    gameObject.AddComponent<T>();
+            };
     }
 #endif
 }

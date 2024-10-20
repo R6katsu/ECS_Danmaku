@@ -5,7 +5,6 @@ using UnityEngine;
 using static EnemyHelper;
 using static EntityCampsHelper;
 using static EntityCategoryHelper;
-using static PlayerHelper;
 
 /// <summary>
 /// “G‚Ìİ’è
@@ -24,26 +23,6 @@ public class EnemyAuthoring : MonoBehaviour
     [SerializeField, Header("Entity‚ÌƒJƒeƒSƒŠ")]
     private EntityCategory _entityCategory = 0;
 
-    /// <summary>
-    /// –³“GŠÔ‚Ì’·‚³
-    /// </summary>
-    public float IsInvincibleTime => _isInvincibleTime;
-
-    /// <summary>
-    /// Å‘å‘Ì—Í
-    /// </summary>
-    public float MaxHP => _maxHP;
-
-    /// <summary>
-    /// w‰c‚Ìí—Ş
-    /// </summary>
-    public EntityCampsType CampsType => _campsType;
-
-    /// <summary>
-    /// Entity‚ÌƒJƒeƒSƒŠ
-    /// </summary>
-    public EntityCategory EntityCategory => _entityCategory;
-
     public class Baker : Baker<EnemyAuthoring>
     {
         public override void Bake(EnemyAuthoring src)
@@ -53,11 +32,11 @@ public class EnemyAuthoring : MonoBehaviour
             // Data‚ğƒAƒ^ƒbƒ`
             AddComponent(entity, new EnemyTag());
             AddComponent(entity, new DestroyableData());
-            AddComponent(entity, new EnemyHealthPointData(src.MaxHP, src.IsInvincibleTime));
+            AddComponent(entity, new EnemyHealthPointData(src._maxHP, src._isInvincibleTime));
 
             // w‰c‚ÆƒJƒeƒSƒŠ‚ÌTag‚ğƒAƒ^ƒbƒ`
-            AddComponent(entity, EntityCampsHelper.GetCampsTagType(src.CampsType));
-            AddComponent(entity, EntityCategoryHelper.GetCampsTagType(src.EntityCategory));
+            AddComponent(entity, EntityCampsHelper.GetCampsTagType(src._campsType));
+            AddComponent(entity, EntityCategoryHelper.GetCampsTagType(src._entityCategory));
         }
     }
 }

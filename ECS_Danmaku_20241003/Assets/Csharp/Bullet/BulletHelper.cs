@@ -4,8 +4,11 @@ using Unity.Entities;
 using UnityEngine;
 using static EntityCampsHelper;
 using static HealthHelper;
+
+#if UNITY_EDITOR
 using static MoveHelper;
 using static UnityEngine.EventSystems.EventTrigger;
+#endif
 
 /// <summary>
 /// ’e‚Ì•â•
@@ -16,6 +19,23 @@ static public class BulletHelper
     /// ’e
     /// </summary>
     public struct BulletTag : IComponentData { }
+
+    /// <summary>
+    /// c‚èŠÑ’Ê‰ñ”‚Ìî•ñ
+    /// </summary>
+    public struct RemainingPierceCountData : IComponentData
+    {
+        public int remainingPierceCount;
+
+        /// <summary>
+        /// c‚èŠÑ’Ê‰ñ”‚Ìî•ñ
+        /// </summary>
+        /// <param name="remainingPierceCount">c‚èŠÑ’Ê‰ñ”</param>
+        public RemainingPierceCountData(int remainingPierceCount)
+        {
+            this.remainingPierceCount = remainingPierceCount;
+        }
+    }
 
     /// <summary>
     /// ’e‚ÌIDealDamageî•ñ

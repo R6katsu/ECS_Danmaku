@@ -1,13 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using Unity.Burst;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
+using Unity.Physics;
 using Unity.Transforms;
 using UnityEngine;
+using UnityEngine.UIElements;
 using static EntityCampsHelper;
 using static EntityCategoryHelper;
+using static UnityEngine.GraphicsBuffer;
 
 /// <summary>
 /// 対象に向かって直線移動する処理
@@ -43,8 +47,9 @@ public partial struct HomingMoveSystm : ISystem
         // campsType
 
         // 対象に向かって直線移動する処理
-        foreach (var (homing, localTfm) in
+        foreach (var (homing, velocity, localTfm) in
                  SystemAPI.Query<RefRO<HomingMoveData>,
+                                 RefRW<PhysicsVelocity>,
                                  RefRW<LocalTransform>>())
         {
             //continue;   // 未完成の為
@@ -92,11 +97,34 @@ public partial struct HomingMoveSystm : ISystem
                 // 現在位置から目標位置へのベクトルを計算
                 float3 direction = math.normalize(gjniknhiaogkvihaoTfm - currentPoint);
 
+                /*
                 // 移動する距離を計算
                 float distanceToMove = homing.ValueRO.moveParam.Speed * delta;
 
                 // 移動を適用
                 localTfm.ValueRW.Position += direction * distanceToMove;
+                */
+
+                // なんというか、余韻みたいなのを持たせたい
+
+                // ターゲットの位置を取得
+                float3 targetPosition = gjniknhiaogkvihaoTfm;
+
+                // 現在の弾の位置とターゲットの位置との差を計算
+                float3 directionToTarget = direction;
+
+                // 現在の弾の速度方向にターゲット方向を加味して、新しい方向へ速度を調整
+                float3 newVelocity = math.lerp(velocity.ValueRO.Linear, directionToTarget * homing.ValueRO.moveParam.Speed, homing.ValueRO.moveParam.Speed * delta);
+
+                // 新しい速度を設定
+                velocity.ValueRW.Linear = newVelocity;
+
+
+
+                // 移動の入力を取得（例：右に移動する場合）
+                //velocity.ValueRW.Linear.x = moveSpeed; // x方向に移動
+                //velocity.ValueRW.Linear.y = 0f;
+                //velocity.ValueRW.Linear.z = 0f;
             }
         }
     }

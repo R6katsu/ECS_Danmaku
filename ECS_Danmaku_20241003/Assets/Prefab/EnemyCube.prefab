@@ -151,7 +151,7 @@ MonoBehaviour:
   _fanAngle: 360
   _amountBullets: 90
   _firingInterval: 2
-  _bulletPrefab: {fileID: 2054778717605205374, guid: 4443447e7fcb8d844971ad112d158991,
+  _bulletPrefab: {fileID: 4122192730682690786, guid: a7c50ff89ed74f540b9838d375faa6e5,
     type: 3}
 --- !u!114 &7528422518746899460
 MonoBehaviour:

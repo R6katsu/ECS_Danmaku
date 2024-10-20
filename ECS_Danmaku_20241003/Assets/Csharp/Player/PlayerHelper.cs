@@ -70,7 +70,7 @@ static public class PlayerHelper
             _currentHP -= damage;
             lastHitTime = World.DefaultGameObjectInjectionWorld.Time.ElapsedTime;
 
-            //Debug.Log($"{damage}ダメージを受けた。残りHP{_currentHP}");
+            Debug.Log($"{damage}ダメージを受けた。残りHP{_currentHP}");
 
             // HPが 0以下なら倒れる
             if (_currentHP <= 0)

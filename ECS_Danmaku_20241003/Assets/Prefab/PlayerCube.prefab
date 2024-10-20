@@ -121,10 +121,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _moveSpeed: 10
   _slowMoveSpeed: 5
-  _maxHP: 10000
+  _maxHP: 10
   _firingInterval: 0.1
   _isInvincibleTime: 1
-  _playerBulletPrefab: {fileID: 8241895751977177836, guid: c5545609a78e8174fbdbb76728053993,
+  _playerBulletPrefab: {fileID: 8983182367055005546, guid: 3955ac77ee2c9374caa42be77715c017,
     type: 3}
   _campsType: 2
   _entityCategory: 4

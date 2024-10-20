@@ -22,20 +22,33 @@ public partial struct DanmakuSystem : ISystem
     public void OnUpdate(ref SystemState state)
     {
         var delta = SystemAPI.Time.DeltaTime;
+        var elapsed = SystemAPI.Time.ElapsedTime;
 
         // ecbの準備
         var ecbSystem = state.World.GetExistingSystemManaged<EndSimulationEntityCommandBufferSystem>();
         var ecb = ecbSystem.CreateCommandBuffer().AsParallelWriter();
 
-        // 弾幕を生成する処理を呼び出す
-        var jobHandle = new N_WayJob
+        // n-Way弾を生成する処理を呼び出す
+        var N_WayJobHandle = new N_WayJob
         {
             commandBuffer = ecb,
             deltaTime = delta
         }.ScheduleParallel(state.Dependency);
 
         // ecbを終える
-        ecbSystem.AddJobHandleForProducer(jobHandle);
-        state.Dependency = jobHandle;
+        ecbSystem.AddJobHandleForProducer(N_WayJobHandle);
+
+        // TapShootingJobをN_WayJobの後にスケジュール
+        var TapShootingJobHandle = new TapShootingJob
+        {
+            commandBuffer = ecb,
+            elapsedTime = elapsed
+        }.ScheduleParallel(N_WayJobHandle);
+
+        // ecbを終える
+        ecbSystem.AddJobHandleForProducer(TapShootingJobHandle);
+
+        // 最終的な依存関係を更新
+        state.Dependency = TapShootingJobHandle;
     }
 }
