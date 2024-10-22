@@ -1,14 +1,17 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Net;
 using Unity.Entities;
-using System.Reflection;
-using System.Linq;
-using Unity.Mathematics;
 using UnityEngine;
 using static MoveHelper;
 using static EnemyHelper;
+
+#if UNITY_EDITOR
+using System.Reflection;
+using System.Linq;
+using Unity.Mathematics;
+using System.Net;
+#endif
 
 /// <summary>
 /// ìGÇÃê∂ê¨ê›íË

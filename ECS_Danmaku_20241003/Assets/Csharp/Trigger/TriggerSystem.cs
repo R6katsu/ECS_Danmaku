@@ -7,6 +7,8 @@ using static TriggerJobs;
 using static PlayerHelper;
 using static BulletHelper;
 using static EnemyHelper;
+using static HealthPointDatas;
+using Unity.Transforms;
 
 /// <summary>
 /// 接触した際の処理を呼び出す
@@ -19,6 +21,8 @@ public partial struct TriggerSystem : ISystem
     private ComponentLookup<BulletIDealDamageData> _dealDamageLookup;
     private ComponentLookup<DestroyableData> _destroyableLookup;
     private ComponentLookup<RemainingPierceCountData> _remainingPierceCountLookup;
+    private ComponentLookup<LocalTransform> _localTransformLookup;
+    private ComponentLookup<VFXCreationData> _vfxCreationLookup;
 
     public void OnCreate(ref SystemState state)
     {
@@ -28,6 +32,8 @@ public partial struct TriggerSystem : ISystem
         _dealDamageLookup = state.GetComponentLookup<BulletIDealDamageData>(false);
         _destroyableLookup = state.GetComponentLookup<DestroyableData>(false);
         _remainingPierceCountLookup = state.GetComponentLookup<RemainingPierceCountData>(false);
+        _localTransformLookup = state.GetComponentLookup<LocalTransform>(false);
+        _vfxCreationLookup = state.GetComponentLookup<VFXCreationData>(false);
     }
 
     public void OnUpdate(ref SystemState state)
@@ -40,6 +46,8 @@ public partial struct TriggerSystem : ISystem
         _dealDamageLookup.Update(ref state);
         _destroyableLookup.Update(ref state);
         _remainingPierceCountLookup.Update(ref state);
+        _localTransformLookup.Update(ref state);
+        _vfxCreationLookup.Update(ref state);
 
         // PLに弾が当たった時の処理を呼び出す
         var playerDamage = new PlayerDamageTriggerJob()
@@ -48,6 +56,8 @@ public partial struct TriggerSystem : ISystem
             dealDamageLookup = _dealDamageLookup,
             destroyableLookup = _destroyableLookup,
             remainingPierceCountLookup = _remainingPierceCountLookup,
+            localTransformLookup = _localTransformLookup,
+            vfxCreationLookup = _vfxCreationLookup,
             currentTime = currentTime
         };
 
@@ -65,7 +75,9 @@ public partial struct TriggerSystem : ISystem
             healthPointLookup = _enemyHealthPointLookup,
             dealDamageLookup = _dealDamageLookup,
             destroyableLookup = _destroyableLookup,
-            remainingPierceCountLookup = _remainingPierceCountLookup
+            remainingPierceCountLookup = _remainingPierceCountLookup,
+            localTransformLookup = _localTransformLookup,
+            vfxCreationLookup = _vfxCreationLookup
         };
 
         // 前のジョブを完了する
