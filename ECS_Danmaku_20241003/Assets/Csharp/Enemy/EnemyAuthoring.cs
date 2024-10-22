@@ -5,6 +5,7 @@ using UnityEngine;
 using static EnemyHelper;
 using static EntityCampsHelper;
 using static EntityCategoryHelper;
+using static HealthPointDatas;
 
 /// <summary>
 /// “G‚Ìİ’è

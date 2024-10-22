@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 5111542248299814572}
   - component: {fileID: 2881573246659338294}
   - component: {fileID: 7528422518746899460}
+  - component: {fileID: 2042645397350024681}
   m_Layer: 0
   m_Name: EnemyCube
   m_TagString: Untagged
@@ -169,3 +170,17 @@ MonoBehaviour:
   _isInvincibleTime: 0
   _campsType: 1
   _entityCategory: 4
+--- !u!114 &2042645397350024681
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8335752562342092953}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5cbaeac001b19d34dbaac4956954ca8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _visualEffectName: 1
+  _size: 2

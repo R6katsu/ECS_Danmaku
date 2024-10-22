@@ -5,6 +5,10 @@ using static EntityCampsHelper;
 using static EnemyHelper;
 using static PlayerHelper;
 using Unity.Burst;
+using static HealthPointDatas;
+using Unity.Transforms;
+
+
 
 
 #if UNITY_EDITOR
@@ -35,6 +39,8 @@ static public partial class TriggerJobs
         public ComponentLookup<BulletIDealDamageData> dealDamageLookup;
         public ComponentLookup<DestroyableData> destroyableLookup;
         public ComponentLookup<RemainingPierceCountData> remainingPierceCountLookup;
+        public ComponentLookup<LocalTransform> localTransformLookup;
+        public ComponentLookup<VFXCreationData> vfxCreationLookup;
 
         // 現在の時刻
         public double currentTime;
@@ -43,6 +49,13 @@ static public partial class TriggerJobs
         {
             var entityA = triggerEvent.EntityA; // 接触対象
             var entityB = triggerEvent.EntityB; // isTriggerを有効にしている方
+
+            // entityBがLocalTransformを有しているか
+            if (!localTransformLookup.HasComponent(entityB)) { return; }
+
+            // isTriggerが有効である以上、LocalTransformは絶対にある
+            var localTransform = localTransformLookup[entityB];
+            var position = localTransform.Position;
 
             // entityAがBulletIDealDamageDataを有していない。
             // あるいは、entityBがPlayerHealthPointDataを有していなければ切り上げる
@@ -90,11 +103,24 @@ static public partial class TriggerJobs
             {
                 var destroyable = destroyableLookup[entityB];
 
+                var isKilled = healthPoint.isKilled;
+
                 // HPの削除フラグを代入する
-                destroyable.isKilled = healthPoint.isKilled;
+                destroyable.isKilled = isKilled;
 
                 // 変更を反映
                 destroyableLookup[entityB] = destroyable;
+
+                if (vfxCreationLookup.HasComponent(entityB))
+                {
+                    var vfxCreation = vfxCreationLookup[entityB];
+
+                    if (isKilled)
+                    {
+                        vfxCreation.Position = position;
+                        vfxCreationLookup[entityB] = vfxCreation;
+                    }
+                }
             }
         }
     }
@@ -110,11 +136,19 @@ static public partial class TriggerJobs
         public ComponentLookup<BulletIDealDamageData> dealDamageLookup;
         public ComponentLookup<DestroyableData> destroyableLookup;
         public ComponentLookup<RemainingPierceCountData> remainingPierceCountLookup;
+        public ComponentLookup<LocalTransform> localTransformLookup;
+        public ComponentLookup<VFXCreationData> vfxCreationLookup;
 
         public void Execute(TriggerEvent triggerEvent)
         {
             var entityA = triggerEvent.EntityA; // 接触対象
             var entityB = triggerEvent.EntityB; // isTriggerを有効にしている方
+
+            // entityBがLocalTransformを有しているか
+            if (!localTransformLookup.HasComponent(entityB)) { return; }
+
+            var localTransform = localTransformLookup[entityB];
+            var position = localTransform.Position;
 
             // entityAがBulletIDealDamageDataを有していない。
             // あるいは、entityBがEnemyHealthPointDataを有していなければ切り上げる
@@ -159,11 +193,24 @@ static public partial class TriggerJobs
             {
                 var destroyable = destroyableLookup[entityB];
 
+                var isKilled = healthPoint.isKilled;
+
                 // HPの削除フラグを代入する
-                destroyable.isKilled = healthPoint.isKilled;
+                destroyable.isKilled = isKilled;
 
                 // 変更を反映
                 destroyableLookup[entityB] = destroyable;
+
+                if (vfxCreationLookup.HasComponent(entityB))
+                {
+                    var vfxCreation = vfxCreationLookup[entityB];
+
+                    if (isKilled)
+                    {
+                        vfxCreation.Position = position;
+                        vfxCreationLookup[entityB] = vfxCreation;
+                    }
+                }
             }
         }
     }

@@ -45,7 +45,7 @@ public class BulletAuthoring : MonoBehaviour
             AddComponent(entity, EntityCategoryHelper.GetCampsTagType(src._entityCategory));
 
             // •K—v‚Ì‚È‚­‚È‚Á‚½Authoring‚ð–³Œø‰»
-            //src.enabled = false;
+            src.enabled = false;
         }
     }
 }

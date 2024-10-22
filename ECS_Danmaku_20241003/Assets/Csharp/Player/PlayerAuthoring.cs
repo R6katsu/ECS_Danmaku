@@ -13,6 +13,8 @@ using static TriggerHelper;
 using static EntityCampsHelper;
 
 using static EntityCategoryHelper;
+using static HealthPointDatas;
+
 
 #if UNITY_EDITOR
 using static UnityEngine.EventSystems.EventTrigger;

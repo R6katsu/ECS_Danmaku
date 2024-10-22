@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 8609453330968100996}
   - component: {fileID: 2455165552490115793}
   - component: {fileID: 8955863141400010110}
+  - component: {fileID: -1180943040847590679}
   m_Layer: 0
   m_Name: PlayerCube
   m_TagString: Untagged
@@ -128,6 +129,20 @@ MonoBehaviour:
     type: 3}
   _campsType: 2
   _entityCategory: 4
+--- !u!114 &-1180943040847590679
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1050577698566512583}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5cbaeac001b19d34dbaac4956954ca8d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _visualEffectName: 1
+  _size: 2
 --- !u!1001 &8800672082083486789
 PrefabInstance:
   m_ObjectHideFlags: 0
