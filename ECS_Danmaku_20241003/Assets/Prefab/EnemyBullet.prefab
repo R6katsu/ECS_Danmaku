@@ -148,6 +148,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _damageAmount: 1
+  _lifeTime: 10
   _remainingPierceCount: 0
   _campsType: 1
   _entityCategory: 3

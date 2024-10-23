@@ -22,6 +22,10 @@ public readonly partial struct HealthPointDataAspect : IAspect
     public readonly RefRW<PlayerHealthPointData> refRW_PlayerHealthPointData;
     public readonly RefRW<EnemyHealthPointData> refRW_EnemyHealthPointData;
 
+    // Field変数については、この変数を実装するというインターフェースを継承する
+    // この変数を実装しているというインターフェースを継承していた場合、その変数を使用した処理を持つ関数を呼べる
+    // 関数の種類についてはenumで設定する。なんならenumについてもインターフェースで実装し、選択可能な関数のみenumに含めるか
+
     // HealthPointDataAspectを呼び出せば様々なHPDataを呼び出せるのではないか
     // というか、関数のみを変えてその他の処理を一緒にする方法もできるのではないか
     // 毎回異なるIHealthを継承した構造体を作成する必要がないかもしれない

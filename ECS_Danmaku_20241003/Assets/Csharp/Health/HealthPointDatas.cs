@@ -1,10 +1,14 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Entities;
 using UnityEngine;
 using static EnemyHelper;
 using static HealthHelper;
 using static HealthPointDataAspect;
+
+#if UNITY_EDITOR
+using System.Collections;
+using System.Collections.Generic;
+#endif
+
 
 /// <summary>
 /// HealthPointData‚ðˆêŠ‡‚è‚É‚·‚é
