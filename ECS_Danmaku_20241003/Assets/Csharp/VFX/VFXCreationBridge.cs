@@ -1,15 +1,15 @@
 using System.Collections.Generic;
-using Unity.Entities;
 using UnityEngine;
 using UnityEngine.VFX;
-using Unity.Mathematics;
-using static VFXCreationBridge;
 
 #if UNITY_EDITOR
 using UnityEngine.UIElements;
 using UnityEditor;
 using System.Drawing;
 using System.Collections;
+using Unity.Mathematics;
+using Unity.Entities;
+using static VFXCreationBridge;
 #endif
 
 /// <summary>
@@ -64,11 +64,6 @@ public class VFXCreationBridge : SingletonMonoBehaviour<VFXCreationBridge>
     /// <param name="size">生成時の大きさ（初期値は1）</param>
     public void VFXCreation(VisualEffectName visualEffectName, Vector3 position, float size)
     {
-        // VFXCreationDataを作成して関数を呼び出す
-        // 生成したDataをEntityと紐つけるには、entityManagerかBakeが必要になる
-        // 敷居が低いのはentityManager。こちらは動的に追加できる
-        // しかしentityManagerはCreateやUpdateでしか使えない...？
-
         if (visualEffectName == VisualEffectName.None)
         {
 #if UNITY_EDITOR

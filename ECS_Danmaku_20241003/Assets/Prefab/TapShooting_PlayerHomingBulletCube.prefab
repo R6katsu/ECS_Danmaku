@@ -111,7 +111,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _shootNSingleSet: 1
-  _singleSetRestTimeAfter: 1
-  _firingInterval: 1
+  _singleSetRestTimeAfter: 0.5
+  _firingInterval: 0
   _bulletPrefab: {fileID: 6745676436058148753, guid: c5545609a78e8174fbdbb76728053993,
     type: 3}

@@ -1,10 +1,10 @@
-#if UNITY_EDITOR
-#if false
-using System.ComponentModel;
-#endif
 using UnityEditor;
 using UnityEngine;
 using static DanmakuHelper;
+using Component = UnityEngine.Component;
+
+#if UNITY_EDITOR
+using System.ComponentModel;
 #endif
 
 /// <summary>

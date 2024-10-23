@@ -111,10 +111,19 @@ static public partial class TriggerJobs
                 // 変更を反映
                 destroyableLookup[entityB] = destroyable;
 
+                // 削除フラグが立った
+                if (isKilled)
+                {
+                    // ゲームオーバー処理を開始する
+                    GameOver.Instance.OnGameOver();
+                }
+
+                // EntityBがVFXCreationDataを有していた
                 if (vfxCreationLookup.HasComponent(entityB))
                 {
                     var vfxCreation = vfxCreationLookup[entityB];
 
+                    // 削除フラグが立った
                     if (isKilled)
                     {
                         vfxCreation.Position = position;
@@ -201,6 +210,7 @@ static public partial class TriggerJobs
                 // 変更を反映
                 destroyableLookup[entityB] = destroyable;
 
+                // EntityBがVFXCreationDataを有していた
                 if (vfxCreationLookup.HasComponent(entityB))
                 {
                     var vfxCreation = vfxCreationLookup[entityB];

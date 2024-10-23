@@ -1,12 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Entities;
-using UnityEngine;
 using static EntityCampsHelper;
 using static HealthHelper;
 
 #if UNITY_EDITOR
 using static MoveHelper;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 using static UnityEngine.EventSystems.EventTrigger;
 #endif
 

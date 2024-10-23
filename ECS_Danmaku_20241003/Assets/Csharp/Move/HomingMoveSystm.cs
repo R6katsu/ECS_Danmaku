@@ -23,29 +23,6 @@ public partial struct HomingMoveSystm : ISystem
     {
         var delta = SystemAPI.Time.DeltaTime;
 
-        Debug.LogError("ここに予定を書いている");
-
-        // 敵に弾が当たった時、弾によっては消えるようにする
-        // 貫通などをenumで決めるか。それとも回数？
-
-
-        // ディレクトリについての#ifを書いて軽量化する
-        // Authoringでgetプロパティを無くしてprivateだけにする
-        // 陣営をAuthoringで設定するのではなく、引数として入れてもらう？
-        // いや、自分の陣営がアンノウンだった場合は自身の所属するEntityから陣営Dataを取得して代入するように設計する
-        // 陣営だけではなく、Entityの種類（生物、武器、弾幕、障害物etc...）についてのTagも実装する
-
-        // Tagについては、自身の所属するEntityからDataを取得する方法を考える
-
-
-
-        // 対象はどうやって指定する？
-        // ここでは対象に向かって直線移動するだけ
-        // 対象は他の場所で指定する
-        // いや、特に指定がない場合は自身と異なる陣営の中から一番近い対象を狙えばいいか
-
-        // campsType
-
         // 対象に向かって直線移動する処理
         foreach (var (homing, velocity, localTfm) in
                  SystemAPI.Query<RefRO<HomingMoveData>,

@@ -1,8 +1,9 @@
+using Unity.Entities;
+
 #if UNITY_EDITOR
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.Entities;
 using UnityEngine;
 using static HealthHelper;
 using static PlayerAuthoring;
