@@ -14,6 +14,8 @@ using static EntityCampsHelper;
 
 using static EntityCategoryHelper;
 using static HealthPointDatas;
+using UnityEngine.Events;
+
 
 
 #if UNITY_EDITOR

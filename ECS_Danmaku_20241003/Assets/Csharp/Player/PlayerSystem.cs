@@ -75,6 +75,9 @@ public partial class PlayerSystem : SystemBase
 
             // ”½‰f
             localTfm.ValueRW.Position = currentPosition;
+
+            // ƒJƒƒ‰ˆÊ’u‚É”½‰f
+            GameManager.Instance.GameCameraPosition = currentPosition;
         }
 
         if (_isShot)
