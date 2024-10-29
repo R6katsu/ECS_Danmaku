@@ -122,7 +122,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _moveSpeed: 10
   _slowMoveSpeed: 5
-  _maxHP: 10
+  _maxHP: 1
   _firingInterval: 0.1
   _isInvincibleTime: 1
   _playerBulletPrefab: {fileID: 8983182367055005546, guid: 3955ac77ee2c9374caa42be77715c017,
@@ -184,7 +184,7 @@ PrefabInstance:
     - target: {fileID: 6611844823219291892, guid: e76ac1f3de5ce9d4ca6f86a879fa92a5,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -0.5
       objectReference: {fileID: 0}
     - target: {fileID: 6611844823219291892, guid: e76ac1f3de5ce9d4ca6f86a879fa92a5,
         type: 3}

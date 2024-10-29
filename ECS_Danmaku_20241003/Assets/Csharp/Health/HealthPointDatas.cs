@@ -2,7 +2,8 @@ using Unity.Entities;
 using UnityEngine;
 using static EnemyHelper;
 using static HealthHelper;
-using static HealthPointDataAspect;
+using static HealthPointDatas;
+
 
 #if UNITY_EDITOR
 using System.Collections;
@@ -67,8 +68,15 @@ static public class HealthPointDatas
         // IHealthPoint
         public void DamageHP(float damage, Entity entity)
         {
-            var damageHP = HealthPointDataAspect.GetDamage(ASDFGHJKL.PlayerDamage);
-            this = damageHP(damage, entity, this);
+            Debug.Log("試験的なコードの為、後で直す");
+            currentHP -= damage;
+            lastHitTime = World.DefaultGameObjectInjectionWorld.Time.ElapsedTime;
+
+            Debug.Log($"{damage}ダメージを受けた。残りHP{currentHP}");
+
+            // HPが 0以下なら倒れる
+            if (currentHP <= 0)
+                Down();
         }
 
         // IHealthPoint
