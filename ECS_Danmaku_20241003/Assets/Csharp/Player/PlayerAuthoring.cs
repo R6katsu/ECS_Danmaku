@@ -103,7 +103,7 @@ public class PlayerAuthoring : MonoBehaviour
 
             // 陣営とカテゴリのTagをアタッチ
             AddComponent(entity, EntityCampsHelper.GetCampsTagType(src._campsType));
-            AddComponent(entity, EntityCategoryHelper.GetCampsTagType(src._entityCategory));
+            AddComponent(entity, EntityCategoryHelper.GetCategoryTagType(src._entityCategory));
         }
     }
 }

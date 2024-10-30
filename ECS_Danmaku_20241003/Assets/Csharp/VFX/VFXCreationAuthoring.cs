@@ -94,12 +94,11 @@ public class VFXCreationAuthoring : MonoBehaviour
     {
         public override void Bake(VFXCreationAuthoring src)
         {
+            Debug.Log("VFXCreationAuthoring");
+
             var enemy = GetEntity(TransformUsageFlags.Dynamic);
 
             AddComponent(enemy, new VFXCreationData(src._visualEffectName, src._size));
-
-            // •K—v‚Ì‚È‚­‚È‚Á‚½Authoring‚ð–³Œø‰»
-            src.enabled = false;
         }
     }
 }

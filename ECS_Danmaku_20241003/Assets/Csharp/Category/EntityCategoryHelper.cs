@@ -18,7 +18,7 @@ static public class EntityCategoryHelper
     /// </summary>
     /// <param name="entityCategory">Entity‚ÌƒJƒeƒSƒŠ‚Ìí—Ş</param>
     /// <returns>‘Î‰‚·‚éTag‚ÌŒ^</returns>
-    static public Type GetCampsTagType(EntityCategory entityCategory)
+    static public Type GetCategoryTagType(EntityCategory entityCategory)
     {
         switch (entityCategory)
         {
