@@ -64,6 +64,8 @@ public class VFXCreationBridge : SingletonMonoBehaviour<VFXCreationBridge>
     /// <param name="size">¶¬‚Ì‘å‚«‚³i‰Šú’l‚Í1j</param>
     public void VFXCreation(VisualEffectName visualEffectName, Vector3 position, float size)
     {
+        Debug.Log("VFXCreation");
+
         if (visualEffectName == VisualEffectName.None)
         {
 #if UNITY_EDITOR

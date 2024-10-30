@@ -2,8 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Entities;
 using UnityEngine;
-using static BulletHelper;
 using static MoveHelper;
+
+#if UNITY_EDITOR
+using static BulletHelper;
+using static EntityCampsHelper;
+using static EntityCategoryHelper;
+#endif
 
 /// <summary>
 /// Œü‚¢‚Ä‚¢‚é•ûŒü‚ÉˆÚ“®‚·‚éˆ×‚Ìî•ñ
@@ -26,7 +31,7 @@ public class FacingDirectionMoveAuthoring : MonoBehaviour
     [SerializeField]
     private MoveParameter _moveParam = new();
 
-    public class Baker : Baker<FacingDirectionMoveAuthoring>
+    public class FacingDirectionMoveBaker : Baker<FacingDirectionMoveAuthoring>
     {
         public override void Bake(FacingDirectionMoveAuthoring src)
         {
