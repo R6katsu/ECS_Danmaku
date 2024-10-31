@@ -70,8 +70,6 @@ public class BulletAuthoring : MonoBehaviour
     {
         public override void Bake(BulletAuthoring src)
         {
-            Debug.Log("BulletAuthoring");
-
             var entity = GetEntity(TransformUsageFlags.Dynamic);
 
             // c‚èŠÑ’Ê‰ñ”‚ª‰ºŒÀ‚Å‚Í‚È‚©‚Á‚½

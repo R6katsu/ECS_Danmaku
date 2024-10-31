@@ -77,6 +77,7 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
                 _gameCameraPosition = value;
 
                 // ˆÚ“®‚ğƒJƒƒ‰ˆÊ’u‚É”½‰f
+                _gameCameraPosition.z = 0;
                 _gameCamera.transform.position = _gameCameraPosition + _cameraOffset;
             }
         }

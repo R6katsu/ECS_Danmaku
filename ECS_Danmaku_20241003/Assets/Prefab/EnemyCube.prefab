@@ -17,6 +17,7 @@ GameObject:
   - component: {fileID: 146172239428239888}
   - component: {fileID: -1988456149972333103}
   - component: {fileID: 5046027235216254825}
+  - component: {fileID: -5616618894178967048}
   m_Layer: 0
   m_Name: EnemyCube
   m_TagString: Untagged
@@ -124,6 +125,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _maxHP: 5
   _isInvincibleTime: 0
+  _hitSENumber: 0
+  _killedSENumber: 1
   _campsType: 1
   _entityCategory: 4
 --- !u!114 &9049284431697849701
@@ -184,3 +187,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _visualEffectName: 1
   _size: 1
+--- !u!114 &-5616618894178967048
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 703188993269376355}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: efc42c4b17fc57b40abda17d1784d481, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _audioType: 1
