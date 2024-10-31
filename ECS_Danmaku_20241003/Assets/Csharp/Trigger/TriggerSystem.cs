@@ -23,6 +23,7 @@ public partial struct TriggerSystem : ISystem
     private ComponentLookup<RemainingPierceCountData> _remainingPierceCountLookup;
     private ComponentLookup<LocalTransform> _localTransformLookup;
     private ComponentLookup<VFXCreationData> _vfxCreationLookup;
+    private ComponentLookup<AudioPlayData> _audioPlayLookup;
 
     public void OnCreate(ref SystemState state)
     {
@@ -34,6 +35,7 @@ public partial struct TriggerSystem : ISystem
         _remainingPierceCountLookup = state.GetComponentLookup<RemainingPierceCountData>(false);
         _localTransformLookup = state.GetComponentLookup<LocalTransform>(false);
         _vfxCreationLookup = state.GetComponentLookup<VFXCreationData>(false);
+        _audioPlayLookup = state.GetComponentLookup<AudioPlayData>(false);
     }
 
     public void OnUpdate(ref SystemState state)
@@ -48,6 +50,7 @@ public partial struct TriggerSystem : ISystem
         _remainingPierceCountLookup.Update(ref state);
         _localTransformLookup.Update(ref state);
         _vfxCreationLookup.Update(ref state);
+        _audioPlayLookup.Update(ref state);
 
         // PLに弾が当たった時の処理を呼び出す
         var playerDamage = new PlayerDamageTriggerJob()
@@ -77,7 +80,8 @@ public partial struct TriggerSystem : ISystem
             destroyableLookup = _destroyableLookup,
             remainingPierceCountLookup = _remainingPierceCountLookup,
             localTransformLookup = _localTransformLookup,
-            vfxCreationLookup = _vfxCreationLookup
+            vfxCreationLookup = _vfxCreationLookup,
+            audioPlayLookup = _audioPlayLookup
         };
 
         // 前のジョブを完了する

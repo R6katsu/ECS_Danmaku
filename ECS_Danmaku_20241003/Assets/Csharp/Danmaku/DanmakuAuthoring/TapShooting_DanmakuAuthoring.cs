@@ -85,9 +85,6 @@ public class TapShooting_DanmakuAuthoring : MonoBehaviour, IDanmakuAuthoring
                     bulletPrefab
                 );
             AddComponent(GetEntity(TransformUsageFlags.Dynamic), tapShooting_DanmakuData);
-
-            // •K—v‚È‚­‚È‚Á‚½Authoring‚ð–³Œø‰»
-            //src.enabled = false;
         }
     }
 }

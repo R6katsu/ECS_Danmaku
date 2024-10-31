@@ -147,6 +147,7 @@ static public partial class TriggerJobs
         public ComponentLookup<RemainingPierceCountData> remainingPierceCountLookup;
         public ComponentLookup<LocalTransform> localTransformLookup;
         public ComponentLookup<VFXCreationData> vfxCreationLookup;
+        public ComponentLookup<AudioPlayData> audioPlayLookup;
 
         public void Execute(TriggerEvent triggerEvent)
         {
@@ -209,6 +210,17 @@ static public partial class TriggerJobs
 
                 // 変更を反映
                 destroyableLookup[entityB] = destroyable;
+
+                // EntityBがAudioPlayDataを有していた
+                if (audioPlayLookup.HasComponent(entityB))
+                {
+                    var audioPlay = audioPlayLookup[entityB];
+
+                    // 削除フラグが立っていたら死亡時の効果音、立っていなければ被弾時の効果音を代入
+                    audioPlay.AudioNumber = (isKilled) ? healthPoint.killedSENumber : healthPoint.hitSENumber;
+
+                    audioPlayLookup[entityB] = audioPlay;
+                }
 
                 // EntityBがVFXCreationDataを有していた
                 if (vfxCreationLookup.HasComponent(entityB))

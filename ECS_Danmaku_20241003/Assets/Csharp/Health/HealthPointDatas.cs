@@ -103,6 +103,12 @@ static public class HealthPointDatas
         [Tooltip("–³“GŠÔ‚Ì’·‚³")]
         public readonly float isInvincibleTime;
 
+        [Tooltip("”í’e‚ÌŒø‰Ê‰¹”Ô†")]
+        public readonly int hitSENumber;
+
+        [Tooltip("€–S‚ÌŒø‰Ê‰¹”Ô†")]
+        public readonly int killedSENumber;
+
         [Tooltip("Œ»‘¶‘Ì—Í")]
         private float _currentHP;
 
@@ -154,10 +160,15 @@ static public class HealthPointDatas
         /// Enemy‚ÌIHealthPointî•ñ
         /// </summary>
         /// <param name="maxHP">Å‘å‘Ì—Í</param>
-        public EnemyHealthPointData(float maxHP, float isInvincibleTime)
+        /// <param name="isInvincibleTime">–³“GŠÔ‚Ì’·‚³</param>
+        /// <param name="hitSENumber">”í’e‚ÌŒø‰Ê‰¹”Ô†</param>
+        /// <param name="killedSENumber">€–S‚ÌŒø‰Ê‰¹”Ô†</param>
+        public EnemyHealthPointData(float maxHP, float isInvincibleTime, int hitSENumber, int killedSENumber)
         {
             this.maxHP = maxHP;
             this.isInvincibleTime = isInvincibleTime;
+            this.hitSENumber = hitSENumber;
+            this.killedSENumber = killedSENumber;
 
             // ‰Šú‰»
             _currentHP = this.maxHP;

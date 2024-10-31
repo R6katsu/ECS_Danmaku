@@ -1,7 +1,6 @@
 using Unity.Entities;
 using Unity.Transforms;
 
-
 #if UNITY_EDITOR
 using System.Collections;
 using System.Collections.Generic;

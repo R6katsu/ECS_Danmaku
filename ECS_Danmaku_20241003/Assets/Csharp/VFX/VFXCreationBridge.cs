@@ -64,8 +64,6 @@ public class VFXCreationBridge : SingletonMonoBehaviour<VFXCreationBridge>
     /// <param name="size">生成時の大きさ（初期値は1）</param>
     public void VFXCreation(VisualEffectName visualEffectName, Vector3 position, float size)
     {
-        Debug.Log("VFXCreation");
-
         if (visualEffectName == VisualEffectName.None)
         {
 #if UNITY_EDITOR
@@ -73,6 +71,9 @@ public class VFXCreationBridge : SingletonMonoBehaviour<VFXCreationBridge>
 #endif
             return;
         }
+
+        // 途中から1個前の位置にエフェクトが生成されるようになる
+        // 最初は問題なく倒した位置に生成されることもあり、原因が分からない
 
         if (!_positions.ContainsKey(visualEffectName))
         { _positions.Add(visualEffectName, new List<Vector3>()); }
