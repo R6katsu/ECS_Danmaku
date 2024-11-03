@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using Unity.Entities;
+using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -72,6 +74,14 @@ public partial class PlayerSystem : SystemBase
 
             // ‚’¼“ü—Í‚ğ‚’¼•ûŒü‚É‰ÁZ‘ã“ü
             currentPosition.z += _verticalValue * speed * delta;
+
+            var maxMovementRange = playerData.ValueRO.maxMovementRange;
+            var minMovementRange = playerData.ValueRO.minMovementRange;
+
+            // ˆÚ“®‰Â”\”ÍˆÍ“à‚Éû‚ß‚é
+            currentPosition.x = Mathf.Clamp(currentPosition.x, minMovementRange.x, maxMovementRange.x);
+            currentPosition.y = Mathf.Clamp(currentPosition.y, minMovementRange.y, maxMovementRange.y);
+            currentPosition.z = Mathf.Clamp(currentPosition.z, minMovementRange.z, maxMovementRange.z);
 
             // ”½‰f
             localTfm.ValueRW.Position = currentPosition;
