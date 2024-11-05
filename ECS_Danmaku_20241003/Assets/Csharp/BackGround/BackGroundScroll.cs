@@ -1,21 +1,42 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using BoxCollider = UnityEngine.BoxCollider;
+
 
 #if UNITY_EDITOR
 using Unity.Physics;
+using System.Collections;
+using System.Collections.Generic;
+using static UnityEngine.UI.Image;
+using UnityEngine.UIElements;
 #endif
 
 /// <summary>
 /// 背景スクロール
 /// </summary>
+#if UNITY_EDITOR
+[ExecuteInEditMode]
+#endif
 public class BackGroundScroll : MonoBehaviour
 {
+    private void OnDrawGizmos()
+    {
+        // 黄色
+        Gizmos.color = Color.yellow;
+
+        // 複製した背景の出現位置
+        Gizmos.DrawWireCube(transform.position + _backGroundSize.z * Vector3.forward, _backGroundSize);
+        Gizmos.DrawWireCube(transform.position + _backGroundSize.z * Vector3.back, _backGroundSize);
+
+        // 緑
+        Gizmos.color = Color.green;
+
+        // オリジナルの背景の大きさ
+        Gizmos.DrawWireCube(transform.position, _backGroundSize);
+    }
+
     /// <summary>
     /// 軸の種類
     /// </summary>
-    public enum AxisType
+    private enum AxisType
     { X, Y, Z }
 
     [SerializeField, Header("スクロールさせる方向")]
@@ -24,14 +45,11 @@ public class BackGroundScroll : MonoBehaviour
     [SerializeField, Header("スクロールさせる背景")]
     private Transform _backGround = null;
 
-    [SerializeField, Header("目標までの長さ")]
-    private float _targetLength = 0.0f;
-
     [SerializeField, Header("スクロール速度")]
     private float _scrollSpeed = 0.0f;
 
-    [Tooltip("スクロールさせる方向の軸の大きさ")]
-    private float _axisScale = 0.0f;
+    [SerializeField, Header("背景の大きさ")]
+    private Vector3 _backGroundSize = Vector3.zero;
 
     [Tooltip("移動方向")]
     private Vector3 _moveDirection = Vector3.zero;
@@ -39,19 +57,34 @@ public class BackGroundScroll : MonoBehaviour
     [Tooltip("初期位置")]
     private Vector3 _initialPosition = Vector3.zero;
 
-    private float _loopTargetLength = 0.0f;
+    [Tooltip("移動開始位置")]
+    private Vector3 _startPosition = Vector3.zero;
+
+    [Tooltip("初期位置から移動終了位置までの距離")]
+    private float _endLength = 0.0f;
 
     private void OnEnable()
     {
-        // スクロールさせる背景がnullだった
+#if UNITY_EDITOR
+        // ランタイム中ではなかった
+        if (!Application.isPlaying) { return; }
+#endif
+
+        // 背景がnullだった
         if (_backGround == null)
         {
-            enabled = false;
 #if UNITY_EDITOR
-            Debug.LogError("スクロールさせる背景がnullだった");
-#endif
+            // 新しく背景を生成する
+            _backGround = InstantiateBackGround("BackGround", Vector3.zero);
+#else
+            enabled = false;
             return;
+#endif
         }
+
+        // 背景を前後に複製
+        InstantiateBackGround("ForwardBackGround", transform.position + _backGroundSize.z * Vector3.forward, _backGround);
+        InstantiateBackGround("BackBackGround", transform.position + _backGroundSize.z * Vector3.back, _backGround);
 
         // スクロール方向が反対だった
         if (_scrollSpeed < 0.0f)
@@ -63,11 +96,11 @@ public class BackGroundScroll : MonoBehaviour
             var parentBackScroll = new GameObject();
             parentBackScroll.name = parentName;
 
-            // 反対の定義
+            // 反対向きの定義
             var faceOppositeDirection = Vector3.up * 180.0f;
 
             // 親を設定
-            _backGround.transform.parent = parentBackScroll.transform;
+            transform.parent = parentBackScroll.transform;
 
             // 反対を向かせる
             parentBackScroll.transform.rotation = Quaternion.Euler(faceOppositeDirection);
@@ -76,61 +109,90 @@ public class BackGroundScroll : MonoBehaviour
             _scrollSpeed *= -1.0f;
         }
 
-        _initialPosition = _backGround.transform.position;
+        // 初期位置
+        _initialPosition = transform.position;
 
-        _loopTargetLength = -_targetLength;
+        // 初期位置から移動開始/終了位置までの距離を求める
+        _endLength = _backGroundSize.z;
 
+        // 移動方向
         switch (_axisType)
         {
             case AxisType.X:
-                _axisScale = _backGround.localScale.x;
                 _moveDirection = Vector3.right * _scrollSpeed;
+                _startPosition = _initialPosition + -_endLength * Vector3.right;
                 break;
 
             case AxisType.Y:
-                _axisScale = _backGround.localScale.y;
                 _moveDirection = Vector3.up * _scrollSpeed;
+                _startPosition = _initialPosition + -_endLength * Vector3.up;
                 break;
 
             case AxisType.Z:
-                _axisScale = _backGround.localScale.z;
                 _moveDirection = Vector3.forward * _scrollSpeed;
+                _startPosition = _initialPosition + -_endLength * Vector3.forward;
                 break;
         }
     }
 
     private void Update()
     {
-        var aaa = Time.deltaTime * _moveDirection;
+#if UNITY_EDITOR
+        // ランタイム中ではなかった
+        if (!Application.isPlaying) { return; }
+#endif
 
-        bool aajioa = false;
-        Vector3 gafaaa = Vector3.zero;
+        // 今回のフレームでの移動量
+        var frameMovement = Time.deltaTime * _moveDirection;
+
+        // 目標に到達したか
+        bool hasReachedTarget = false;
 
         switch (_axisType)
         {
             case AxisType.X:
-                aajioa = _initialPosition.x + _targetLength <= _backGround.transform.localPosition.x + aaa.x;
-                gafaaa = _initialPosition + _loopTargetLength * Vector3.right;
+                hasReachedTarget = _initialPosition.x + _endLength <= transform.localPosition.x + frameMovement.x;
                 break;
 
             case AxisType.Y:
-                aajioa = _initialPosition.y + _targetLength <= _backGround.transform.localPosition.y + aaa.y;
-                gafaaa = _initialPosition + _loopTargetLength * Vector3.up;
+                hasReachedTarget = _initialPosition.y + _endLength <= transform.localPosition.y + frameMovement.y;
                 break;
 
             case AxisType.Z:
-                aajioa = _initialPosition.z + _targetLength <= _backGround.transform.localPosition.z + aaa.z;
-                gafaaa = _initialPosition + _loopTargetLength * Vector3.forward;
+                hasReachedTarget = _initialPosition.z + _endLength <= transform.localPosition.z + frameMovement.z;
                 break;
         }
 
-        if (aajioa)
+        // 目標に到達した
+        if (hasReachedTarget)
         {
-            _backGround.transform.localPosition = gafaaa;
+            // 移動開始位置に移動
+            transform.localPosition = _startPosition;
         }
         else
         {
-            _backGround.transform.localPosition += aaa;
+            // 移動を反映
+            transform.localPosition += frameMovement;
         }
+    }
+
+    /// <summary>
+    /// 背景を生成する
+    /// </summary>
+    /// <param name="name">生成、または複製した対象の名前</param>
+    /// <param name="position">生成位置</param>
+    /// <param name="original">複製する場合のオリジナル</param>
+    /// <returns>生成、または複製した対象</returns>
+    private Transform InstantiateBackGround(string name, Vector3 position, Transform original = null)
+    {
+        // 生成対象がnullだったら新しく生成、違えば複製
+        var backGround = (original == null) ? new GameObject().transform : Instantiate(original);
+
+        // 初期設定
+        backGround.name = name;
+        backGround.transform.parent = transform;
+        backGround.localPosition = position;
+
+        return backGround;
     }
 }

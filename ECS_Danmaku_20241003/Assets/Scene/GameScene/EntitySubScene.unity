@@ -130,11 +130,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 3075924852922795476, guid: f8b88333bdf881c4c8613d06cf3e6418,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 5290772082677936250, guid: f8b88333bdf881c4c8613d06cf3e6418,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -189,51 +184,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Player
-      objectReference: {fileID: 0}
-    - target: {fileID: 8757146574616733484, guid: f8b88333bdf881c4c8613d06cf3e6418,
-        type: 3}
-      propertyPath: _movementRange.x
-      value: 25
-      objectReference: {fileID: 0}
-    - target: {fileID: 8757146574616733484, guid: f8b88333bdf881c4c8613d06cf3e6418,
-        type: 3}
-      propertyPath: _movementRange.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8757146574616733484, guid: f8b88333bdf881c4c8613d06cf3e6418,
-        type: 3}
-      propertyPath: _movementRange.z
-      value: 16.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 8757146574616733484, guid: f8b88333bdf881c4c8613d06cf3e6418,
-        type: 3}
-      propertyPath: _maxMovementRange.x
-      value: 25
-      objectReference: {fileID: 0}
-    - target: {fileID: 8757146574616733484, guid: f8b88333bdf881c4c8613d06cf3e6418,
-        type: 3}
-      propertyPath: _maxMovementRange.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8757146574616733484, guid: f8b88333bdf881c4c8613d06cf3e6418,
-        type: 3}
-      propertyPath: _maxMovementRange.z
-      value: 30
-      objectReference: {fileID: 0}
-    - target: {fileID: 8757146574616733484, guid: f8b88333bdf881c4c8613d06cf3e6418,
-        type: 3}
-      propertyPath: _minMovementRange.x
-      value: -25
-      objectReference: {fileID: 0}
-    - target: {fileID: 8757146574616733484, guid: f8b88333bdf881c4c8613d06cf3e6418,
-        type: 3}
-      propertyPath: _minMovementRange.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8757146574616733484, guid: f8b88333bdf881c4c8613d06cf3e6418,
-        type: 3}
-      propertyPath: _minMovementRange.z
-      value: -3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
