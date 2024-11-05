@@ -5,20 +5,17 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
-using static DanmakuJobs;
-using static HealthHelper;
-using static PlayerAuthoring;
 using static PlayerHelper;
 using static TriggerHelper;
 using static EntityCampsHelper;
-
 using static EntityCategoryHelper;
 using static HealthPointDatas;
-using UnityEngine.Events;
-
-
 
 #if UNITY_EDITOR
+using UnityEngine.Events;
+using static DanmakuJobs;
+using static HealthHelper;
+using static PlayerAuthoring;
 using static UnityEngine.EventSystems.EventTrigger;
 using Unity.VisualScripting.FullSerializer;
 using UnityEditor;
@@ -136,6 +133,9 @@ public class PlayerAuthoring : MonoBehaviour
     [SerializeField, Min(0.0f), Header("–³“GŠÔ‚Ì’·‚³")]
     private float _isInvincibleTime = 0.0f;
 
+    [SerializeField, Min(0.0f), Header("€–S‚ÌŒø‰Ê‰¹”Ô†")]
+    private int _killedSENumber;
+
     [SerializeField, Header("PL‚Ì’e‚ÌPrefab")]
     private Transform _playerBulletPrefab = null;
 
@@ -166,7 +166,7 @@ public class PlayerAuthoring : MonoBehaviour
             AddComponent(entity, playerData);
             AddComponent(entity, new PlayerTag());
             AddComponent(entity, new DestroyableData());
-            AddComponent(entity, new PlayerHealthPointData(src._maxHP, src._isInvincibleTime));
+            AddComponent(entity, new PlayerHealthPointData(src._maxHP, src._isInvincibleTime, src._killedSENumber));
 
             // w‰c‚ÆƒJƒeƒSƒŠ‚ÌTag‚ğƒAƒ^ƒbƒ`
             AddComponent(entity, EntityCampsHelper.GetCampsTagType(src._campsType));

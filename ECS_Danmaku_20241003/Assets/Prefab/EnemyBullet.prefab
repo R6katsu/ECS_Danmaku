@@ -13,8 +13,8 @@ GameObject:
   - component: {fileID: 3284531192009571796}
   - component: {fileID: 8747252506329310038}
   - component: {fileID: 5369493252696556595}
-  - component: {fileID: 4951002065958848566}
   - component: {fileID: 6337237026663219694}
+  - component: {fileID: 5112098016560038383}
   m_Layer: 0
   m_Name: EnemyBullet
   m_TagString: Untagged
@@ -44,7 +44,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8291925342730665244}
-  m_Mesh: {fileID: 4300000, guid: 938eba39347079543b78101df895834e, type: 2}
+  m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!23 &3284531192009571796
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -65,7 +65,7 @@ MeshRenderer:
   m_RenderingLayerMask: 258
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: f67dd40d8f6d88849808a30f6a330543, type: 2}
+  - {fileID: 2100000, guid: a88b8324c356fdd46b383a2fcdb52c55, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -118,27 +118,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _moveParam:
     _speed: 2.5
---- !u!65 &4951002065958848566
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8291925342730665244}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &6337237026663219694
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -166,3 +145,24 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!135 &5112098016560038383
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8291925342730665244}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.1
+  m_Center: {x: 0, y: 0, z: 0}

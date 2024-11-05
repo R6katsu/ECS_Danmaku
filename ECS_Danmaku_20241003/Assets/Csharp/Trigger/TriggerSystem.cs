@@ -61,6 +61,7 @@ public partial struct TriggerSystem : ISystem
             remainingPierceCountLookup = _remainingPierceCountLookup,
             localTransformLookup = _localTransformLookup,
             vfxCreationLookup = _vfxCreationLookup,
+            audioPlayLookup = _audioPlayLookup,
             currentTime = currentTime
         };
 

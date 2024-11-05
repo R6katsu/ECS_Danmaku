@@ -36,18 +36,6 @@ public struct BulletData : IComponentData
 /// </summary>
 public class BulletAuthoring : MonoBehaviour
 {
-    // なぜ、毎回BulletAuthoringだけが読み込まれなくなる？
-    // 処理をコピペして他のBakeに貼り付けたところ機能した
-    // つまり処理内容に不備があり、途中で止まったり、読み込まれなかった訳ではない
-
-    // オリジナルのみ接触した時にダメージを受けた。つまり、動的にインスタンスから生成したものとは違う
-    // Prefabに事前に設定しておき、Bakeで取り付けるのではなく、生成時に生成側から必要なBakeをする？
-    // いや、BakeはObjectが必要な筈。
-    // また、オリジナルに関しても接触時に体力が減ったもののエラーが発生した
-    // いや、これは違う。悪くない。オリジナルに接触したことでオリジナルが消えて生成時に参照できないだけ
-
-
-
     [Tooltip("無制限に貫通する下限")]
     private const int UNLIMITED_PIERCE_MINIMUM = -1;
 
@@ -80,6 +68,7 @@ public class BulletAuthoring : MonoBehaviour
             }
 
             AddComponent(entity, new BulletTag());
+            AddComponent(entity, new BillboardTag());
             AddComponent(entity, new DestroyableData());
             AddComponent(entity, new BulletData(src._lifeTime));
             AddComponent(entity, new BulletIDealDamageData(src._damageAmount, src._campsType));
