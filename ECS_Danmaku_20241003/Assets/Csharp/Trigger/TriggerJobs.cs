@@ -2,9 +2,6 @@ using Unity.Entities;
 using Unity.Physics;
 using static BulletHelper;
 using static EntityCampsHelper;
-using static EnemyHelper;
-using static PlayerHelper;
-using Unity.Burst;
 using static HealthPointDatas;
 using Unity.Transforms;
 
@@ -12,6 +9,9 @@ using Unity.Transforms;
 
 
 #if UNITY_EDITOR
+using static EnemyHelper;
+using static PlayerHelper;
+using Unity.Burst;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
@@ -41,6 +41,7 @@ static public partial class TriggerJobs
         public ComponentLookup<RemainingPierceCountData> remainingPierceCountLookup;
         public ComponentLookup<LocalTransform> localTransformLookup;
         public ComponentLookup<VFXCreationData> vfxCreationLookup;
+        public ComponentLookup<AudioPlayData> audioPlayLookup;
 
         // 現在の時刻
         public double currentTime;
@@ -116,18 +117,21 @@ static public partial class TriggerJobs
                 {
                     // ゲームオーバー処理を開始する
                     GameOver.Instance.OnGameOver();
-                }
 
-                // EntityBがVFXCreationDataを有していた
-                if (vfxCreationLookup.HasComponent(entityB))
-                {
-                    var vfxCreation = vfxCreationLookup[entityB];
-
-                    // 削除フラグが立った
-                    if (isKilled)
+                    // EntityBがVFXCreationDataを有していた
+                    if (vfxCreationLookup.HasComponent(entityB))
                     {
+                        var vfxCreation = vfxCreationLookup[entityB];
                         vfxCreation.Position = position;
                         vfxCreationLookup[entityB] = vfxCreation;
+                    }
+
+                    // EntityBがAudioPlayDataを有していた
+                    if (audioPlayLookup.HasComponent(entityB))
+                    {
+                        var audioPlay = audioPlayLookup[entityB];
+                        audioPlay.AudioNumber = healthPoint.killedSENumber;
+                        audioPlayLookup[entityB] = audioPlay;
                     }
                 }
             }

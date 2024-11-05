@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Burst;
 using Unity.Entities;
 using Unity.Transforms;
 using UnityEngine;
@@ -10,6 +11,7 @@ using UnityEngine;
 /// <summary>
 /// ’e‚Ìˆ—
 /// </summary>
+[BurstCompile]
 public partial struct BulletSystem : ISystem
 {
     public void OnUpdate(ref SystemState state)

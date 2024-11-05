@@ -33,11 +33,39 @@ public class AudioManager : SingletonMonoBehaviour<AudioManager>
     /// <summary>
     /// 効果音再生
     /// </summary>
+    /// <param name="num">音源番号</param>
     public void PlaySE(int num)
     {
         if (_seAudioSource == null) { return; }
 
-        _seAudioSource.clip = _seClips[num];
-        _seAudioSource.Play();
+        _seAudioSource.PlayOneShot(_seClips[num]);
+    }
+
+    /// <summary>
+    /// 効果音再生
+    /// </summary>
+    /// <param name="nums">音源番号の配列</param>
+    public void PlaySE(int[] nums)
+    {
+        if (_seAudioSource == null) { return; }
+
+        StartCoroutine(PlaySEs(nums));
+    }
+
+    /// <summary>
+    /// 前回の音源再生が終了したら次の音源を再生する
+    /// </summary>
+    /// <param name="nums">音源番号の配列</param>
+    /// <returns>null</returns>
+    private IEnumerator PlaySEs(int[] nums)
+    {
+        // 前回の音源再生が終了したら次の音源を再生する
+        foreach (var num in nums)
+        {
+            _seAudioSource.clip = _seClips[num];
+            _seAudioSource.Play();
+
+            yield return new WaitForSeconds(_seAudioSource.clip.length);
+        }
     }
 }

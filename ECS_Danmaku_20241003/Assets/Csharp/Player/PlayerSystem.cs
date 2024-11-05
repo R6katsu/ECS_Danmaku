@@ -9,6 +9,9 @@ using UnityEngine.InputSystem;
 using static HealthHelper;
 using static PlayerHelper;
 
+#if UNITY_EDITOR
+#endif
+
 /// <summary>
 /// PL‚Ìˆ—
 /// </summary>

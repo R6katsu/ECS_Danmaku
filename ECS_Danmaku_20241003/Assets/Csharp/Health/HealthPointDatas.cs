@@ -1,4 +1,5 @@
 using Unity.Entities;
+using Unity.Collections;
 using UnityEngine;
 using static EnemyHelper;
 using static HealthHelper;
@@ -39,6 +40,9 @@ static public class HealthPointDatas
         [Tooltip("íœƒtƒ‰ƒO")]
         public bool isKilled;
 
+        [Tooltip("€–S‚ÌŒø‰Ê‰¹”Ô†")]
+        public readonly int killedSENumber;
+
         /// <summary>
         /// Å‘å‘Ì—Í
         /// </summary>
@@ -53,10 +57,13 @@ static public class HealthPointDatas
         /// Player‚ÌIHealthPointî•ñ
         /// </summary>
         /// <param name="maxHP">Å‘å‘Ì—Í</param>
-        public PlayerHealthPointData(float maxHP, float isInvincibleTime)
+        /// <param name="isInvincibleTime">–³“GŠÔ‚Ì’·‚³</param>
+        /// <param name="killedSENumber">€–S‚ÌŒø‰Ê‰¹”Ô†</param>
+        public PlayerHealthPointData(float maxHP, float isInvincibleTime, int killedSENumber)
         {
             this.maxHP = maxHP;
             this.isInvincibleTime = isInvincibleTime;
+            this.killedSENumber = killedSENumber;
 
             // ‰Šú‰»
             currentHP = this.maxHP;
