@@ -33,12 +33,6 @@ public class BackGroundScroll : MonoBehaviour
         Gizmos.DrawWireCube(transform.position, _backGroundSize);
     }
 
-    /// <summary>
-    /// 軸の種類
-    /// </summary>
-    private enum AxisType
-    { X, Y, Z }
-
     [SerializeField, Header("スクロールさせる方向")]
     private AxisType _axisType = 0;
 
@@ -65,11 +59,6 @@ public class BackGroundScroll : MonoBehaviour
 
     private void OnEnable()
     {
-#if UNITY_EDITOR
-        // ランタイム中ではなかった
-        if (!Application.isPlaying) { return; }
-#endif
-
         // 背景がnullだった
         if (_backGround == null)
         {
@@ -82,32 +71,14 @@ public class BackGroundScroll : MonoBehaviour
 #endif
         }
 
+#if UNITY_EDITOR
+        // ランタイム中ではなかった
+        if (!Application.isPlaying) { return; }
+#endif
+
         // 背景を前後に複製
         InstantiateBackGround("ForwardBackGround", transform.position + _backGroundSize.z * Vector3.forward, _backGround);
         InstantiateBackGround("BackBackGround", transform.position + _backGroundSize.z * Vector3.back, _backGround);
-
-        // スクロール方向が反対だった
-        if (_scrollSpeed < 0.0f)
-        {
-            // 親の名前を定義
-            var parentName = "ParentBackScroll";
-
-            // 親を作成
-            var parentBackScroll = new GameObject();
-            parentBackScroll.name = parentName;
-
-            // 反対向きの定義
-            var faceOppositeDirection = Vector3.up * 180.0f;
-
-            // 親を設定
-            transform.parent = parentBackScroll.transform;
-
-            // 反対を向かせる
-            parentBackScroll.transform.rotation = Quaternion.Euler(faceOppositeDirection);
-
-            // 正の値に変更
-            _scrollSpeed *= -1.0f;
-        }
 
         // 初期位置
         _initialPosition = transform.position;
@@ -115,24 +86,17 @@ public class BackGroundScroll : MonoBehaviour
         // 初期位置から移動開始/終了位置までの距離を求める
         _endLength = _backGroundSize.z;
 
-        // 移動方向
-        switch (_axisType)
-        {
-            case AxisType.X:
-                _moveDirection = Vector3.right * _scrollSpeed;
-                _startPosition = _initialPosition + -_endLength * Vector3.right;
-                break;
+        // AxisTypeに対応する方向を取得
+        var axisValue = AxisTypeHelper.GetAxisDirection(_axisType);
 
-            case AxisType.Y:
-                _moveDirection = Vector3.up * _scrollSpeed;
-                _startPosition = _initialPosition + -_endLength * Vector3.up;
-                break;
+        // 方向と速度
+        _moveDirection = axisValue * _scrollSpeed;
 
-            case AxisType.Z:
-                _moveDirection = Vector3.forward * _scrollSpeed;
-                _startPosition = _initialPosition + -_endLength * Vector3.forward;
-                break;
-        }
+        // 開始位置
+        Vector3 startPosition = -_endLength * axisValue;
+
+        // 目標と開始位置の符号を反対にする
+        _startPosition = (_scrollSpeed < 0.0f) ? _initialPosition - startPosition : _initialPosition + startPosition;
     }
 
     private void Update()
@@ -141,6 +105,7 @@ public class BackGroundScroll : MonoBehaviour
         // ランタイム中ではなかった
         if (!Application.isPlaying) { return; }
 #endif
+        var endLength = _endLength;
 
         // 今回のフレームでの移動量
         var frameMovement = Time.deltaTime * _moveDirection;
@@ -148,31 +113,34 @@ public class BackGroundScroll : MonoBehaviour
         // 目標に到達したか
         bool hasReachedTarget = false;
 
-        switch (_axisType)
-        {
-            case AxisType.X:
-                hasReachedTarget = _initialPosition.x + _endLength <= transform.localPosition.x + frameMovement.x;
-                break;
+        // 移動方向が反転しているか
+        bool isMovingBackwards = _scrollSpeed < 0.0f;
 
-            case AxisType.Y:
-                hasReachedTarget = _initialPosition.y + _endLength <= transform.localPosition.y + frameMovement.y;
-                break;
+        // 反転していたら符号を反転させる
+        endLength *= (isMovingBackwards) ? -1.0f : 1.0f;
 
-            case AxisType.Z:
-                hasReachedTarget = _initialPosition.z + _endLength <= transform.localPosition.z + frameMovement.z;
-                break;
-        }
+        // AxisTypeに対応する各成分を取得
+        var initialPositionValue = AxisTypeHelper.GetAxisValue(_axisType, _initialPosition);
+        var localPositionValue = AxisTypeHelper.GetAxisValue(_axisType, transform.position);
+        var frameMovementValue = AxisTypeHelper.GetAxisValue(_axisType, frameMovement);
+
+        // 移動方向によって終了距離と現在の移動距離を変える
+        float end = (isMovingBackwards) ? initialPositionValue + endLength : localPositionValue + frameMovementValue;
+        float current = (isMovingBackwards) ? localPositionValue + frameMovementValue : initialPositionValue + endLength;
+
+        // 目標に到達したか
+        hasReachedTarget = end >= current;
 
         // 目標に到達した
         if (hasReachedTarget)
         {
             // 移動開始位置に移動
-            transform.localPosition = _startPosition;
+            transform.position = _startPosition;
         }
         else
         {
             // 移動を反映
-            transform.localPosition += frameMovement;
+            transform.position += frameMovement;
         }
     }
 
