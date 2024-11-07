@@ -25,9 +25,9 @@ using Unity.Collections;
 #endif
 
 /// <summary>
-/// PLの情報
+/// PLの情報（シングルトン前提）
 /// </summary>
-public struct PlayerData : IComponentData
+public struct PlayerSingletonData : IComponentData
 {
     [Tooltip("最大移動可能範囲")]
     public readonly float3 maxMovementRange;
@@ -59,7 +59,7 @@ public struct PlayerData : IComponentData
     /// <param name="moveSlowSpeed">減速中の移動速度</param>
     /// <param name="firingInterval">射撃間隔</param>
     /// <param name="playerBulletEntity">PLの弾のPrefabEntity</param>
-    public PlayerData(float3 maxMovementRange, float3 minMovementRange, float moveSpeed, float moveSlowSpeed, float firingInterval, Entity playerBulletEntity)
+    public PlayerSingletonData(float3 maxMovementRange, float3 minMovementRange, float moveSpeed, float moveSlowSpeed, float firingInterval, Entity playerBulletEntity)
     {
         this.maxMovementRange = maxMovementRange;
         this.minMovementRange = minMovementRange;
@@ -76,7 +76,7 @@ public struct PlayerData : IComponentData
 /// <summary>
 /// PLの設定
 /// </summary>
-public class PlayerAuthoring : MonoBehaviour
+public class PlayerAuthoring : SingletonMonoBehaviour<PlayerAuthoring>
 {
     private void OnDrawGizmos()
     {
@@ -152,7 +152,7 @@ public class PlayerAuthoring : MonoBehaviour
             var entity = GetEntity(TransformUsageFlags.Dynamic);
             var PlayerBulletEntity = GetEntity(src._playerBulletPrefab, TransformUsageFlags.Dynamic);
 
-            var playerData = new PlayerData
+            var playerData = new PlayerSingletonData
             (
                 src._maxMovementRange, 
                 src._minMovementRange, 

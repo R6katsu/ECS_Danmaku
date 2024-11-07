@@ -1,15 +1,16 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Drawing;
 using Unity.Entities;
-using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using static HealthHelper;
-using static PlayerHelper;
 
 #if UNITY_EDITOR
+using System.Collections;
+using System.Collections.Generic;
+using System.Drawing;
+using UnityEngine.SocialPlatforms.Impl;
+using Unity.Mathematics;
+using static HealthHelper;
+using static PlayerHelper;
 #endif
 
 /// <summary>
@@ -56,42 +57,27 @@ public partial class PlayerSystem : SystemBase
 
     protected override void OnUpdate()
     {
+        // PlayerSingletonDataが存在しなかった
+        if (!SystemAPI.HasSingleton<PlayerSingletonData>()) { return; }
+
+        // シングルトンデータの取得
+        var playerSingleton = SystemAPI.GetSingleton<PlayerSingletonData>();
+
+        // PlayerSingletonDataを持つEntityを取得
+        Entity playerEntity = SystemAPI.GetSingletonEntity<PlayerSingletonData>();
+
+        // LocalTransformを所持していなかった
+        if (!SystemAPI.HasComponent<LocalTransform>(playerEntity)) { return; }
+
+        // PLからLocalTransformを取得
+        var playerTransform = SystemAPI.GetComponent<LocalTransform>(playerEntity);
+
+        // フレーム秒数、経過時間
         var delta = SystemAPI.Time.DeltaTime;
         var elapsed = SystemAPI.Time.ElapsedTime;
 
         // 移動処理
-        foreach (var (playerTag, playerData, localTfm) in
-            SystemAPI.Query<
-                RefRO<PlayerTag>, 
-                RefRO<PlayerData>, 
-                RefRW<LocalTransform>>())
-        {
-            // 現在地を取得
-            var currentPosition = localTfm.ValueRO.Position;
-
-            // 移動速度
-            var speed = (playerData.ValueRO.isSlowdown) ? playerData.ValueRO.slowMoveSpeed : playerData.ValueRO.moveSpeed;
-
-            // 水平入力を水平方向に加算代入
-            currentPosition.x += _horizontalValue * speed * delta;
-
-            // 垂直入力を垂直方向に加算代入
-            currentPosition.z += _verticalValue * speed * delta;
-
-            var maxMovementRange = playerData.ValueRO.maxMovementRange;
-            var minMovementRange = playerData.ValueRO.minMovementRange;
-
-            // 移動可能範囲内に収める
-            currentPosition.x = Mathf.Clamp(currentPosition.x, minMovementRange.x, maxMovementRange.x);
-            currentPosition.y = Mathf.Clamp(currentPosition.y, minMovementRange.y, maxMovementRange.y);
-            currentPosition.z = Mathf.Clamp(currentPosition.z, minMovementRange.z, maxMovementRange.z);
-
-            // 反映
-            localTfm.ValueRW.Position = currentPosition;
-
-            // カメラ位置に反映
-            GameManager.Instance.GameCameraPosition = currentPosition;
-        }
+        PlayerMove(delta, playerEntity, playerSingleton, playerTransform);
 
         if (_isShot)
         {
@@ -102,30 +88,7 @@ public partial class PlayerSystem : SystemBase
 
 
             // 射撃処理
-            foreach (var (playerTag, playerData, localTfm) in
-                SystemAPI.Query<
-                    RefRO<PlayerTag>,
-                    RefRW<PlayerData>,
-                    RefRW<LocalTransform>>())
-            {
-                // 最後に射撃した時刻と現在の時間から経過時間を求め、射撃間隔を満たしていなければコンテニュー
-                if (elapsed - playerData.ValueRW.lastShotTime <= playerData.ValueRO.firingInterval) { continue; }
-
-                // 最後に射撃した時刻を更新
-                playerData.ValueRW.lastShotTime = elapsed;
-
-                // PLの弾を生成
-                var playerBulletEntity = EntityManager.Instantiate(playerData.ValueRO.playerBulletEntity);
-
-                // 弾のLocalTransformを取得
-                var localTransform = SystemAPI.GetComponent<LocalTransform>(playerBulletEntity);
-
-                // 現在地を代入
-                localTransform.Position = localTfm.ValueRO.Position;
-
-                // 変更を適用
-                SystemAPI.SetComponent(playerBulletEntity, localTransform);
-            }
+            PlayerShot(elapsed, playerEntity, playerSingleton, playerTransform);
         }
     }
 
@@ -159,33 +122,98 @@ public partial class PlayerSystem : SystemBase
     /// <param name="context"></param>
     private void Slowdown(InputAction.CallbackContext context)
     {
-        Debug.Log("そもそもPLは一体しか居ないのだからシングルトンでいいのでは？");
+        // PlayerSingletonDataが存在しなかった
+        if (!SystemAPI.HasSingleton<PlayerSingletonData>()) { return; }
+
+        // シングルトンデータの取得
+        var playerSingleton = SystemAPI.GetSingleton<PlayerSingletonData>();
 
         switch (context.phase)
         {
             case InputActionPhase.Started:
-                // 減速処理
-                foreach (var (playerTag, playerData, localTfm) in
-                    SystemAPI.Query<
-                        RefRO<PlayerTag>,
-                        RefRW<PlayerData>,
-                        RefRW<LocalTransform>>())
-                {
-                    playerData.ValueRW.isSlowdown = true;
-                }
+                // 減速フラグを立てる
+                playerSingleton.isSlowdown = true;
                 break;
 
             case InputActionPhase.Canceled:
-                // 減速処理
-                foreach (var (playerTag, playerData, localTfm) in
-                    SystemAPI.Query<
-                        RefRO<PlayerTag>,
-                        RefRW<PlayerData>,
-                        RefRW<LocalTransform>>())
-                {
-                    playerData.ValueRW.isSlowdown = false;
-                }
+                // 減速フラグを折る
+                playerSingleton.isSlowdown = false;
                 break;
         }
+
+        // PlayerSingletonDataを持つEntityを取得
+        Entity playerEntity = SystemAPI.GetSingletonEntity<PlayerSingletonData>();
+
+        // 変更を反映
+        SystemAPI.SetComponent(playerEntity, playerSingleton);
+    }
+
+    /// <summary>
+    /// PLの移動処理
+    /// </summary>
+    /// <param name="delta">現在のフレーム秒数</param>
+    /// <param name="playerEntity">PLのEntity</param>
+    /// <param name="playerSingleton">PLのSingletonData</param>
+    /// <param name="playerTransform">PLのLocalTransform</param>
+    public void PlayerMove(float delta, Entity playerEntity, PlayerSingletonData playerSingleton, LocalTransform playerTransform)
+    {
+        // 現在地を取得
+        var currentPosition = playerTransform.Position;
+
+        // 移動速度
+        var speed = (playerSingleton.isSlowdown) ? playerSingleton.slowMoveSpeed : playerSingleton.moveSpeed;
+
+        // 水平入力、垂直入力からfloat3を作成
+        var movementDirection = new float3(_horizontalValue, new float(), _verticalValue);
+
+        // 入力がある場合は正規化
+        movementDirection = (math.lengthsq(movementDirection) > 0) ?
+                math.normalize(movementDirection) : movementDirection;
+
+        // 移動量を算出
+        Vector3 scaledMovement = movementDirection * speed * delta;
+
+        // 移動を加算代入
+        currentPosition += (float3)scaledMovement;
+
+        // 移動可能範囲
+        var maxMovementRange = playerSingleton.maxMovementRange;
+        var minMovementRange = playerSingleton.minMovementRange;
+
+        // 移動可能範囲内に収める
+        currentPosition.x = Mathf.Clamp(currentPosition.x, minMovementRange.x, maxMovementRange.x);
+        currentPosition.y = Mathf.Clamp(currentPosition.y, minMovementRange.y, maxMovementRange.y);
+        currentPosition.z = Mathf.Clamp(currentPosition.z, minMovementRange.z, maxMovementRange.z);
+
+        // 反映
+        playerTransform.Position = currentPosition;
+
+        // カメラ位置に反映
+        GameManager.Instance.GameCameraPosition = currentPosition;
+
+        // 変更を反映
+        SystemAPI.SetComponent(playerEntity, playerTransform);
+    }
+
+    public void PlayerShot(double elapsed, Entity playerEntity, PlayerSingletonData playerSingleton, LocalTransform playerTransform)
+    {
+        // 最後に射撃した時刻と現在の時間から経過時間を求め、射撃間隔を満たしていなければ切り上げる
+        if (elapsed - playerSingleton.lastShotTime <= playerSingleton.firingInterval) { return; }
+
+        // 最後に射撃した時刻を更新
+        playerSingleton.lastShotTime = elapsed;
+
+        // PLの弾を生成
+        var playerBulletEntity = EntityManager.Instantiate(playerSingleton.playerBulletEntity);
+
+        // 弾のLocalTransformを取得
+        var localTransform = SystemAPI.GetComponent<LocalTransform>(playerBulletEntity);
+
+        // 現在地を代入
+        localTransform.Position = playerTransform.Position;
+
+        // 変更を適用
+        SystemAPI.SetComponent(playerBulletEntity, localTransform);
+        SystemAPI.SetComponent(playerEntity, playerSingleton);
     }
 }
