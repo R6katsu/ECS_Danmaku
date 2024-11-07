@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &8291925342730665244
+--- !u!1 &5406267800065867434
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,50 +8,47 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 4638527366984909}
-  - component: {fileID: 3079152206643133704}
-  - component: {fileID: 3284531192009571796}
-  - component: {fileID: 8747252506329310038}
-  - component: {fileID: 5369493252696556595}
-  - component: {fileID: 6337237026663219694}
-  - component: {fileID: 5112098016560038383}
+  - component: {fileID: 601068259529846860}
+  - component: {fileID: 4876287844920316036}
+  - component: {fileID: 2306039569742282009}
+  - component: {fileID: 7849515184116723539}
   m_Layer: 0
-  m_Name: EnemyBullet
+  m_Name: ModelQuad
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &4638527366984909
+--- !u!4 &601068259529846860
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8291925342730665244}
+  m_GameObject: {fileID: 5406267800065867434}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 4638527366984909}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &3079152206643133704
+--- !u!33 &4876287844920316036
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8291925342730665244}
-  m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
---- !u!23 &3284531192009571796
+  m_GameObject: {fileID: 5406267800065867434}
+  m_Mesh: {fileID: 4300000, guid: 938eba39347079543b78101df895834e, type: 2}
+--- !u!23 &2306039569742282009
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8291925342730665244}
+  m_GameObject: {fileID: 5406267800065867434}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -62,7 +59,7 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 2
   m_RayTraceProcedural: 0
-  m_RenderingLayerMask: 258
+  m_RenderingLayerMask: 257
   m_RendererPriority: 0
   m_Materials:
   - {fileID: 2100000, guid: a88b8324c356fdd46b383a2fcdb52c55, type: 2}
@@ -87,6 +84,54 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &7849515184116723539
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5406267800065867434}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50fb1d5942a755044a423bd0d3fb7760, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!1 &8291925342730665244
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4638527366984909}
+  - component: {fileID: 8747252506329310038}
+  - component: {fileID: 5369493252696556595}
+  - component: {fileID: 6337237026663219694}
+  - component: {fileID: 5112098016560038383}
+  m_Layer: 0
+  m_Name: EnemyBullet
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4638527366984909
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8291925342730665244}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 601068259529846860}
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8747252506329310038
 MonoBehaviour:
   m_ObjectHideFlags: 0

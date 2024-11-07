@@ -54,7 +54,7 @@ public class BulletAuthoring : MonoBehaviour
     [SerializeField, Header("Entity‚ÌƒJƒeƒSƒŠ")]
     private EntityCategory _entityCategory = 0;
 
-    public class BulletBaker : Baker<BulletAuthoring>
+    public class Baker : Baker<BulletAuthoring>
     {
         public override void Bake(BulletAuthoring src)
         {
@@ -68,7 +68,6 @@ public class BulletAuthoring : MonoBehaviour
             }
 
             AddComponent(entity, new BulletTag());
-            AddComponent(entity, new BillboardTag());
             AddComponent(entity, new DestroyableData());
             AddComponent(entity, new BulletData(src._lifeTime));
             AddComponent(entity, new BulletIDealDamageData(src._damageAmount, src._campsType));
