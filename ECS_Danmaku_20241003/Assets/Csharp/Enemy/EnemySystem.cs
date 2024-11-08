@@ -1,20 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Transforms;
 using UnityEngine;
 using static BulletHelper;
+using static EnemyHelper;
 
 #if UNITY_EDITOR
 #endif
 
 /// <summary>
-/// 弾の処理
+/// 敵の処理
 /// </summary>
 [BurstCompile]
-public partial struct BulletSystem : ISystem
+public partial struct EnemySystem : ISystem
 {
     public void OnUpdate(ref SystemState state)
     {
@@ -24,17 +24,17 @@ public partial struct BulletSystem : ISystem
         // シングルトンデータの取得
         var movementRangeSingleton = SystemAPI.GetSingleton<MovementRangeSingletonData>();
 
-        // 弾の移動可能範囲を取得
-        var bulletMovementRange = movementRangeSingleton.bulletMovementRange;
-        var movementRange = bulletMovementRange.movementRange + bulletMovementRange.movementRangeCenter;
+        // 敵の移動可能範囲を取得
+        var enemyMovementRange = movementRangeSingleton.enemyMovementRange;
+        var movementRange = enemyMovementRange.movementRange + enemyMovementRange.movementRangeCenter;
 
         // 半分の大きさを求める
         var halfMovementRange = movementRange / 2;
 
         // 移動可能範囲外だったら削除フラグを立てる
-        foreach (var (bullet, destroyable, localTfm) in
+        foreach (var (enemy, destroyable, localTfm) in
                  SystemAPI.Query
-                 <RefRW<BulletTag>,
+                 <RefRW<EnemyTag>,
                  RefRW<DestroyableData>,
                  RefRW<LocalTransform>>())
         {
