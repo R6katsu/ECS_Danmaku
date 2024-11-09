@@ -157,6 +157,25 @@ public partial class PlayerSystem : SystemBase
     /// <param name="playerTransform">PLのLocalTransform</param>
     public void PlayerMove(float delta, Entity playerEntity, PlayerSingletonData playerSingleton, LocalTransform playerTransform)
     {
+        // MovementRangeSingletonDataが存在しなかった
+        if (!SystemAPI.HasSingleton<MovementRangeSingletonData>()) { return; }
+
+        // シングルトンデータの取得
+        var movementRangeSingleton = SystemAPI.GetSingleton<MovementRangeSingletonData>();
+
+        // PLの移動可能範囲を取得
+        var playerMovementRange = movementRangeSingleton.playerMovementRange;
+
+        // 中心位置
+        var movementRangeCenter = playerMovementRange.movementRangeCenter;
+
+        // 半分の大きさを求める
+        var halfMovementRange = playerMovementRange.movementRange / 2;
+
+        // 中心位置を考慮した移動可能範囲を求める
+        var minMovementRange = movementRangeCenter + -halfMovementRange;
+        var maxMovementRange = movementRangeCenter + halfMovementRange;
+
         // 現在地を取得
         var currentPosition = playerTransform.Position;
 
@@ -175,10 +194,6 @@ public partial class PlayerSystem : SystemBase
 
         // 移動を加算代入
         currentPosition += (float3)scaledMovement;
-
-        // 移動可能範囲
-        var maxMovementRange = playerSingleton.maxMovementRange;
-        var minMovementRange = playerSingleton.minMovementRange;
 
         // 移動可能範囲内に収める
         currentPosition.x = Mathf.Clamp(currentPosition.x, minMovementRange.x, maxMovementRange.x);

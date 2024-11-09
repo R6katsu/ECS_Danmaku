@@ -25,26 +25,6 @@ public struct MovementRangeSingletonData : IComponentData
 
     [Header("敵の移動可能範囲")]
     public MovementRangeInfo enemyMovementRange;
-
-    /*
-    /// <summary>
-    /// 移動可能範囲の情報（シングルトン前提）
-    /// </summary>
-    /// <param name="playerMovementRange">PLの移動可能範囲</param>
-    /// <param name="bulletMovementRange">弾の移動可能範囲</param>
-    /// <param name="enemyMovementRange">敵の移動可能範囲</param>
-    public MovementRangeSingletonData
-        (
-            MovementRangeInfo playerMovementRange,
-            MovementRangeInfo bulletMovementRange,
-            MovementRangeInfo enemyMovementRange
-        )
-    {
-        this.playerMovementRange = playerMovementRange;
-        this.bulletMovementRange = bulletMovementRange;
-        this.enemyMovementRange = enemyMovementRange;
-    }
-    */
 }
 
 /// <summary>
@@ -67,34 +47,12 @@ public class MovementRangeAuthoring : SingletonMonoBehaviour<MovementRangeAuthor
 
     public MovementRangeSingletonData _playerMovementRangeSingletonData = new();
 
-    /*
-    [SerializeField, Header("PLの移動可能範囲")]
-    private MovementRangeInfo _playerMovementRange = new();
-
-    [SerializeField, Header("弾の移動可能範囲")]
-    private MovementRangeInfo _bulletMovementRange = new();
-
-    [SerializeField, Header("敵の移動可能範囲")]
-    private MovementRangeInfo _enemyMovementRange = new();
-    */
-
     public class Baker : Baker<MovementRangeAuthoring>
     {
         public override void Bake(MovementRangeAuthoring src)
         {
             var entity = GetEntity(TransformUsageFlags.None);
 
-            /*
-            // MovementRangeSingletonDataのインスタンスを作成
-            var movementRangeSingleton = new MovementRangeSingletonData
-                (
-                    src._playerMovementRange,
-                    src._bulletMovementRange,
-                    src._enemyMovementRange
-                );
-            */
-
-            //AddComponent(entity, movementRangeSingleton);
             AddComponent(entity, src._playerMovementRangeSingletonData);
 
             // ビルド時に固定
