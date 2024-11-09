@@ -26,10 +26,16 @@ public partial struct EnemySystem : ISystem
 
         // 敵の移動可能範囲を取得
         var enemyMovementRange = movementRangeSingleton.enemyMovementRange;
-        var movementRange = enemyMovementRange.movementRange + enemyMovementRange.movementRangeCenter;
+
+        // 中心位置
+        var movementRangeCenter = enemyMovementRange.movementRangeCenter;
 
         // 半分の大きさを求める
-        var halfMovementRange = movementRange / 2;
+        var halfMovementRange = enemyMovementRange.movementRange / 2;
+
+        // 中心位置を考慮した移動可能範囲を求める
+        var minMovementRange = movementRangeCenter + -halfMovementRange;
+        var maxMovementRange = movementRangeCenter + halfMovementRange;
 
         // 移動可能範囲外だったら削除フラグを立てる
         foreach (var (enemy, destroyable, localTfm) in
@@ -41,9 +47,9 @@ public partial struct EnemySystem : ISystem
             var position = localTfm.ValueRO.Position;
 
             // 移動可能範囲外だった
-            if (position.x < -halfMovementRange.x || position.x > halfMovementRange.x ||
-                position.y < -halfMovementRange.y || position.y > halfMovementRange.y ||
-                position.z < -halfMovementRange.z || position.z > halfMovementRange.z)
+            if (position.x < minMovementRange.x || position.x > maxMovementRange.x ||
+                position.y < minMovementRange.y || position.y > maxMovementRange.y ||
+                position.z < minMovementRange.z || position.z > maxMovementRange.z)
             {
                 // 削除フラグを立てる
                 destroyable.ValueRW.isKilled = true;

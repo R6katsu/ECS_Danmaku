@@ -29,12 +29,6 @@ using Unity.Collections;
 /// </summary>
 public struct PlayerSingletonData : IComponentData
 {
-    [Tooltip("最大移動可能範囲")]
-    public readonly float3 maxMovementRange;
-
-    [Tooltip("最小移動可能範囲")]
-    public readonly float3 minMovementRange;
-
     [Tooltip("移動速度")]
     public readonly float moveSpeed;
 
@@ -53,16 +47,12 @@ public struct PlayerSingletonData : IComponentData
     /// <summary>
     /// PLの情報
     /// </summary>
-    /// <param name="maxMovementRange">最大移動可能範囲</param>
-    /// <param name="minMovementRange">最小移動可能範囲</param>
     /// <param name="moveSpeed">移動速度</param>
     /// <param name="moveSlowSpeed">減速中の移動速度</param>
     /// <param name="firingInterval">射撃間隔</param>
     /// <param name="playerBulletEntity">PLの弾のPrefabEntity</param>
-    public PlayerSingletonData(float3 maxMovementRange, float3 minMovementRange, float moveSpeed, float moveSlowSpeed, float firingInterval, Entity playerBulletEntity)
+    public PlayerSingletonData(float moveSpeed, float moveSlowSpeed, float firingInterval, Entity playerBulletEntity)
     {
-        this.maxMovementRange = maxMovementRange;
-        this.minMovementRange = minMovementRange;
         this.moveSpeed = moveSpeed;
         this.slowMoveSpeed = moveSlowSpeed;
         this.firingInterval = firingInterval;
@@ -78,46 +68,6 @@ public struct PlayerSingletonData : IComponentData
 /// </summary>
 public class PlayerAuthoring : SingletonMonoBehaviour<PlayerAuthoring>
 {
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.cyan;
-
-        // 立方体の8つの頂点を計算
-        Vector3 frontTopLeft = new Vector3(_minMovementRange.x, _maxMovementRange.y, _minMovementRange.z);
-        Vector3 frontTopRight = new Vector3(_maxMovementRange.x, _maxMovementRange.y, _minMovementRange.z);
-        Vector3 frontBottomLeft = new Vector3(_minMovementRange.x, _minMovementRange.y, _minMovementRange.z);
-        Vector3 frontBottomRight = new Vector3(_maxMovementRange.x, _minMovementRange.y, _minMovementRange.z);
-
-        Vector3 backTopLeft = new Vector3(_minMovementRange.x, _maxMovementRange.y, _maxMovementRange.z);
-        Vector3 backTopRight = new Vector3(_maxMovementRange.x, _maxMovementRange.y, _maxMovementRange.z);
-        Vector3 backBottomLeft = new Vector3(_minMovementRange.x, _minMovementRange.y, _maxMovementRange.z);
-        Vector3 backBottomRight = new Vector3(_maxMovementRange.x, _minMovementRange.y, _maxMovementRange.z);
-
-        // 前面の四辺
-        Gizmos.DrawLine(frontTopLeft, frontTopRight);
-        Gizmos.DrawLine(frontTopRight, frontBottomRight);
-        Gizmos.DrawLine(frontBottomRight, frontBottomLeft);
-        Gizmos.DrawLine(frontBottomLeft, frontTopLeft);
-
-        // 背面の四辺
-        Gizmos.DrawLine(backTopLeft, backTopRight);
-        Gizmos.DrawLine(backTopRight, backBottomRight);
-        Gizmos.DrawLine(backBottomRight, backBottomLeft);
-        Gizmos.DrawLine(backBottomLeft, backTopLeft);
-
-        // 前面と背面を繋ぐ辺
-        Gizmos.DrawLine(frontTopLeft, backTopLeft);
-        Gizmos.DrawLine(frontTopRight, backTopRight);
-        Gizmos.DrawLine(frontBottomLeft, backBottomLeft);
-        Gizmos.DrawLine(frontBottomRight, backBottomRight);
-    }
-
-    [SerializeField, Header("最大移動可能範囲")]
-    private float3 _maxMovementRange = 0.0f;
-
-    [SerializeField, Header("最小移動可能範囲")]
-    private float3 _minMovementRange = 0.0f;
-
     [SerializeField, Min(0.0f), Header("移動速度")]
     private float _moveSpeed = 0.0f;
 
@@ -154,8 +104,6 @@ public class PlayerAuthoring : SingletonMonoBehaviour<PlayerAuthoring>
 
             var playerData = new PlayerSingletonData
             (
-                src._maxMovementRange, 
-                src._minMovementRange, 
                 src._moveSpeed, 
                 src._slowMoveSpeed,
                 src._firingInterval,
