@@ -190,6 +190,7 @@ static public class HealthPointDatas
         public void DamageHP(float damage, Entity entity)
         {
             Debug.Log("DamageHP");
+            Debug.LogError("EnemyHealthPointDataDicは修正必須");
 
             // まだKeyが含まれていなければ自身を追加する
             if (!EnemyHealthPointDataDic.entitys.ContainsKey(MyNumber))
@@ -224,5 +225,15 @@ static public class HealthPointDatas
         {
             isKilled = true;
         }
+    }
+
+    public class EnemyHealthPointDataDic
+    {
+        // あとで修正する。とりあえずの奴
+        // BurstCompile属性を付与している場所から呼び出した場合はエラーになる
+
+        // Layerのように　AのID | BのID　というのはできないか
+
+        static public Dictionary<int, List<Entity>> entitys = new();
     }
 }

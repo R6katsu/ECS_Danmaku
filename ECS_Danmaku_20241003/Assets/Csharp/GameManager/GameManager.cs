@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -113,6 +114,8 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
                 break;
 
             case GameState.Game:
+                //OnEnemySpawnerSystem();
+
                 StartCoroutine(Game());
                 break;
 
@@ -140,5 +143,35 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
                 _elapsedTimeUGUI.text = _currentTime.ToString();
             }
         }
+    }
+
+    public void OnEnemySpawnerSystem()
+    {
+        // World取得
+        World defaultWorld = World.DefaultGameObjectInjectionWorld;
+
+        // SystemHandleを取得
+        var systemHandle = defaultWorld.GetExistingSystem<EnemySpawnerSystem>();
+
+        // 実際のSystemの参照を取得する
+        var enemySpawnerSystem = defaultWorld.Unmanaged.GetUnsafeSystemRef<EnemySpawnerSystem>(systemHandle);
+
+        // EnemySpawnerSystemを有効にする
+        enemySpawnerSystem.isSelfEnable = true;
+    }
+
+    public void OffEnemySpawnerSystem()
+    {
+        // World取得
+        World defaultWorld = World.DefaultGameObjectInjectionWorld;
+
+        // SystemHandleを取得
+        var systemHandle = defaultWorld.GetExistingSystem<EnemySpawnerSystem>();
+
+        // 実際のSystemの参照を取得する
+        var enemySpawnerSystem = defaultWorld.Unmanaged.GetUnsafeSystemRef<EnemySpawnerSystem>(systemHandle);
+
+        // EnemySpawnerSystemを有効にする
+        enemySpawnerSystem.isSelfEnable = false;
     }
 }
