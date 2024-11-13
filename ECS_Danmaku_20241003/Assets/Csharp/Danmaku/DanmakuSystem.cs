@@ -14,6 +14,16 @@ using UnityEngine;
 [BurstCompile]
 public partial struct DanmakuSystem : ISystem
 {
+    // 弾幕を放つのは敵やPL自身ではない
+    // 敵やPLの子オブジェクトとして追従している銃口から放たれる
+    // 自身の子を取得し、その弾幕を取得する
+    // というか、敵やPL自身が持てる銃口の数に制限を設ける
+    // そしてその位置に子オブジェクトを動的に作成する
+    // 子オブジェクトの銃口に渡すパラメーターはPLのインスペクタから設定する？
+    // 
+
+
+
     private SystemHandle _ecbSystemHandle;
 
     public void OnCreate(ref SystemState state)

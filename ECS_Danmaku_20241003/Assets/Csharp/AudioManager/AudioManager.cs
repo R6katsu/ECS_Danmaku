@@ -38,6 +38,7 @@ public class AudioManager : SingletonMonoBehaviour<AudioManager>
     {
         if (_seAudioSource == null) { return; }
 
+        // PlayOneShotÇ≈âπåπçƒê∂
         _seAudioSource.PlayOneShot(_seClips[num]);
     }
 
