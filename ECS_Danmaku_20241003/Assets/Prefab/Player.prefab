@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 8757146574616733484}
   - component: {fileID: 130446701928984513}
   - component: {fileID: 2235014953288189815}
+  - component: {fileID: 4689318399891710906}
   m_Layer: 0
   m_Name: PlayerCube
   m_TagString: Untagged
@@ -120,18 +121,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab2d338df7e16cb4a95e4750affb8f16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxMovementRange:
-    x: 25
-    y: 0
-    z: 30
-  _minMovementRange:
-    x: -25
-    y: 0
-    z: -3
   _moveSpeed: 10
   _slowMoveSpeed: 5
   _maxHP: 1
-  _firingInterval: 0.1
+  _firingInterval: 0.05
   _isInvincibleTime: 1
   _killedSENumber: 2
   _playerBulletPrefab: {fileID: 5686516524955122670, guid: 3955ac77ee2c9374caa42be77715c017,
@@ -165,6 +158,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _audioType: 1
+--- !u!114 &4689318399891710906
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7691638050411492723}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e02fe5b9f319d841b477934921e225c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rotationData:
+    axisType: 1
+    rotationSpeed: 20
 --- !u!1 &8542894061459229910
 GameObject:
   m_ObjectHideFlags: 0

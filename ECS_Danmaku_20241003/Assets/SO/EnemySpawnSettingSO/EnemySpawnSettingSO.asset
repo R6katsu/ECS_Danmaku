@@ -13,35 +13,35 @@ MonoBehaviour:
   m_Name: EnemySpawnSettingSO
   m_EditorClassIdentifier: 
   _info:
-  - _enemyPrefab: {fileID: 8278590107479577057, guid: 47c63935f5fccd341b3f3767e6a09f63,
+  - _enemyPrefab: {fileID: 8435925510417071167, guid: 06ca7b2726170de4d934167f4802b3ba,
       type: 3}
     _enemySpawnSettingInfo:
       _creationDelay: 0
       _spawnPosition:
-        x: 0
+        x: -10
         y: 0
         z: 30
-  - _enemyPrefab: {fileID: 8278590107479577057, guid: 47c63935f5fccd341b3f3767e6a09f63,
+  - _enemyPrefab: {fileID: 8435925510417071167, guid: 06ca7b2726170de4d934167f4802b3ba,
       type: 3}
     _enemySpawnSettingInfo:
       _creationDelay: 3
       _spawnPosition:
-        x: -10
+        x: -5
         y: 0
         z: 30
-  - _enemyPrefab: {fileID: 8278590107479577057, guid: 47c63935f5fccd341b3f3767e6a09f63,
+  - _enemyPrefab: {fileID: 8435925510417071167, guid: 06ca7b2726170de4d934167f4802b3ba,
       type: 3}
     _enemySpawnSettingInfo:
       _creationDelay: 6
       _spawnPosition:
-        x: 10
+        x: 0
         y: 0
         z: 30
-  - _enemyPrefab: {fileID: 8278590107479577057, guid: 47c63935f5fccd341b3f3767e6a09f63,
+  - _enemyPrefab: {fileID: 8435925510417071167, guid: 06ca7b2726170de4d934167f4802b3ba,
       type: 3}
     _enemySpawnSettingInfo:
       _creationDelay: 9
       _spawnPosition:
-        x: -10
+        x: 5
         y: 0
         z: 30

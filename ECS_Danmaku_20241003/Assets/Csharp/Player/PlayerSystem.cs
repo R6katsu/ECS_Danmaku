@@ -227,6 +227,9 @@ public partial class PlayerSystem : SystemBase
         // 現在地を代入
         localTransform.Position = playerTransform.Position;
 
+        // 現在の回転を代入
+        localTransform.Rotation = playerTransform.Rotation;
+
         // 変更を適用
         SystemAPI.SetComponent(playerBulletEntity, localTransform);
         SystemAPI.SetComponent(playerEntity, playerSingleton);
