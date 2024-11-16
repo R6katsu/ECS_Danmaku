@@ -5,9 +5,6 @@ using static EntityCampsHelper;
 using static HealthPointDatas;
 using Unity.Transforms;
 
-
-
-
 #if UNITY_EDITOR
 using static EnemyHelper;
 using static PlayerHelper;

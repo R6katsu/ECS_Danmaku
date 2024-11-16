@@ -17,13 +17,17 @@ public struct StraightMoveData : IComponentData
     [Tooltip("移動の設定値")]
     public readonly MoveParameter moveParam;
 
+    [Tooltip("進行方向")]
+    public readonly AxisType axisType;
+
     /// <summary>
     /// 直進移動の情報
     /// </summary>
     /// <param name="moveParam">移動の設定値</param>
-    public StraightMoveData(MoveParameter moveParam)
+    public StraightMoveData(MoveParameter moveParam, AxisType axisType)
     {
         this.moveParam = moveParam;
+        this.axisType = axisType;
     }
 }
 
@@ -32,11 +36,11 @@ public struct StraightMoveData : IComponentData
 /// </summary>
 public class StraightMoveAuthoring : MonoBehaviour
 {
-    // 範囲から出ると削除されるようにする
-    // AABBとかfloat3とかを持ったTransform？
-
     [SerializeField]
     private MoveParameter _moveParam = new();
+
+    [SerializeField, Header("進行方向")]
+    private AxisType _axisType = 0;
 
     public class Baker : Baker<StraightMoveAuthoring>
     {
@@ -44,7 +48,13 @@ public class StraightMoveAuthoring : MonoBehaviour
         {
             var entity = GetEntity(TransformUsageFlags.Dynamic);
 
-            var straightMove = new StraightMoveData(src._moveParam);
+            var straightMoveData = new StraightMoveData
+                (
+                    src._moveParam, 
+                    src._axisType
+                );
+
+            var straightMove = straightMoveData;
 
             // Dataをアタッチ
             AddComponent(entity, straightMove);

@@ -18,13 +18,12 @@ public partial struct StraightMoveSystem : ISystem
         var delta = SystemAPI.Time.DeltaTime;
 
         // ’¼iˆÚ“®‚Ìˆ—
-        foreach (var (straightMove, directionTravel, localTfm) in
+        foreach (var (straightMove, localTfm) in
                  SystemAPI.Query<RefRO<StraightMoveData>,
-                                 RefRO<DirectionTravelData>,
                                  RefRW<LocalTransform>>())
         {
             // is•ûŒü‚ÉˆÚ“®‚·‚é
-            float3 direction = DirectionTravelTypeConverter.GetDirectionVector(directionTravel.ValueRO.directionTravelType);
+            float3 direction = AxisTypeHelper.GetAxisDirection(straightMove.ValueRO.axisType);
             localTfm.ValueRW.Position += direction * straightMove.ValueRO.moveParam.Speed * delta;
         }
     }

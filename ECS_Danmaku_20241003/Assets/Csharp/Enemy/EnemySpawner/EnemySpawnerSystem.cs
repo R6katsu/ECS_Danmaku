@@ -29,6 +29,36 @@ public partial struct EnemySpawnerSystem : ISystem
 
     public void OnUpdate(ref SystemState state)
     {
+        // EntityQueryDesc を使って `Disabled` コンポーネントを除外
+        var queryDesc = new EntityQueryDesc
+        {
+            All = new ComponentType[] { typeof(EntityEnemySpawnData), typeof(Disabled) }
+        };
+
+        // クエリ作成
+        var query = state.EntityManager.CreateEntityQuery(queryDesc);
+
+        // エンティティの数を取得
+        int entityEnemySpawnCount = query.CalculateEntityCount();
+
+        // クエリ作成
+        var enabledEnemyQuery = state.EntityManager.CreateEntityQuery(typeof(EntityEnemySpawnData));
+
+        // エンティティの数を取得
+        int enabledEnemySpawnCount = enabledEnemyQuery.CalculateEntityCount();
+
+
+        // まだEntityEnemySpawnDataが存在していない
+        if (enabledEnemySpawnCount <= 0)
+        {
+            if (entityEnemySpawnCount <= 0)
+            {
+                return;
+            }
+        }
+
+
+
         _elapsed += SystemAPI.Time.DeltaTime;
 
         var ecb = new EntityCommandBuffer(Allocator.Temp);
@@ -60,6 +90,12 @@ public partial struct EnemySpawnerSystem : ISystem
                 Rotation = quaternion.identity,
                 Scale = 1.0f
             });
+        }
+
+        if (enabledEnemySpawnCount <= 0)
+        {
+            // ゲームオーバー処理を開始する
+            GameOver.Instance.OnGameOver();
         }
 
         ecb.Playback(state.EntityManager);
