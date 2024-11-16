@@ -2,13 +2,13 @@ using Unity.Entities;
 using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using Unity.Mathematics;
 
 #if UNITY_EDITOR
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using UnityEngine.SocialPlatforms.Impl;
-using Unity.Mathematics;
 using static HealthHelper;
 using static PlayerHelper;
 #endif

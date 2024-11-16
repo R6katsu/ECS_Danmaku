@@ -1,14 +1,14 @@
 using Unity.Entities;
-using Unity.Collections;
 using UnityEngine;
-using static EnemyHelper;
+using System.Collections.Generic;
 using static HealthHelper;
-using static HealthPointDatas;
 
 
 #if UNITY_EDITOR
+using static HealthPointDatas;
+using static EnemyHelper;
+using Unity.Collections;
 using System.Collections;
-using System.Collections.Generic;
 #endif
 
 

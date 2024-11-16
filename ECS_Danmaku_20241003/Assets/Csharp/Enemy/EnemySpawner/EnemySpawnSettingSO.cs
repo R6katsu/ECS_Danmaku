@@ -38,6 +38,11 @@ public struct EnemySpawnSettingInfo
 [CreateAssetMenu(fileName = "EnemySpawnSettingSO", menuName = "ScriptableObject/EnemySpawnSettingSO")]
 public class EnemySpawnSettingSO : ScriptableObject
 {
+    // 使いにくい
+    // 敵の設定が難しい。要素数が増えると変更が困難になる
+    // 敵の出現位置を事前に幾つか設定しておき、レーンという概念で設定する方が良さそう
+    // もっと分かりやすく操作性の良い敵の出現設定を作りたい
+
     [SerializeField]
     private TransformEnemySpawnInfo[] _info = null;
 

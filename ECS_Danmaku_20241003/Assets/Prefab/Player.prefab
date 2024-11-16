@@ -124,7 +124,7 @@ MonoBehaviour:
   _moveSpeed: 10
   _slowMoveSpeed: 5
   _maxHP: 1
-  _firingInterval: 0.05
+  _firingInterval: 0.1
   _isInvincibleTime: 1
   _killedSENumber: 2
   _playerBulletPrefab: {fileID: 5686516524955122670, guid: 3955ac77ee2c9374caa42be77715c017,

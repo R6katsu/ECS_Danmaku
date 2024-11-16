@@ -25,6 +25,7 @@ static public partial class DanmakuJobs
             Entity entity,
             N_Way_DanmakuData n_Way_DanmakuData,
             LocalTransform localTfm,
+            LocalToWorld localToWorld,
             [EntityIndexInQuery] int index)
         {
             // åoâﬂéûä‘Çâ¡éZë„ì¸
@@ -64,12 +65,12 @@ static public partial class DanmakuJobs
                 Entity bulletEntity = commandBuffer.Instantiate(index, n_Way_DanmakuData.bulletPrefab);
 
                 // ê≥ãKâª
-                quaternion normalizedRotation = math.normalize(localTfm.Rotation);
+                quaternion normalizedRotation = math.normalize(localToWorld.Rotation);
 
                 // TransformÇë„ì¸
                 commandBuffer.SetComponent(index, bulletEntity, new LocalTransform
                 {
-                    Position = localTfm.Position,
+                    Position = localToWorld.Position,
                     Rotation = math.mul(normalizedRotation, rotation),
                     Scale = n_Way_DanmakuData.bulletLocalScale
                 });

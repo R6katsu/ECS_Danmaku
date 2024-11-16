@@ -28,14 +28,8 @@ public class TitleScene : MonoBehaviour
     [SerializeField, Min(0), Header("タイトルBGMの番号")]
     private int _titleBGMNumber = 0;
 
-    [SerializeField, Header("タイトルロゴのAnimator")]
-    private Animator _titleLogoAnimator = null;
-
     [SerializeField, Header("シーン遷移のトランジション")]
     private Transform _transitionTransform = null;
-
-    [SerializeField, Header("タイトルロゴの再生Trigger")]
-    private string _titleLogoTriggerName = null;
 
     [Tooltip("シーン遷移のトランジション")]
     private ITransition _transition = null;
@@ -80,6 +74,12 @@ public class TitleScene : MonoBehaviour
                     return;
                 }
 
+                TitleLogoSingleton.Instance.breakAction = () =>
+                {
+                    Debug.Log("TitleLogoSingleton.Instance.breakAction");
+                    MyTitleSceneState = TitleSceneState.TitleClose;
+                };
+
                 MyTitleSceneState = TitleSceneState.TitleLogo;
                 break;
 
@@ -98,7 +98,7 @@ public class TitleScene : MonoBehaviour
 
             case TitleSceneState.TitleClose:
                 // タイトル画面を閉じ、新しいシーンを読み込む
-                TitleClose();
+                StartCoroutine(TitleClose());
                 break;
 
             default:
@@ -114,24 +114,7 @@ public class TitleScene : MonoBehaviour
     private IEnumerator TitleLogoAnimationAndWait()
     {
         // タイトルロゴを再生
-        _titleLogoAnimator.SetTrigger(_titleLogoTriggerName);
-
-        // アニメーションの遷移を待つ
-        yield return null;
-
-        // アニメーション情報の取得
-        AnimatorStateInfo stateInfo = _titleLogoAnimator.GetCurrentAnimatorStateInfo(0);
-
-        // 正しい長さが取得できるまで待機
-        while (stateInfo.length == 1)
-        {
-            yield return null;
-            stateInfo = _titleLogoAnimator.GetCurrentAnimatorStateInfo(0);
-        }
-
-        // アニメーション終了まで待機
-        float animationLength = stateInfo.length;
-        yield return new WaitForSeconds(animationLength);
+        yield return StartCoroutine(TitleLogoSingleton.Instance.TitleLogoAnimation());
 
         // タイトル画面の処理を開始
         MyTitleSceneState = TitleSceneState.Title;
@@ -143,6 +126,16 @@ public class TitleScene : MonoBehaviour
     /// <returns>null</returns>
     private IEnumerator TitleUpdate()
     {
+        yield return null;
+
+        Debug.Log("ここから続き");
+
+        // PLを登場させ、射撃できるようにする
+        // タイトルロゴに攻撃できるようにする
+        // WASDやShiftの操作説明を出現させる
+        // タイトルロゴを攻撃した時、壊せ！という文字が表示されるようにする
+
+        /*
         while (_titleSceneState == TitleSceneState.Title)
         {
             yield return null;
@@ -153,13 +146,19 @@ public class TitleScene : MonoBehaviour
             // タイトル画面の処理を終了
             MyTitleSceneState = TitleSceneState.TitleClose;            
         }
+        */
     }
 
     /// <summary>
     /// タイトル画面を閉じ、新しいシーンを読み込む
     /// </summary>
-    private void TitleClose()
+    private IEnumerator TitleClose()
     {
+        Debug.Log("TitleClose");
+
+        // タイトルロゴを壊す
+        yield return StartCoroutine(TitleLogoSingleton.Instance.TitleLogoBreakAnimation());
+
         _transition.StartTransition();
     }
 }
