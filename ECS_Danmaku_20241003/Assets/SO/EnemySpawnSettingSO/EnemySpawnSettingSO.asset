@@ -12,180 +12,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3169f71a03c4b7d4fad708d45876a276, type: 3}
   m_Name: EnemySpawnSettingSO
   m_EditorClassIdentifier: 
-  _info:
-  - _enemyPrefab: {fileID: 8278590107479577057, guid: 47c63935f5fccd341b3f3767e6a09f63,
-      type: 3}
-    _enemySpawnSettingInfo:
+  _patterns:
+  - arrays:
+    - _enemyName: 0
       _creationDelay: 0
-      _spawnPosition:
-        x: 20
-        y: 0
-        z: 20
-  - _enemyPrefab: {fileID: 8278590107479577057, guid: 47c63935f5fccd341b3f3767e6a09f63,
-      type: 3}
-    _enemySpawnSettingInfo:
-      _creationDelay: 0
-      _spawnPosition:
-        x: -20
-        y: 0
-        z: 20
-  - _enemyPrefab: {fileID: 8435925510417071167, guid: 06ca7b2726170de4d934167f4802b3ba,
-      type: 3}
-    _enemySpawnSettingInfo:
-      _creationDelay: 0
-      _spawnPosition:
-        x: -12.5
-        y: 0
-        z: 20
-  - _enemyPrefab: {fileID: 8435925510417071167, guid: 06ca7b2726170de4d934167f4802b3ba,
-      type: 3}
-    _enemySpawnSettingInfo:
+      _spawnPointType: 0
+    - _enemyName: 0
       _creationDelay: 3
-      _spawnPosition:
-        x: 0
-        y: 0
-        z: 20
-  - _enemyPrefab: {fileID: 8435925510417071167, guid: 06ca7b2726170de4d934167f4802b3ba,
-      type: 3}
-    _enemySpawnSettingInfo:
+      _spawnPointType: 1
+    - _enemyName: 1
       _creationDelay: 6
-      _spawnPosition:
-        x: 12.5
-        y: 0
-        z: 20
-  - _enemyPrefab: {fileID: 8278590107479577057, guid: 47c63935f5fccd341b3f3767e6a09f63,
-      type: 3}
-    _enemySpawnSettingInfo:
+      _spawnPointType: 2
+    - _enemyName: 0
       _creationDelay: 9
-      _spawnPosition:
-        x: -10
-        y: 0
-        z: 20
-  - _enemyPrefab: {fileID: 8278590107479577057, guid: 47c63935f5fccd341b3f3767e6a09f63,
-      type: 3}
-    _enemySpawnSettingInfo:
+      _spawnPointType: 3
+    - _enemyName: 0
       _creationDelay: 12
-      _spawnPosition:
-        x: -5
-        y: 0
-        z: 20
-  - _enemyPrefab: {fileID: 8278590107479577057, guid: 47c63935f5fccd341b3f3767e6a09f63,
-      type: 3}
-    _enemySpawnSettingInfo:
-      _creationDelay: 15
-      _spawnPosition:
-        x: 0
-        y: 0
-        z: 20
-  - _enemyPrefab: {fileID: 8278590107479577057, guid: 47c63935f5fccd341b3f3767e6a09f63,
-      type: 3}
-    _enemySpawnSettingInfo:
-      _creationDelay: 18
-      _spawnPosition:
-        x: 5
-        y: 0
-        z: 20
-  - _enemyPrefab: {fileID: 8278590107479577057, guid: 47c63935f5fccd341b3f3767e6a09f63,
-      type: 3}
-    _enemySpawnSettingInfo:
-      _creationDelay: 21
-      _spawnPosition:
-        x: 10
-        y: 0
-        z: 20
-  - _enemyPrefab: {fileID: 8435925510417071167, guid: 06ca7b2726170de4d934167f4802b3ba,
-      type: 3}
-    _enemySpawnSettingInfo:
-      _creationDelay: 24
-      _spawnPosition:
-        x: 7.5
-        y: 0
-        z: 20
-  - _enemyPrefab: {fileID: 8435925510417071167, guid: 06ca7b2726170de4d934167f4802b3ba,
-      type: 3}
-    _enemySpawnSettingInfo:
-      _creationDelay: 24
-      _spawnPosition:
-        x: -7.5
-        y: 0
-        z: 20
-  - _enemyPrefab: {fileID: 8278590107479577057, guid: 47c63935f5fccd341b3f3767e6a09f63,
-      type: 3}
-    _enemySpawnSettingInfo:
-      _creationDelay: 33
-      _spawnPosition:
-        x: 0
-        y: 0
-        z: 20
-  - _enemyPrefab: {fileID: 8278590107479577057, guid: 47c63935f5fccd341b3f3767e6a09f63,
-      type: 3}
-    _enemySpawnSettingInfo:
-      _creationDelay: 27
-      _spawnPosition:
-        x: -5
-        y: 0
-        z: 20
-  - _enemyPrefab: {fileID: 8278590107479577057, guid: 47c63935f5fccd341b3f3767e6a09f63,
-      type: 3}
-    _enemySpawnSettingInfo:
-      _creationDelay: 27
-      _spawnPosition:
-        x: 5
-        y: 0
-        z: 20
-  - _enemyPrefab: {fileID: 8278590107479577057, guid: 47c63935f5fccd341b3f3767e6a09f63,
-      type: 3}
-    _enemySpawnSettingInfo:
-      _creationDelay: 30
-      _spawnPosition:
-        x: -10
-        y: 0
-        z: 20
-  - _enemyPrefab: {fileID: 8278590107479577057, guid: 47c63935f5fccd341b3f3767e6a09f63,
-      type: 3}
-    _enemySpawnSettingInfo:
-      _creationDelay: 30
-      _spawnPosition:
-        x: 10
-        y: 0
-        z: 20
-  - _enemyPrefab: {fileID: 8278590107479577057, guid: 47c63935f5fccd341b3f3767e6a09f63,
-      type: 3}
-    _enemySpawnSettingInfo:
-      _creationDelay: 33
-      _spawnPosition:
-        x: -5
-        y: 0
-        z: 20
-  - _enemyPrefab: {fileID: 8278590107479577057, guid: 47c63935f5fccd341b3f3767e6a09f63,
-      type: 3}
-    _enemySpawnSettingInfo:
-      _creationDelay: 33
-      _spawnPosition:
-        x: 5
-        y: 0
-        z: 20
-  - _enemyPrefab: {fileID: 8278590107479577057, guid: 47c63935f5fccd341b3f3767e6a09f63,
-      type: 3}
-    _enemySpawnSettingInfo:
-      _creationDelay: 36
-      _spawnPosition:
-        x: 0
-        y: 0
-        z: 20
-  - _enemyPrefab: {fileID: 8435925510417071167, guid: 06ca7b2726170de4d934167f4802b3ba,
-      type: 3}
-    _enemySpawnSettingInfo:
-      _creationDelay: 42
-      _spawnPosition:
-        x: -7.5
-        y: 0
-        z: 20
-  - _enemyPrefab: {fileID: 8435925510417071167, guid: 06ca7b2726170de4d934167f4802b3ba,
-      type: 3}
-    _enemySpawnSettingInfo:
-      _creationDelay: 42
-      _spawnPosition:
-        x: 7.5
-        y: 0
-        z: 20
+      _spawnPointType: 4
+  - arrays:
+    - _enemyName: 1
+      _creationDelay: 5
+      _spawnPointType: 1
+    - _enemyName: 1
+      _creationDelay: 5
+      _spawnPointType: 3

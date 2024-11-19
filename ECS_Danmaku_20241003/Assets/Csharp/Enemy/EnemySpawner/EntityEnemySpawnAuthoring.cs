@@ -1,67 +1,168 @@
 using System;
 using Unity.Entities;
 using UnityEngine;
-
-
+using Unity.Mathematics;
+using Unity.Collections;
 
 #if UNITY_EDITOR
+using System.Security.Cryptography.X509Certificates;
 using System.Collections;
-using Unity.Collections;
 using System.Collections.Generic;
 using static MoveHelper;
 using System.Security.Cryptography;
 using Unity.Entities.UniversalDelegates;
 using System.Reflection;
 using System.Linq;
-using Unity.Mathematics;
 using System.Net;
 using static EnemyHelper;
 using static UnityEngine.EventSystems.EventTrigger;
 #endif
 
 /// <summary>
-/// 敵Transform + 敵生成関連の情報の設定
+/// 敵生成設定の情報の配列
 /// </summary>
-[Serializable]
-public struct TransformEnemySpawnInfo
+public struct EnemySpawnPattern
 {
-    [SerializeField, Header("生成する敵Prefab")]
-    private Transform _enemyPrefab;
-
-    [SerializeField, Header("敵生成関連の情報")]
-    private EnemySpawnSettingInfo _enemySpawnSettingInfo;
+    [Tooltip("敵生成設定の情報の配列")]
+    public readonly FixedList64Bytes<EnemySpawnInfo> infos;
 
     /// <summary>
-    /// 生成する敵Prefab
+    /// 敵生成関連の情報の配列
     /// </summary>
-    public Transform EnemyPrefab => _enemyPrefab;
+    /// <param name="enemySpawnSettingDatas">配列の要素をFixedList64Bytesに代入</param>
+    public EnemySpawnPattern(EnemySpawnInfo[] enemySpawnSettingDatas)
+    {
+        // 初期割り当て
+        this.infos = new();
 
-    /// <summary>
-    /// 敵生成関連の情報
-    /// </summary>
-    public EnemySpawnSettingInfo EnemySpawnSettingInfo => _enemySpawnSettingInfo;
+        // 配列の要素をFixedList64Bytesに代入
+        foreach (var enemySpawnSettingData in enemySpawnSettingDatas)
+        {
+            this.infos.Add(enemySpawnSettingData);
+        }
+    }
 }
 
 /// <summary>
-/// 敵Entity + 敵生成関連の情報の設定
+/// 敵生成設定の情報の配列
 /// </summary>
-public struct EntityEnemySpawnData : IComponentData
+public struct EnemySpawnPatternArraySingletonData : IComponentData
 {
-    [Tooltip("生成する敵Entity")]
-    public readonly Entity enemyEntity;
-
-    [Tooltip("敵生成関連の情報")]
-    public readonly EnemySpawnSettingInfo enemySpawnSettingInfo;
+    [Tooltip("敵生成設定の情報の配列")]
+    public FixedList4096Bytes<EnemySpawnPattern> infos;
 
     /// <summary>
-    /// 敵Entity + 敵生成関連の情報の設定
+    /// 敵生成関連の情報の配列
     /// </summary>
-    /// <param name="enemySpawnSettingInfo">敵生成関連の情報</param>
-    /// <param name="enemyEntity">生成する敵Entity</param>
-    public EntityEnemySpawnData(Entity enemyEntity, EnemySpawnSettingInfo enemySpawnSettingInfo)
+    /// <param name="enemySpawnInfoArrayDatas">配列の要素をFixedList4096Bytesに代入</param>
+    public EnemySpawnPatternArraySingletonData(EnemySpawnPatternArray[] enemySpawnInfoArrayDatas)
     {
-        this.enemyEntity = enemyEntity;
-        this.enemySpawnSettingInfo = enemySpawnSettingInfo;
+        // 初期割り当て
+        this.infos = new();
+        var tempInfos = new FixedList4096Bytes<EnemySpawnPattern>();
+
+        if (enemySpawnInfoArrayDatas == null)
+        {
+            Debug.LogError("enemySpawnInfoArrayDatasがnull！");
+            return;
+        }
+
+        for (int i = 0; i < enemySpawnInfoArrayDatas.Length; i++)
+        {
+            //var jfoa = new EnemySpawnInfo[enemySpawnInfoArrayDatas.Length];
+            var jfoa = new EnemySpawnInfo[enemySpawnInfoArrayDatas[i].arrays.Length];
+
+            for (int j = 0; j < enemySpawnInfoArrayDatas[i].arrays.Length; j++)
+            {
+                jfoa[j] = enemySpawnInfoArrayDatas[i].arrays[j];
+            }
+
+            var koda = new EnemySpawnPattern(jfoa);
+            tempInfos.Add(koda);
+        }
+
+        // 配列の要素をFixedList4096Bytesに代入
+        this.infos = tempInfos;
+    }
+}
+
+/// <summary>
+/// 生成位置の情報（シングルトン前提）
+/// </summary>
+public struct SpawnPointSingletonData : IComponentData
+{
+    /// <summary>
+    /// 生成位置の種類
+    /// </summary>
+    public enum SpawnPointType
+    {
+        [Tooltip("左")] Left,
+        [Tooltip("中心と左の間")] LeftSpacer,
+        [Tooltip("中心")] Center,
+        [Tooltip("中心と右の間")] RightSpacer,
+        [Tooltip("右")] Right
+    }
+
+    [Tooltip("左の生成位置")]
+    public readonly float3 leftPoint;
+
+    [Tooltip("中心と左の間の生成位置")]
+    public readonly float3 leftSpacerPoint;
+
+    [Tooltip("中心の生成位置")]
+    public readonly float3 centerPoint;
+
+    [Tooltip("中心と右の間の生成位置")]
+    public readonly float3 rightSpacerPoint;
+
+    [Tooltip("右の生成位置")]
+    public readonly float3 rightPoint;
+
+    /// <summary>
+    /// 生成位置
+    /// </summary>
+    /// <param name="leftPoint">左の生成位置</param>
+    /// <param name="rightPoint">右の生成位置</param>
+    public SpawnPointSingletonData(float3 leftPoint, float3 rightPoint)
+    {
+        this.leftPoint = leftPoint;
+        this.rightPoint = rightPoint;
+
+        // /2を定義
+        float averageFactor = 2.0f;
+
+        // 左右以外の生成位置を計算
+        centerPoint = (leftPoint + rightPoint) / averageFactor;
+        leftSpacerPoint = (leftPoint + centerPoint) / averageFactor;
+        rightSpacerPoint = (rightPoint + centerPoint) / averageFactor;
+    }
+
+    /// <summary>
+    /// SpawnPointTypeに対応する生成位置を返す
+    /// </summary>
+    /// <returns>SpawnPointTypeに対応する生成位置</returns>
+    public float3? GetSpawnPoint(SpawnPointType spawnPointType)
+    {
+        switch (spawnPointType)
+        {
+            case SpawnPointType.Left:
+                return leftPoint;
+
+            case SpawnPointType.LeftSpacer:
+                return leftSpacerPoint;
+
+            case SpawnPointType.Center:
+                return centerPoint;
+
+            case SpawnPointType.RightSpacer:
+                return rightSpacerPoint;
+
+            case SpawnPointType.Right:
+                return rightPoint;
+
+            default:
+                return null;
+        }
     }
 }
 
@@ -71,24 +172,33 @@ public struct EntityEnemySpawnData : IComponentData
 public class EntityEnemySpawnAuthoring : SingletonMonoBehaviour<EntityEnemySpawnAuthoring>
 {
     [SerializeField]
-    private EnemySpawnSettingSO _enemySpawnSettingSO = null;
+    private EnemySpawnPatternSettingSO _enemySpawnSettingSO = null;
+
+    [SerializeField, Header("左の生成位置")]
+    private float3 _leftPoint = float3.zero;
+
+    [SerializeField, Header("右の生成位置")]
+    private float3 _rightPoint = float3.zero;
 
     public class Baker : Baker<EntityEnemySpawnAuthoring>
     {
         public override void Bake(EntityEnemySpawnAuthoring src)
         {
-            foreach (var info in src._enemySpawnSettingSO.Info)
-            {
-                // 敵PrefabをEntityに変換し、Dataのコンストラクタに渡す
-                var enemyEntity = GetEntity(info.EnemyPrefab, TransformUsageFlags.Dynamic);
-                var entityEnemySpawnInfo = new EntityEnemySpawnData(enemyEntity, info.EnemySpawnSettingInfo);
+            // 生成位置の情報を保持するシングルトンを作成
+            var spawnPointSingletonData = new SpawnPointSingletonData
+                (
+                    src._leftPoint,
+                    src._rightPoint
+                );
 
-                // 空のEntityを作成
-                var tmpEnemy = CreateAdditionalEntity(TransformUsageFlags.None);
+            var entity = GetEntity(TransformUsageFlags.None);
+            AddComponent(entity, spawnPointSingletonData);
 
-                // 空のEntityにEntityEnemySpawnInfoをアタッチ
-                AddComponent(tmpEnemy, entityEnemySpawnInfo);
-            }
+            // 敵生成設定の配列の配列
+            var aaaa = new EnemySpawnPatternArraySingletonData(src._enemySpawnSettingSO.Patterns);
+            AddComponent(entity, aaaa);
+
+            Debug.Log("動くかの確認段階。リファクタリング必須");
         }
     }
 }

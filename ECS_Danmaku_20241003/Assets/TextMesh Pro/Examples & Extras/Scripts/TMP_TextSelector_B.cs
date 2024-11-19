@@ -103,7 +103,7 @@ namespace TMPro.Examples
                     // Get the index of the first vertex of the selected character.
                     int vertexIndex = m_TextMeshPro.textInfo.characterInfo[charIndex].vertexIndex;
 
-                    // Get a reference to the vertices array.
+                    // Get a reference to the vertices infos.
                     Vector3[] vertices = m_TextMeshPro.textInfo.meshInfo[materialIndex].vertices;
 
                     // Determine the center point of the character.
@@ -343,7 +343,7 @@ namespace TMPro.Examples
             {
                 TMP_WordInfo wInfo = m_TextMeshPro.textInfo.wordInfo[m_selectedWord];
 
-                // Get a reference to the uiVertices array.
+                // Get a reference to the uiVertices infos.
                 UIVertex[] uiVertices = m_TextMeshPro.textInfo.meshInfo.uiVertices;
 
                 // Iterate through each of the characters of the word.
@@ -371,7 +371,7 @@ namespace TMPro.Examples
 
                 TMP_WordInfo wInfo = m_TextMeshPro.textInfo.wordInfo[wordIndex];
 
-                // Get a reference to the uiVertices array.
+                // Get a reference to the uiVertices infos.
                 UIVertex[] uiVertices = m_TextMeshPro.textInfo.meshInfo.uiVertices;
 
                 // Iterate through each of the characters of the word.
