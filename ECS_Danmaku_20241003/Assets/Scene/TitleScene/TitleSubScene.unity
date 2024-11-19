@@ -122,6 +122,78 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &386336008
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 386336010}
+  - component: {fileID: 386336009}
+  m_Layer: 0
+  m_Name: MovementRangeAuthoring
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 2147483647
+  m_IsActive: 1
+--- !u!114 &386336009
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 386336008}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1db913b8dd7a1c84588a29eea8f9341e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _playerMovementRangeSingletonData:
+    playerMovementRange:
+      movementRange:
+        x: 18
+        y: 0
+        z: 10
+      movementRangeCenter:
+        x: 0
+        y: 0
+        z: 0
+    bulletMovementRange:
+      movementRange:
+        x: 25
+        y: 0
+        z: 15
+      movementRangeCenter:
+        x: 0
+        y: 0
+        z: 0
+    enemyMovementRange:
+      movementRange:
+        x: 25
+        y: 0
+        z: 15
+      movementRangeCenter:
+        x: 0
+        y: 0
+        z: 0
+--- !u!4 &386336010
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 386336008}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1608897932
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -133,12 +205,12 @@ PrefabInstance:
     - target: {fileID: 5290772082677936250, guid: f8b88333bdf881c4c8613d06cf3e6418,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 20
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5290772082677936250, guid: f8b88333bdf881c4c8613d06cf3e6418,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5290772082677936250, guid: f8b88333bdf881c4c8613d06cf3e6418,
         type: 3}
@@ -218,7 +290,7 @@ Transform:
   m_GameObject: {fileID: 1866377904}
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 20, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -265,3 +337,4 @@ SceneRoots:
   m_Roots:
   - {fileID: 1866377905}
   - {fileID: 1608897932}
+  - {fileID: 386336010}

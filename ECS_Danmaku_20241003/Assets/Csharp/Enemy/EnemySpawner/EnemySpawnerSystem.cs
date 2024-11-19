@@ -6,7 +6,10 @@ using Unity.Transforms;
 using UnityEngine;
 using static EnemyHelper;
 
+using Random = UnityEngine.Random;
+
 #if UNITY_EDITOR
+using System.Linq.Expressions;
 using Unity.Jobs;
 using System;
 using System.Collections;
@@ -24,52 +27,58 @@ public partial struct EnemySpawnerSystem : ISystem
 {
     private float _elapsed;
 
+    EnemySpawnPattern currentPattern;
+    int currentInfoNumber;
+
+    int bossNumber;
+
     [Tooltip("EnemySpawnerSystemが有効か")]
     public bool isSelfEnable;
 
+    public void OnCreate(ref SystemState state)
+    {
+        bossNumber = 5;
+    }
+
     public void OnUpdate(ref SystemState state)
     {
-        // EntityQueryDesc を使って `Disabled` コンポーネントを除外
-        var queryDesc = new EntityQueryDesc
-        {
-            All = new ComponentType[] { typeof(EntityEnemySpawnData), typeof(Disabled) }
-        };
-
-        // クエリ作成
-        var query = state.EntityManager.CreateEntityQuery(queryDesc);
-
-        // エンティティの数を取得
-        int entityEnemySpawnCount = query.CalculateEntityCount();
-
-        // クエリ作成
-        var enabledEnemyQuery = state.EntityManager.CreateEntityQuery(typeof(EntityEnemySpawnData));
-
-        // エンティティの数を取得
-        int enabledEnemySpawnCount = enabledEnemyQuery.CalculateEntityCount();
-
-
-        // まだEntityEnemySpawnDataが存在していない
-        if (enabledEnemySpawnCount <= 0)
-        {
-            if (entityEnemySpawnCount <= 0)
-            {
-                return;
-            }
-        }
-
-
+        // int bossNumber = 5;
+        Debug.LogError("マジックナンバー");
 
         _elapsed += SystemAPI.Time.DeltaTime;
 
         var ecb = new EntityCommandBuffer(Allocator.Temp);
 
         // Entityと一緒にDataを取得する
-        foreach (var (entityEnemySpawnData, entity) in SystemAPI.Query<EntityEnemySpawnData>().WithEntityAccess())
+        foreach (var (array, entity) in SystemAPI.Query<EnemySpawnPatternArraySingletonData>().WithEntityAccess())
         {
-            // 経過時間が敵生成時間未満だったらコンテニュー
-            if (entityEnemySpawnData.enemySpawnSettingInfo.CreationDelay > _elapsed) { continue; }
+            if (currentPattern.Equals(default) || currentPattern.infos.Length <= currentInfoNumber)
+            {
+                var patternNumber = Random.Range(0, array.infos.Length);
 
-            var enemyEntity = entityEnemySpawnData.enemyEntity;
+                currentPattern = array.infos[patternNumber];
+
+                currentInfoNumber = 0;
+                _elapsed = 0.0f;
+                bossNumber--;
+            }
+
+            // 0以下になった
+            if (bossNumber <= 0)
+            {
+                Debug.Log("ボスを出現させる");
+                return;
+            }
+
+            var currentInfo = currentPattern.infos[currentInfoNumber];
+
+            // 経過時間が敵生成時間未満だったらコンテニュー
+            if (currentInfo.CreationDelay > _elapsed) { continue; }
+
+            currentInfoNumber++;
+
+            // EnemyNameに対応する敵Entityを取得
+            var enemyEntity = GetEnemyEntity(ref state, currentInfo.MyEnemyName);
 
             // 敵EntityがNullだったらコンテニュー
             if (enemyEntity == Entity.Null) { continue; }
@@ -77,28 +86,56 @@ public partial struct EnemySpawnerSystem : ISystem
             // 敵を生成
             var enemy = ecb.Instantiate(enemyEntity);
 
-            // 今回使用した敵生成情報を検索対象から外す
-            ecb.AddComponent<Disabled>(entity);
-
             // ecbでDataをアタッチする
             ecb.AddComponent(enemy, new EnemyTag());
 
-            // LocalTransformを設定する
-            ecb.SetComponent(enemy, new LocalTransform
+            // SpawnPointSingletonDataが存在していた
+            if (SystemAPI.HasSingleton<SpawnPointSingletonData>())
             {
-                Position = entityEnemySpawnData.enemySpawnSettingInfo.SpawnPosition,
-                Rotation = quaternion.identity,
-                Scale = 1.0f
-            });
-        }
+                // シングルトンデータの取得
+                var spawnPointSingleton = SystemAPI.GetSingleton<SpawnPointSingletonData>();
 
-        if (enabledEnemySpawnCount <= 0)
-        {
-            // ゲームオーバー処理を開始する
-            GameOver.Instance.OnGameOver();
+                // 生成位置を取得
+                var spawnPoint = spawnPointSingleton.GetSpawnPoint
+                    (
+                        currentInfo.SpawnPointType
+                    );
+
+                // nullチェック。nullだったら原点に生成
+                spawnPoint = (spawnPoint == null) ? float3.zero : spawnPoint;
+
+                // LocalTransformを設定する
+                ecb.SetComponent(enemy, new LocalTransform
+                {
+                    Position = (float3)spawnPoint,
+                    Rotation = quaternion.identity,
+                    Scale = 1.0f
+                });
+            }
         }
 
         ecb.Playback(state.EntityManager);
         ecb.Dispose();
+    }
+
+    /// <summary>
+    /// EnemyNameに対応する敵Entityを取得する
+    /// </summary>
+    /// <param name="enemyName">敵Entityの名称</param>
+    /// <returns>EnemyNameに対応する敵Entity</returns>
+    private Entity GetEnemyEntity(ref SystemState systemState, EnemyName enemyName)
+    {
+        foreach (var enemyEntityData in SystemAPI.Query<EnemyEntityData>())
+        {
+            Debug.Log($"enemyEntityData:{enemyEntityData.enemyName}, enemyName:{enemyName}");
+
+            if (enemyEntityData.enemyName == enemyName)
+            {
+                return enemyEntityData.enemyEntity;
+            }
+        }
+
+        // 見つからなかった
+        return Entity.Null;
     }
 }

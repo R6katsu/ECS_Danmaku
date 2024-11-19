@@ -203,8 +203,11 @@ public partial class PlayerSystem : SystemBase
         // ”½‰f
         playerTransform.Position = currentPosition;
 
-        // ƒJƒƒ‰ˆÊ’u‚É”½‰f
-        GameManager.Instance.GameCameraPosition = currentPosition;
+        if (GameManager.Instance != null)
+        {
+            // ƒJƒƒ‰ˆÊ’u‚É”½‰f
+            GameManager.Instance.GameCameraPosition = currentPosition;
+        }
 
         // •ÏX‚ğ”½‰f
         SystemAPI.SetComponent(playerEntity, playerTransform);

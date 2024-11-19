@@ -5,5 +5,6 @@ using UnityEngine;
 /// </summary>
 public enum EnemyName : byte
 {
-    [Tooltip("")] Test
+    [Tooltip("")] Enemy,
+    [Tooltip("")] TapShooting_Rotation
 }
