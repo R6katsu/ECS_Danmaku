@@ -9,6 +9,7 @@ using static BulletHelper;
 using static EnemyHelper;
 using static HealthPointDatas;
 using Unity.Transforms;
+using static EntityCampsHelper;
 
 /// <summary>
 /// 接触した際の処理を呼び出す
@@ -24,6 +25,7 @@ public partial struct TriggerSystem : ISystem
     private ComponentLookup<LocalTransform> _localTransformLookup;
     private ComponentLookup<VFXCreationData> _vfxCreationLookup;
     private ComponentLookup<AudioPlayData> _audioPlayLookup;
+    private ComponentLookup<BossEnemyCampsTag> _bossEnemyCampsLookup;
 
     public void OnCreate(ref SystemState state)
     {
@@ -36,6 +38,7 @@ public partial struct TriggerSystem : ISystem
         _localTransformLookup = state.GetComponentLookup<LocalTransform>(false);
         _vfxCreationLookup = state.GetComponentLookup<VFXCreationData>(false);
         _audioPlayLookup = state.GetComponentLookup<AudioPlayData>(false);
+        _bossEnemyCampsLookup = state.GetComponentLookup<BossEnemyCampsTag>(false);
     }
 
     public void OnUpdate(ref SystemState state)
@@ -51,6 +54,7 @@ public partial struct TriggerSystem : ISystem
         _localTransformLookup.Update(ref state);
         _vfxCreationLookup.Update(ref state);
         _audioPlayLookup.Update(ref state);
+        _bossEnemyCampsLookup.Update(ref state);
 
         // PLに弾が当たった時の処理を呼び出す
         var playerDamage = new PlayerDamageTriggerJob()
@@ -82,7 +86,8 @@ public partial struct TriggerSystem : ISystem
             remainingPierceCountLookup = _remainingPierceCountLookup,
             localTransformLookup = _localTransformLookup,
             vfxCreationLookup = _vfxCreationLookup,
-            audioPlayLookup = _audioPlayLookup
+            audioPlayLookup = _audioPlayLookup,
+            bossEnemyCampsLookup = _bossEnemyCampsLookup
         };
 
         // 前のジョブを完了する

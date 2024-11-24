@@ -22,6 +22,9 @@ static public class EntityCampsHelper
             case EntityCampsType.Player:
                 return typeof(PlayerCampsTag);
 
+            case EntityCampsType.BossEnemy:
+                return typeof(BossEnemyCampsTag);
+
             case EntityCampsType.Unknown:
             default:
                 return typeof(UnknownCampsTag);
@@ -35,7 +38,8 @@ static public class EntityCampsHelper
     {
         Unknown,
         Enemy,
-        Player
+        Player,
+        BossEnemy
     }
 
     /// <summary>
@@ -69,4 +73,9 @@ static public class EntityCampsHelper
     /// PLêwâc
     /// </summary>
     public struct PlayerCampsTag : IComponentData { }
+
+    /// <summary>
+    /// É{ÉXìGêwâc
+    /// </summary>
+    public struct BossEnemyCampsTag : IComponentData { }
 }

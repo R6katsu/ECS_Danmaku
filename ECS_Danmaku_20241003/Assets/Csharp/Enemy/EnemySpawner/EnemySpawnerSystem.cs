@@ -7,6 +7,8 @@ using UnityEngine;
 using static EnemyHelper;
 
 using Random = UnityEngine.Random;
+using static SpawnPointSingletonData;
+
 
 #if UNITY_EDITOR
 using System.Linq.Expressions;
@@ -37,14 +39,12 @@ public partial struct EnemySpawnerSystem : ISystem
 
     public void OnCreate(ref SystemState state)
     {
-        bossNumber = 5;
+        bossNumber = 2;
+        Debug.LogError("マジックナンバー");
     }
 
     public void OnUpdate(ref SystemState state)
     {
-        // int bossNumber = 5;
-        Debug.LogError("マジックナンバー");
-
         _elapsed += SystemAPI.Time.DeltaTime;
 
         var ecb = new EntityCommandBuffer(Allocator.Temp);
@@ -66,8 +66,37 @@ public partial struct EnemySpawnerSystem : ISystem
             // 0以下になった
             if (bossNumber <= 0)
             {
-                Debug.Log("ボスを出現させる");
-                return;
+                if (bossNumber != 0) { continue; }
+
+                // ボスを生成
+                var bossEnemy = ecb.Instantiate(array.bossEnemyEntity);
+
+                // SpawnPointSingletonDataが存在していた
+                if (SystemAPI.HasSingleton<SpawnPointSingletonData>())
+                {
+                    // シングルトンデータの取得
+                    var spawnPointSingleton = SystemAPI.GetSingleton<SpawnPointSingletonData>();
+
+                    // 生成位置を取得
+                    var spawnPoint = spawnPointSingleton.GetSpawnPoint
+                        (
+                            SpawnPointType.Center
+                        );
+
+                    // nullチェック。nullだったら原点に生成
+                    spawnPoint = (spawnPoint == null) ? float3.zero : spawnPoint;
+
+                    // LocalTransformを設定する
+                    ecb.SetComponent(bossEnemy, new LocalTransform
+                    {
+                        Position = (float3)spawnPoint,
+                        Rotation = quaternion.identity,
+                        Scale = 1.0f
+                    });
+                }
+
+                bossNumber--;
+                continue;
             }
 
             var currentInfo = currentPattern.infos[currentInfoNumber];
@@ -85,9 +114,6 @@ public partial struct EnemySpawnerSystem : ISystem
 
             // 敵を生成
             var enemy = ecb.Instantiate(enemyEntity);
-
-            // ecbでDataをアタッチする
-            ecb.AddComponent(enemy, new EnemyTag());
 
             // SpawnPointSingletonDataが存在していた
             if (SystemAPI.HasSingleton<SpawnPointSingletonData>())

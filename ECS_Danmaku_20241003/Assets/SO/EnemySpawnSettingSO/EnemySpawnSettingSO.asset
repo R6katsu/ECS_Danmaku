@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3169f71a03c4b7d4fad708d45876a276, type: 3}
   m_Name: EnemySpawnSettingSO
   m_EditorClassIdentifier: 
+  _bossEnemyPrefab: {fileID: 3532004193051288537, guid: 636e984adad873b40bec88be066ba522,
+    type: 3}
   _patterns:
   - arrays:
     - _enemyName: 0

@@ -16,10 +16,6 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
     // ゲームが開始するまではジングルを再生
     // PLを動かせるようになったらBGMを再生する
 
-    // PLの移動範囲を画面内に収める
-    // カメラを斜め後ろの画角にする。この場合、敵の出現位置も丸見えになる。横から出てくるようにする？
-    // いや、それは表現が難しそうなのでやめる。正面からでいい。
-
     /// <summary>
     /// ゲームの状態
     /// </summary>
@@ -28,7 +24,18 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
         Loading,
         Start,
         Game,
+        GameClear,
+        GameOver,
         End
+    }
+
+    /// <summary>
+    /// UIの名称
+    /// </summary>
+    private enum UIName : int
+    {
+        GameClearUI,
+        GameOverUI
     }
 
     [SerializeField, Header("経過時間のテキスト")]
@@ -101,11 +108,7 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
     {
         switch (MyGameState)
         {
-            case GameState.Loading:
-                // None。初期値
-                break;
-
-            case GameState.Start:
+             case GameState.Start:
                 // BGM開始
                 AudioManager.Instance.PlayBGM(0);
 
@@ -119,7 +122,19 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
                 StartCoroutine(Game());
                 break;
 
+            case GameState.GameClear:
+                ActivatableUIDirector.Instance.ActivateSingleUIElement((int)UIName.GameClearUI);
+                break;
+
+            case GameState.GameOver:
+                ActivatableUIDirector.Instance.ActivateSingleUIElement((int)UIName.GameOverUI);
+                break;
+
             case GameState.End:
+                break;
+
+            case GameState.Loading:
+            default:
                 break;
         }
     }
