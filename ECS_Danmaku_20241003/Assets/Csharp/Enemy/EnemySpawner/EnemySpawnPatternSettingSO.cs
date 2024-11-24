@@ -59,8 +59,16 @@ public struct EnemySpawnPatternArray
 [CreateAssetMenu(fileName = "EnemySpawnPatternSettingSO", menuName = "ScriptableObject/EnemySpawnPatternSettingSO")]
 public class EnemySpawnPatternSettingSO : ScriptableObject
 {
+    [SerializeField, Header("ボス敵Prefab")]
+    private Transform _bossEnemyPrefab = null;
+
     [SerializeField, Header("敵生成関連の情報の配列の配列の配列")]
     private EnemySpawnPatternArray[] _patterns = null;
+
+    /// <summary>
+    /// ボス敵Prefab
+    /// </summary>
+    public Transform BossEnemyPrefab => _bossEnemyPrefab;
 
     /// <summary>
     /// 敵生成関連の情報の配列の配列の配列

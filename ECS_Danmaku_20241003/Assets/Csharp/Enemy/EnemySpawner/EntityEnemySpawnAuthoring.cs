@@ -51,12 +51,17 @@ public struct EnemySpawnPatternArraySingletonData : IComponentData
     [Tooltip("敵生成設定の情報の配列")]
     public FixedList4096Bytes<EnemySpawnPattern> infos;
 
+    [Tooltip("ボス敵Entity")]
+    public readonly Entity bossEnemyEntity;
+
     /// <summary>
     /// 敵生成関連の情報の配列
     /// </summary>
     /// <param name="enemySpawnInfoArrayDatas">配列の要素をFixedList4096Bytesに代入</param>
-    public EnemySpawnPatternArraySingletonData(EnemySpawnPatternArray[] enemySpawnInfoArrayDatas)
+    public EnemySpawnPatternArraySingletonData(EnemySpawnPatternArray[] enemySpawnInfoArrayDatas, Entity bossEnemyEntity)
     {
+        this.bossEnemyEntity = bossEnemyEntity;
+
         // 初期割り当て
         this.infos = new();
         var tempInfos = new FixedList4096Bytes<EnemySpawnPattern>();
@@ -194,8 +199,10 @@ public class EntityEnemySpawnAuthoring : SingletonMonoBehaviour<EntityEnemySpawn
             var entity = GetEntity(TransformUsageFlags.None);
             AddComponent(entity, spawnPointSingletonData);
 
+            var bossEntity = GetEntity(src._enemySpawnSettingSO.BossEnemyPrefab, TransformUsageFlags.None);
+
             // 敵生成設定の配列の配列
-            var aaaa = new EnemySpawnPatternArraySingletonData(src._enemySpawnSettingSO.Patterns);
+            var aaaa = new EnemySpawnPatternArraySingletonData(src._enemySpawnSettingSO.Patterns, bossEntity);
             AddComponent(entity, aaaa);
 
             Debug.Log("動くかの確認段階。リファクタリング必須");

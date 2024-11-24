@@ -113,7 +113,7 @@ static public partial class TriggerJobs
                 if (isKilled)
                 {
                     // ゲームオーバー処理を開始する
-                    GameOver.Instance.OnGameOver();
+                    GameManager.Instance.MyGameState = GameManager.GameState.GameOver;
 
                     // EntityBがVFXCreationDataを有していた
                     if (vfxCreationLookup.HasComponent(entityB))
@@ -149,6 +149,7 @@ static public partial class TriggerJobs
         public ComponentLookup<LocalTransform> localTransformLookup;
         public ComponentLookup<VFXCreationData> vfxCreationLookup;
         public ComponentLookup<AudioPlayData> audioPlayLookup;
+        public ComponentLookup<BossEnemyCampsTag> bossEnemyCampsLookup;
 
         public void Execute(TriggerEvent triggerEvent)
         {
@@ -223,15 +224,23 @@ static public partial class TriggerJobs
                     audioPlayLookup[entityB] = audioPlay;
                 }
 
-                // EntityBがVFXCreationDataを有していた
-                if (vfxCreationLookup.HasComponent(entityB))
+                // 倒された
+                if (isKilled)
                 {
-                    var vfxCreation = vfxCreationLookup[entityB];
-
-                    if (isKilled)
+                    // EntityBがVFXCreationDataを有していた
+                    if (vfxCreationLookup.HasComponent(entityB))
                     {
+                        var vfxCreation = vfxCreationLookup[entityB];
+
                         vfxCreation.Position = position;
                         vfxCreationLookup[entityB] = vfxCreation;
+                    }
+
+                    // ボス敵だった
+                    if (bossEnemyCampsLookup.HasComponent(entityB))
+                    {
+                        // ボスが倒されたためゲームクリア
+                        GameManager.Instance.MyGameState = GameManager.GameState.GameClear;
                     }
                 }
             }
