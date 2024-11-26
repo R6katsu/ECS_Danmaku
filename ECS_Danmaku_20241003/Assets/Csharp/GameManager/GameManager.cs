@@ -124,10 +124,14 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
 
             case GameState.GameClear:
                 ActivatableUIDirector.Instance.ActivateSingleUIElement((int)UIName.GameClearUI);
+
+                GameSceneUIDirector.Instance.ActivateSingleUIControllerElement(0);
                 break;
 
             case GameState.GameOver:
                 ActivatableUIDirector.Instance.ActivateSingleUIElement((int)UIName.GameOverUI);
+
+                GameSceneUIDirector.Instance.ActivateSingleUIControllerElement(0);
                 break;
 
             case GameState.End:
