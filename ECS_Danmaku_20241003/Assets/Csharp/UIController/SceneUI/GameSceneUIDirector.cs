@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -34,10 +36,6 @@ public class GameSceneUIDirector : SingletonMonoBehaviour<GameSceneUIDirector>
 #endif
     }
 
-    // GameEndのUIControllerを有効にする
-    // また、UIControllerの現在選択中の要素番号(x,y)を保持する
-    // GameEndはゲームクリアとゲームオーバーの両方に使い回す
-
     /// <summary>
     /// 単一のUI要素を有効化する。<br/>
     /// 使い方：関数を実行する側でenumを実装、intに変換してください。
@@ -54,29 +52,8 @@ public class GameSceneUIDirector : SingletonMonoBehaviour<GameSceneUIDirector>
             return;
         }
 
-        // 全てのUIを無効化
-        DisableAllUIController();
+        var uiController = _activatableUIControllerElements[elementNumber];
 
-        // 対応するUI要素を有効化
-        _activatableUIControllerElements[elementNumber].gameObject.SetActive(true);
-
-
-
-        // 選択された要素番号に登録されたイベントを実行する必要がある
-        // gameObject.SetActive(true)　ではない。Invokeをする？
-        // Enterで実行なども実装する
-        // UIの操作が有効になった場合、決定ボタンを押した時にこの関数を呼び出す処理を追加する？
-    }
-
-    /// <summary>
-    /// 全てのUIを無効化
-    /// </summary>
-    public void DisableAllUIController()
-    {
-        // 全てのUIを無効化
-        foreach (var uiElement in _activatableUIControllerElements)
-        {
-            uiElement.gameObject.SetActive(false);
-        }
+        uiController.Enable();
     }
 }
