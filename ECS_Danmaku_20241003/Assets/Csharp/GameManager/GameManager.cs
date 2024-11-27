@@ -41,9 +41,6 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
     [SerializeField, Header("経過時間のテキスト")]
     private TextMeshProUGUI _elapsedTimeUGUI = null;
 
-    [SerializeField, Header("ゲームカメラ")]
-    private Camera _gameCamera = null;
-
     private GameState _gameState = 0;
 
     [Tooltip("経過時間")]
@@ -51,12 +48,6 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
 
     [Tooltip("現在時刻")]
     private int _currentTime = 0;
-
-    [Tooltip("ゲームカメラの位置")]
-    private Vector3 _gameCameraPosition = Vector3.zero;
-
-    [Tooltip("基準点からズレたカメラの位置")]
-    private Vector3 _cameraOffset = Vector3.zero;
 
     /// <summary>
     /// ゲームの状態
@@ -74,26 +65,6 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
                 ChangeGameState();
             }
         }
-    }
-
-    public float3 GameCameraPosition
-    {
-        set
-        {
-            if (_gameCameraPosition != (Vector3)value)
-            {
-                _gameCameraPosition = value;
-
-                // 移動をカメラ位置に反映
-                _gameCameraPosition.z = 0;
-                _gameCamera.transform.position = _gameCameraPosition + _cameraOffset;
-            }
-        }
-    }
-
-    private void OnEnable()
-    {
-        _cameraOffset = _gameCamera.transform.position;
     }
 
     private void Start()
