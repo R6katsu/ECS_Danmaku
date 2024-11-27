@@ -42,7 +42,9 @@ public partial class PlayerSystem : SystemBase
         // Horizontalに割り当てる
         var horizontal = _playerInput.Player.Horizontal;
         horizontal.started += Horizontal;
+        horizontal.started += TiltOnMoveStart;
         horizontal.canceled += Horizontal;
+        horizontal.canceled += TiltOnMoveEnd;
 
         // Verticalに割り当てる
         var vertical = _playerInput.Player.Vertical;
@@ -203,12 +205,6 @@ public partial class PlayerSystem : SystemBase
         // 反映
         playerTransform.Position = currentPosition;
 
-        if (GameManager.Instance != null)
-        {
-            // カメラ位置に反映
-            GameManager.Instance.GameCameraPosition = currentPosition;
-        }
-
         // 変更を反映
         SystemAPI.SetComponent(playerEntity, playerTransform);
     }
@@ -236,5 +232,21 @@ public partial class PlayerSystem : SystemBase
         // 変更を適用
         SystemAPI.SetComponent(playerBulletEntity, localTransform);
         SystemAPI.SetComponent(playerEntity, playerSingleton);
+    }
+
+    /// <summary>
+    /// 移動時に体を傾ける処理を開始
+    /// </summary>
+    public void TiltOnMoveStart(InputAction.CallbackContext context)
+    {
+        Debug.Log("移動時に体を傾ける処理を開始");
+    }
+
+    /// <summary>
+    /// 移動時に体を傾ける処理を終了
+    /// </summary>
+    public void TiltOnMoveEnd(InputAction.CallbackContext context)
+    {
+        Debug.Log("移動時に体を傾ける処理を終了");
     }
 }
