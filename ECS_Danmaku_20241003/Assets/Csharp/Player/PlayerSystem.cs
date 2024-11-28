@@ -3,6 +3,11 @@ using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Unity.Mathematics;
+using static UnityEngine.Rendering.DebugUI;
+using Unity.Collections;
+using System;
+
+
 
 #if UNITY_EDITOR
 using System.Collections;
@@ -159,6 +164,9 @@ public partial class PlayerSystem : SystemBase
     /// <param name="playerTransform">PLのLocalTransform</param>
     public void PlayerMove(float delta, Entity playerEntity, PlayerSingletonData playerSingleton, LocalTransform playerTransform)
     {
+        // 入力がなかった
+        if (_verticalValue == 0.0f && _horizontalValue == 0.0f) { return; }
+
         // MovementRangeSingletonDataが存在しなかった
         if (!SystemAPI.HasSingleton<MovementRangeSingletonData>()) { return; }
 
@@ -237,9 +245,32 @@ public partial class PlayerSystem : SystemBase
     /// <summary>
     /// 移動時に体を傾ける処理を開始
     /// </summary>
-    public void TiltOnMoveStart(InputAction.CallbackContext context)
+    private void TiltOnMoveStart(InputAction.CallbackContext context)
     {
-        Debug.Log("移動時に体を傾ける処理を開始");
+        // PlayerSingletonDataが存在しなかった
+        if (!SystemAPI.HasSingleton<PlayerSingletonData>()) { return; }
+
+        // シングルトンデータの取得
+        var playerSingleton = SystemAPI.GetSingleton<PlayerSingletonData>();
+
+        // PlayerSingletonDataが持つEntityを取得
+        Entity modelEntity = playerSingleton.playerModelEntity;
+
+        // LocalTransformを所持していなかった
+        if (!SystemAPI.HasComponent<LocalTransform>(modelEntity)) { return; }
+
+        // ModelからLocalTransformを取得
+        var playerTransform = SystemAPI.GetComponent<LocalTransform>(modelEntity);
+
+        // 1、0、-1の整数に変換
+        var dir = (int)math.sign(_horizontalValue);
+
+        var aaa = 30;
+        // Y軸を定義する必要もある
+
+        // 変更を適用
+        playerTransform.Rotation = quaternion.EulerXYZ(0, math.radians(aaa * dir), 0);
+        SystemAPI.SetComponent(modelEntity, playerTransform);
     }
 
     /// <summary>
@@ -247,6 +278,26 @@ public partial class PlayerSystem : SystemBase
     /// </summary>
     public void TiltOnMoveEnd(InputAction.CallbackContext context)
     {
-        Debug.Log("移動時に体を傾ける処理を終了");
+        // PlayerSingletonDataが存在しなかった
+        if (!SystemAPI.HasSingleton<PlayerSingletonData>()) { return; }
+
+        // シングルトンデータの取得
+        var playerSingleton = SystemAPI.GetSingleton<PlayerSingletonData>();
+
+        // PlayerSingletonDataが持つEntityを取得
+        Entity modelEntity = playerSingleton.playerModelEntity;
+
+        // LocalTransformを所持していなかった
+        if (!SystemAPI.HasComponent<LocalTransform>(modelEntity)) { return; }
+
+        // ModelからLocalTransformを取得
+        var playerTransform = SystemAPI.GetComponent<LocalTransform>(modelEntity);
+
+        // Y軸を回転
+        float3 rotationEuler = float3.zero;
+        playerTransform.Rotation = quaternion.EulerXYZ(0, 0, 0);
+
+        // 変更を適用
+        SystemAPI.SetComponent(modelEntity, playerTransform);
     }
 }

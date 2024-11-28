@@ -39,12 +39,18 @@ public partial struct EnemySpawnerSystem : ISystem
 
     public void OnCreate(ref SystemState state)
     {
-        bossNumber = 2;
-        Debug.LogError("マジックナンバー");
+        Initialize();
     }
 
     public void OnUpdate(ref SystemState state)
     {
+        // EnemySpawnPatternArraySingletonDataが存在しなかった
+        if (!SystemAPI.HasSingleton<EnemySpawnPatternArraySingletonData>())
+        {
+            // 初期化
+            Initialize();
+        }
+
         _elapsed += SystemAPI.Time.DeltaTime;
 
         var ecb = new EntityCommandBuffer(Allocator.Temp);
@@ -163,5 +169,18 @@ public partial struct EnemySpawnerSystem : ISystem
 
         // 見つからなかった
         return Entity.Null;
+    }
+
+    /// <summary>
+    /// 初期化
+    /// </summary>
+    private void Initialize()
+    {
+        _elapsed = 0.0f;
+        currentPattern = new();
+        currentInfoNumber = 0;
+        bossNumber = 10;
+
+        Debug.LogError("マジックナンバー");
     }
 }

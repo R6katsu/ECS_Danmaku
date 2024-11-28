@@ -41,6 +41,9 @@ public struct PlayerSingletonData : IComponentData
     [Tooltip("PLÇÃíeÇÃPrefabEntity")]
     public readonly Entity playerBulletEntity;
 
+    [Tooltip("PLÇÃå©ÇΩñ⁄ÇÃEntity")]
+    public readonly Entity playerModelEntity;
+
     public double lastShotTime;
     public bool isSlowdown;
 
@@ -51,12 +54,20 @@ public struct PlayerSingletonData : IComponentData
     /// <param name="moveSlowSpeed">å∏ë¨íÜÇÃà⁄ìÆë¨ìx</param>
     /// <param name="firingInterval">éÀåÇä‘äu</param>
     /// <param name="playerBulletEntity">PLÇÃíeÇÃPrefabEntity</param>
-    public PlayerSingletonData(float moveSpeed, float moveSlowSpeed, float firingInterval, Entity playerBulletEntity)
+    public PlayerSingletonData
+        (
+        float moveSpeed,
+        float moveSlowSpeed, 
+        float firingInterval, 
+        Entity playerBulletEntity,
+        Entity playerModelEntity
+        )
     {
         this.moveSpeed = moveSpeed;
         this.slowMoveSpeed = moveSlowSpeed;
         this.firingInterval = firingInterval;
         this.playerBulletEntity = playerBulletEntity;
+        this.playerModelEntity = playerModelEntity;
 
         lastShotTime = 0.0f;
         isSlowdown = false;
@@ -89,6 +100,9 @@ public class PlayerAuthoring : SingletonMonoBehaviour<PlayerAuthoring>
     [SerializeField, Header("PLÇÃíeÇÃPrefab")]
     private Transform _playerBulletPrefab = null;
 
+    [SerializeField, Header("PLÇÃå©ÇΩñ⁄ÇÃEntity")]
+    private Transform _playerModelTransform = null;
+
     [SerializeField, Header("êwâcÇÃéÌóﬁ")]
     private EntityCampsType _campsType = 0;
 
@@ -100,14 +114,16 @@ public class PlayerAuthoring : SingletonMonoBehaviour<PlayerAuthoring>
         public override void Bake(PlayerAuthoring src)
         {
             var entity = GetEntity(TransformUsageFlags.Dynamic);
-            var PlayerBulletEntity = GetEntity(src._playerBulletPrefab, TransformUsageFlags.Dynamic);
+            var playerBulletEntity = GetEntity(src._playerBulletPrefab, TransformUsageFlags.Dynamic);
+            var playerModelEntity = GetEntity(src._playerModelTransform, TransformUsageFlags.Dynamic);
 
             var playerData = new PlayerSingletonData
             (
                 src._moveSpeed, 
                 src._slowMoveSpeed,
                 src._firingInterval,
-                PlayerBulletEntity
+                playerBulletEntity,
+                playerModelEntity
             );
 
             // DataÇÉAÉ^ÉbÉ`
