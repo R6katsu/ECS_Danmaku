@@ -676,7 +676,7 @@ SphereCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Radius: 100
+  m_Radius: 3
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &471137718
 GameObject:
@@ -1269,7 +1269,7 @@ Transform:
   m_GameObject: {fileID: 1125608280}
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0.5508, y: 0, z: 3.4044}
+  m_LocalPosition: {x: 0, y: 0, z: 3.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1811,7 +1811,7 @@ MonoBehaviour:
   _bgmAudioSource: {fileID: 1968223864}
   _seAudioSource: {fileID: 1719693006}
   _bgmClips:
-  - {fileID: 8300000, guid: 6a5b6fcac4c558e46ab57a5455eed35c, type: 3}
+  - {fileID: 8300000, guid: 9b997d898b7da7c48aeb2ee8fcd7967f, type: 3}
   _seClips:
   - {fileID: 8300000, guid: 21650a975f01c2640830f081c6b1cef1, type: 3}
   - {fileID: 8300000, guid: a2fb25ed8aba25f4ca2f393765be3571, type: 3}
