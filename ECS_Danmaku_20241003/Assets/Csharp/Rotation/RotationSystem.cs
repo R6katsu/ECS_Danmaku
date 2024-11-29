@@ -6,6 +6,7 @@ using Unity.Transforms;
 using UnityEngine;
 using static BulletHelper;
 using Unity.Mathematics;
+using Unity.Collections;
 
 #if UNITY_EDITOR
 #endif
@@ -18,11 +19,20 @@ public partial struct RotationSystem : ISystem
 {
     public void OnUpdate(ref SystemState state)
     {
-        foreach (var (rotationData, localTfm) in
+        // EntityCommandBufferÇçÏê¨
+        var ecb = new EntityCommandBuffer(Allocator.TempJob);
+
+        foreach (var (rotationData, localTfm, entity) in
              SystemAPI.Query
                  <RefRO<RotationData>,
-                 RefRW<LocalTransform>>())
+                 RefRW<LocalTransform>>()
+                 .WithEntityAccess())
         {
+            if (rotationData.ValueRO.IsDataDeletion)
+            {
+                ecb.RemoveComponent<RotationData>(entity);
+            }
+
             var axisType = rotationData.ValueRO.axisType;
             var rotationSpeed = rotationData.ValueRO.rotationSpeed;
             var rotation = localTfm.ValueRW.Rotation;
@@ -33,5 +43,9 @@ public partial struct RotationSystem : ISystem
             // âÒì]ÇîΩâf
             localTfm.ValueRW.Rotation = math.mul(rotation, quaternion.Euler(math.radians(rotationAmount)));
         }
+
+        // EntityCommandBufferÇçƒê∂
+        ecb.Playback(state.EntityManager);
+        ecb.Dispose();
     }
 }

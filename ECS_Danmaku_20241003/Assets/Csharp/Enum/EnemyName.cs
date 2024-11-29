@@ -6,5 +6,6 @@ using UnityEngine;
 public enum EnemyName : byte
 {
     [Tooltip("")] Enemy,
-    [Tooltip("")] TapShooting_Rotation
+    [Tooltip("")] TapShooting_Rotation,
+    [Tooltip("パターン終了まで余白を作る為の敵モドキ")] DummyEnemy,
 }
