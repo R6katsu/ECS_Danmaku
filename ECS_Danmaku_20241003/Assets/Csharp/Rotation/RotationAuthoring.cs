@@ -11,13 +11,20 @@ using System.Collections.Generic;
 /// ©g‚Ì‰ñ“]‚Ìî•ñ
 /// </summary>
 [Serializable]
-public struct RotationData : IComponentData
+public struct RotationData : IComponentData, IEnumerable, IDataDeletion
 {
     [Header("‰ñ“]•ûŒü"), Tooltip("‰ñ“]•ûŒü")]
     public AxisType axisType;
 
     [Header("‰ñ“]‘¬“xi•‰‚Ì’l‚Í‹t‰ñ“]j"), Tooltip("‰ñ“]‘¬“xi•‰‚Ì’l‚Í‹t‰ñ“]j")]
     public float rotationSpeed;
+
+    public bool IsDataDeletion { get; set; }
+
+    public IEnumerator GetEnumerator()
+    {
+        throw new NotImplementedException();
+    }
 }
 
 /// <summary>

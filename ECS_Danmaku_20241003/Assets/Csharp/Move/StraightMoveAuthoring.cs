@@ -24,6 +24,7 @@ public struct StraightMoveData : IComponentData
     /// 直進移動の情報
     /// </summary>
     /// <param name="moveParam">移動の設定値</param>
+    /// <param name="axisType">進行方向</param>
     public StraightMoveData(MoveParameter moveParam, AxisType axisType)
     {
         this.moveParam = moveParam;

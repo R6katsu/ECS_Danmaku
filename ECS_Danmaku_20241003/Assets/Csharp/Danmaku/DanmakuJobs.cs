@@ -9,13 +9,13 @@ using UnityEngine;
 /// <summary>
 /// 弾幕のJobSystem
 /// </summary>
-[BurstCompile]
+//[BurstCompile]
 static public partial class DanmakuJobs
 {
     /// <summary>
     /// N_Way弾を生成
     /// </summary>
-    [BurstCompile]
+    //[BurstCompile]
     public partial struct N_WayJob : IJobEntity
     {
         public EntityCommandBuffer.ParallelWriter commandBuffer;
@@ -28,6 +28,12 @@ static public partial class DanmakuJobs
             LocalToWorld localToWorld,
             [EntityIndexInQuery] int index)
         {
+            if (n_Way_DanmakuData.IsDataDeletion)
+            {
+                commandBuffer.RemoveComponent<N_Way_DanmakuData>(index, entity);
+                return;
+            }
+
             // 経過時間を加算代入
             n_Way_DanmakuData.elapsedTime += deltaTime;
 
@@ -62,7 +68,7 @@ static public partial class DanmakuJobs
                 quaternion rotation = (quaternion)Quaternion.Euler(0.0f, angle, 0.0f);
 
                 // 弾を生成
-                Entity bulletEntity = commandBuffer.Instantiate(index, n_Way_DanmakuData.bulletPrefab);
+                Entity bulletEntity = commandBuffer.Instantiate(index, n_Way_DanmakuData.bulletEntity);
 
                 // 正規化
                 quaternion normalizedRotation = math.normalize(localToWorld.Rotation);
@@ -81,7 +87,7 @@ static public partial class DanmakuJobs
     /// <summary>
     /// タップ撃ち弾幕を生成
     /// </summary>
-    [BurstCompile]
+    //[BurstCompile]
     public partial struct TapShootingJob : IJobEntity
     {
         public EntityCommandBuffer.ParallelWriter commandBuffer;
@@ -93,6 +99,12 @@ static public partial class DanmakuJobs
             LocalTransform localTfm,
             [EntityIndexInQuery] int index)
         {
+            if (tapShooting_DanmakuData.IsDataDeletion)
+            {
+                commandBuffer.RemoveComponent<TapShooting_DanmakuData>(index, entity);
+                return;
+            }
+
             // 現在の時刻が次回のワンセット開始時刻未満だった
             if (elapsedTime < tapShooting_DanmakuData.singleSetNextTime) { return; }
 

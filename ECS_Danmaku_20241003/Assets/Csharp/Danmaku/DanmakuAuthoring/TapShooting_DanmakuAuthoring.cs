@@ -10,7 +10,7 @@ using System.Collections.Generic;
 /// <summary>
 /// タップ撃ち弾幕の情報
 /// </summary>
-public struct TapShooting_DanmakuData : IComponentData
+public struct TapShooting_DanmakuData : IComponentData, IDataDeletion
 {
     [Tooltip("ワンセットでn回撃つ")]
     public readonly int shootNSingleSet;
@@ -33,6 +33,8 @@ public struct TapShooting_DanmakuData : IComponentData
     [Tooltip("次回の射撃時刻")]
     public double firingNextTime;
 
+    public bool IsDataDeletion { get; set; }
+
     /// <summary>
     /// タップ撃ち弾幕の情報
     /// </summary>
@@ -50,6 +52,8 @@ public struct TapShooting_DanmakuData : IComponentData
         currentShotCount = 0;
         singleSetNextTime = 0.0f;
         firingNextTime = 0.0f;
+
+        IsDataDeletion = false;
     }
 }
 

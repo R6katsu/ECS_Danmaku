@@ -11,7 +11,7 @@ using Unity.Mathematics;
 /// <summary>
 /// n-Way’e
 /// </summary>
-public struct N_Way_DanmakuData : IComponentData
+public struct N_Way_DanmakuData : IComponentData, IDataDeletion
 {
     [Tooltip("î‚Ì‘å‚«‚³")]
     public readonly int fanAngle;
@@ -22,14 +22,16 @@ public struct N_Way_DanmakuData : IComponentData
     [Tooltip("”­ËŠÔŠu")]
     public readonly float firingInterval;
 
-    [Tooltip("’e‚ÌPrefab")]
-    public readonly Entity bulletPrefab;
+    [Tooltip("’e‚ÌEntity")]
+    public readonly Entity bulletEntity;
 
-    [Tooltip("’e‚ÌPrefab‚Ì‘å‚«‚³")]
+    [Tooltip("’e‚ÌEntity‚Ì‘å‚«‚³")]
     public readonly float bulletLocalScale;
 
     [Tooltip("Œo‰ßŠÔ")]
     public float elapsedTime;
+
+    public bool IsDataDeletion { get; set; }
 
     /// <summary>
     /// n-Way’e
@@ -43,9 +45,10 @@ public struct N_Way_DanmakuData : IComponentData
         this.fanAngle = fanAngle;
         this.amountBullets = amountBullets;
         this.firingInterval = firingInterval;
-        this.bulletPrefab = bulletPrefab;
+        this.bulletEntity = bulletPrefab;
         this.bulletLocalScale = bulletLocalScale;
         elapsedTime = 0.0f;
+        IsDataDeletion = false;
     }
 }
 

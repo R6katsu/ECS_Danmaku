@@ -11,7 +11,7 @@ using UnityEngine;
 /// <summary>
 /// ’e–‹‚ğ¶¬‚·‚éˆ—‚ğŒÄ‚Ño‚·
 /// </summary>
-[BurstCompile]
+//[BurstCompile]
 public partial struct DanmakuSystem : ISystem
 {
     private SystemHandle _ecbSystemHandle;

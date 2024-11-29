@@ -179,7 +179,7 @@ public partial struct EnemySpawnerSystem : ISystem
         _elapsed = 0.0f;
         currentPattern = new();
         currentInfoNumber = 0;
-        bossNumber = 10;
+        bossNumber = 1;
 
         Debug.LogError("マジックナンバー");
     }

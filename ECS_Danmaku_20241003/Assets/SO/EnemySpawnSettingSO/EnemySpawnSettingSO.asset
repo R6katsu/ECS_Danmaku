@@ -38,3 +38,6 @@ MonoBehaviour:
     - _enemyName: 1
       _creationDelay: 5
       _spawnPointType: 3
+    - _enemyName: 2
+      _creationDelay: 10
+      _spawnPointType: 2

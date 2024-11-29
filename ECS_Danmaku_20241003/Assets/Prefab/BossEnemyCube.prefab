@@ -15,6 +15,8 @@ GameObject:
   - component: {fileID: 4672983851063020029}
   - component: {fileID: 7241745116018879674}
   - component: {fileID: 314964306326285129}
+  - component: {fileID: 4588821853915997741}
+  - component: {fileID: 9007835146448407338}
   m_Layer: 0
   m_Name: BossEnemyCube
   m_TagString: Untagged
@@ -153,3 +155,44 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _visualEffectName: 1
   _size: 1
+--- !u!114 &4588821853915997741
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1140647691368568761}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56fc9efd2668bc84dbb3e057e807f40a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _moveParam:
+    _speed: 5
+  _targetPoint:
+    x: 0
+    y: 0
+    z: 3.5
+--- !u!114 &9007835146448407338
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1140647691368568761}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1dc08b7700f1ba24f91edeccbec773a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _rotationSpeed: 4
+  _fanAngle: 40
+  _amountBullets: 2
+  _nWayFiringInterval: 0
+  _nWayBulletPrefab: {fileID: 5706911903314413699, guid: af60f41348e9e01418bef400c406bfcc,
+    type: 3}
+  _shootNSingleSet: 1
+  _singleSetRestTimeAfter: 0
+  _tapFiringInterval: 0
+  _tapBulletPrefab: {fileID: 5706911903314413699, guid: af60f41348e9e01418bef400c406bfcc,
+    type: 3}
