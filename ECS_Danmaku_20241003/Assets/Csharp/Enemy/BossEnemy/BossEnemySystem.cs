@@ -4,6 +4,12 @@ using UnityEngine;
 using System;
 using Random = UnityEngine.Random;
 using Unity.Collections;
+using static HealthPointDatas;
+using static BulletHelper;
+
+using static EntityCampsHelper;
+
+
 
 
 #if UNITY_EDITOR
@@ -50,12 +56,6 @@ public partial class BossEnemySystem : SystemBase
             // 前回から変更があった
             if (_bossEnemyState != value)
             {
-                // 攻撃が切り替わるまでの時間を最大値へ回復
-                _currentAttackSwitchTime = _attackSwitchTime;
-
-                // BossEnemyStateに対応するリセット処理
-                ResetBossEnemyState(_bossEnemyState);
-
                 // 反映
                 _bossEnemyState = value;
 
@@ -63,6 +63,14 @@ public partial class BossEnemySystem : SystemBase
                 ChangeBossEnemyState(_bossEnemyState);
             }
         }
+    }
+
+    private EntityCommandBufferSystem ecbSystem;
+
+    protected override void OnCreate()
+    {
+        // EndSimulationEntityCommandBufferSystem を取得
+        ecbSystem = World.GetExistingSystemManaged<EndSimulationEntityCommandBufferSystem>();
     }
 
     protected override void OnUpdate()
@@ -75,11 +83,26 @@ public partial class BossEnemySystem : SystemBase
             return;
         }
 
+        // シングルトンデータの取得
+        var bossEnemySingleton = SystemAPI.GetSingleton<BossEnemySingletonData>();
+
+        // Entityを取得
+        Entity entity = SystemAPI.GetSingletonEntity<BossEnemySingletonData>();
+
+        // 移動中だった
+        if (SystemAPI.HasComponent<MoveToTargetPointData>(entity)) { return; }
+
         // 0以下になったら次の攻撃へ切り替える
         _currentAttackSwitchTime -= SystemAPI.Time.DeltaTime;
         if (_currentAttackSwitchTime <= 0.0f)
         {
-            MyBossEnemyState = GetRandomBossEnemyState();
+            // 攻撃が切り替わるまでの時間を最大値へ回復
+            _currentAttackSwitchTime = _attackSwitchTime;
+
+            // BossEnemyStateに対応するリセット処理
+            ResetBossEnemyState(_bossEnemyState);
+
+            MyBossEnemyState = BossEnemyState.None;
             return;
         }
 
@@ -112,10 +135,6 @@ public partial class BossEnemySystem : SystemBase
     /// </summary>
     private void ResetBossEnemyState(BossEnemyState bossEnemyState)
     {
-        // nWayとばら撒き相性良さげ
-
-
-
         // BossEnemySingletonDataが存在していなかった
         if (!SystemAPI.HasSingleton<BossEnemySingletonData>()) { return; }
 
@@ -125,16 +144,15 @@ public partial class BossEnemySystem : SystemBase
         // Entityを取得
         Entity entity = SystemAPI.GetSingletonEntity<BossEnemySingletonData>();
 
+        EntityCommandBuffer ecb = ecbSystem.CreateCommandBuffer();
+
         switch (bossEnemyState)
         {
             case BossEnemyState.PlayerTrackingNWay:
                 // N_Way_DanmakuDataを有していた
                 if (SystemAPI.HasComponent<N_Way_DanmakuData>(entity))
                 {
-                    // N_Way_DanmakuDataを取得
-                    var nWay_DanmakuData = SystemAPI.GetComponent<N_Way_DanmakuData>(entity);
-
-                    nWay_DanmakuData.IsDataDeletion = true;
+                    ecb.RemoveComponent<N_Way_DanmakuData>(entity);
                 }
                 break;
 
@@ -142,30 +160,21 @@ public partial class BossEnemySystem : SystemBase
                 // RotationDataを有していた
                 if (SystemAPI.HasComponent<RotationData>(entity))
                 {
-                    // RotationDataを取得
-                    var rotationData = SystemAPI.GetComponent<RotationData>(entity);
-
-                    rotationData.IsDataDeletion = true;
+                    ecb.RemoveComponent<RotationData>(entity);
                 }
 
                 // N_Way_DanmakuDataを有していた
                 if (SystemAPI.HasComponent<N_Way_DanmakuData>(entity))
                 {
-                    // N_Way_DanmakuDataを取得
-                    var nWay_DanmakuData = SystemAPI.GetComponent<N_Way_DanmakuData>(entity);
-
-                    nWay_DanmakuData.IsDataDeletion = true;
+                    ecb.RemoveComponent<N_Way_DanmakuData>(entity);
                 }
                 break;
 
             case BossEnemyState.RandomSpreadBullets:
-                // TapShooting_DanmakuDataを有していた
-                if (SystemAPI.HasComponent<TapShooting_DanmakuData>(entity))
+                // N_Way_DanmakuDataを有していた
+                if (SystemAPI.HasComponent<N_Way_DanmakuData>(entity))
                 {
-                    // TapShooting_DanmakuDataを取得
-                    var tapShooting_DanmakuData = SystemAPI.GetComponent<TapShooting_DanmakuData>(entity);
-
-                    tapShooting_DanmakuData.IsDataDeletion = true;
+                    ecb.RemoveComponent<N_Way_DanmakuData>(entity);
                 }
                 break;
 
@@ -173,6 +182,9 @@ public partial class BossEnemySystem : SystemBase
             default:
                 break;
         }
+
+        // フレーム終了時に操作を適用
+        ecbSystem.AddJobHandleForProducer(Dependency);
     }
 
     /// <summary>
@@ -203,8 +215,8 @@ public partial class BossEnemySystem : SystemBase
                     var nWay_DanmakuData = new N_Way_DanmakuData
                     (
                         120,
-                        12,
-                        1f,
+                        16,
+                        0.5f,
                         bossEnemySingleton.nWayBulletEntity,
                         bossEnemySingleton.bulletLocalScale
                     );
@@ -239,8 +251,8 @@ public partial class BossEnemySystem : SystemBase
 
                     var nWay_DanmakuData = new N_Way_DanmakuData
                     (
-                        bossEnemySingleton.fanAngle,
-                        bossEnemySingleton.amountBullets,
+                        360,
+                        3,
                         bossEnemySingleton.nWayFiringInterval,
                         bossEnemySingleton.nWayBulletEntity,
                         bossEnemySingleton.bulletLocalScale
@@ -253,22 +265,23 @@ public partial class BossEnemySystem : SystemBase
                 break;
 
             case BossEnemyState.RandomSpreadBullets:
-                // TapShooting_DanmakuDataを有していなかった
-                if (!SystemAPI.HasComponent<TapShooting_DanmakuData>(entity))
+                // N_Way_DanmakuDataを有していなかった
+                if (!SystemAPI.HasComponent<N_Way_DanmakuData>(entity))
                 {
                     // アタッチ
-                    EntityManager.AddComponent<TapShooting_DanmakuData>(entity);
+                    EntityManager.AddComponent<N_Way_DanmakuData>(entity);
 
-                    var tapShooting_DanmakuData = new TapShooting_DanmakuData
+                    var nWay_DanmakuData = new N_Way_DanmakuData
                     (
-                        bossEnemySingleton.shootNSingleSet,
-                        bossEnemySingleton.singleSetRestTimeAfter,
-                        bossEnemySingleton.tapFiringInterval,
-                        bossEnemySingleton.tapBulletEntity
+                        360,
+                        6,
+                        0.0f,
+                        bossEnemySingleton.nWayBulletEntity,
+                        bossEnemySingleton.bulletLocalScale
                     );
 
                     // 変数を設定
-                    EntityManager.SetComponentData<TapShooting_DanmakuData>(entity, tapShooting_DanmakuData);
+                    EntityManager.SetComponentData<N_Way_DanmakuData>(entity, nWay_DanmakuData);
                 }
                 break;
 

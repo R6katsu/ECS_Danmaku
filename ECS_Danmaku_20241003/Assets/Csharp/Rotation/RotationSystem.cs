@@ -28,11 +28,6 @@ public partial struct RotationSystem : ISystem
                  RefRW<LocalTransform>>()
                  .WithEntityAccess())
         {
-            if (rotationData.ValueRO.IsDataDeletion)
-            {
-                ecb.RemoveComponent<RotationData>(entity);
-            }
-
             var axisType = rotationData.ValueRO.axisType;
             var rotationSpeed = rotationData.ValueRO.rotationSpeed;
             var rotation = localTfm.ValueRW.Rotation;
