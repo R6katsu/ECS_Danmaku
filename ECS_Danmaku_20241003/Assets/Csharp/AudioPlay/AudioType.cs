@@ -9,7 +9,7 @@ using UnityEngine;
 /// <summary>
 /// ‰¹Œ¹‚ÌŽí—Þ
 /// </summary>
-public enum AudioType
+public enum AudioType : byte
 {
     None,
     BGM,

@@ -1,9 +1,12 @@
+// リファクタリング済み
+
 /// <summary>
 /// 軸の種類
 /// </summary>
-public enum AxisType
+public enum AxisType : byte
 {
-    X, 
-    Y, 
+    None,
+    X,
+    Y,
     Z
 }
