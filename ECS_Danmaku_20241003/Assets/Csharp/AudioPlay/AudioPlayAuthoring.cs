@@ -8,24 +8,17 @@ using System.Collections;
 using System.Collections.Generic;
 #endif
 
-/// <summary>
-/// 音源の種類
-/// </summary>
-public enum AudioType
-{
-    BGM,
-    SE
-}
+// リファクタリング済み
 
 /// <summary>
-/// 音源再生の情報
+/// 音源再生に必要な情報
 /// </summary>
 public struct AudioPlayData : IComponentData
 {
     private const int LOWER_LIMIT = -1;
 
-    private int audioNumber;
-    private bool isPlaying;
+    private int _audioNumber;
+    private bool _isPlaying;
 
     [Tooltip("音源の種類")]
     public readonly AudioType audioType;
@@ -36,14 +29,23 @@ public struct AudioPlayData : IComponentData
     /// </summary>
     public int AudioNumber
     {
-        get => audioNumber;
+        get
+        {
+            // 無効化前の音源番号を保持
+            var audioNumber = _audioNumber;
+
+            // 音源再生を無効にする
+            DisableAudioPlay();
+
+            return audioNumber;
+        }
         set
         {
             // 下限から変更があった場合に「生成可能」のフラグを立てる
-            if (audioNumber != value && value != LOWER_LIMIT)
+            if (_audioNumber != value && value != LOWER_LIMIT)
             {
-                audioNumber = value;
-                isPlaying = true;
+                _audioNumber = value;
+                _isPlaying = true;
             }
         }
     }
@@ -51,17 +53,18 @@ public struct AudioPlayData : IComponentData
     /// <summary>
     /// 音源再生可能かどうかのフラグ
     /// </summary>
-    public bool IsPlaying => isPlaying;
+    public bool IsPlaying => _isPlaying;
 
     /// <summary>
     /// 音源再生の情報
     /// </summary>
+    /// <param name="audioType">音源の種類</param>
     public AudioPlayData(AudioType audioType)
     {
         this.audioType = audioType;
 
-        audioNumber = LOWER_LIMIT;
-        isPlaying = false;
+        _audioNumber = LOWER_LIMIT;
+        _isPlaying = false;
     }
 
     /// <summary>
@@ -69,13 +72,13 @@ public struct AudioPlayData : IComponentData
     /// </summary>
     public void DisableAudioPlay()
     {
-        audioNumber = LOWER_LIMIT;
-        isPlaying = false;
+        _audioNumber = LOWER_LIMIT;
+        _isPlaying = false;
     }
 }
 
 /// <summary>
-/// 音源再生の設定
+/// 音源再生に必要な設定
 /// </summary>
 public class AudioPlayAuthoring : MonoBehaviour
 {
@@ -88,6 +91,7 @@ public class AudioPlayAuthoring : MonoBehaviour
         {
             var entity = GetEntity(TransformUsageFlags.Dynamic);
 
+            // 自身のEntityにAudioPlayDataをアタッチ
             AddComponent(entity, new AudioPlayData(src._audioType));
         }
     }

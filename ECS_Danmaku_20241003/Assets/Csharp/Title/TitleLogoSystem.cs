@@ -102,7 +102,7 @@ public partial struct TitleLogoTriggerJob : ITriggerEventsJob
 
         // タイトルロゴの被弾SEを再生
         // メインスレッドから呼び出す為にAudioPlayDataを使う
-        //AudioManager.Instance.PlaySE(titleLogoSingleton.damageSENumber);
+        //AudioPlayManager.Instance.PlaySE(titleLogoSingleton.damageSENumber);
 
         // 画像を切り替えるまでの回数をデクリメント
         titleLogoSingleton.currentImageSwapCount--;

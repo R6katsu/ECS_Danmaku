@@ -85,7 +85,7 @@ public class TitleScene : MonoBehaviour
 
             case TitleSceneState.TitleLogo:
                 // タイトル画面のBGM再生
-                AudioManager.Instance.PlayBGM(_titleBGMNumber);
+                AudioPlayManager.Instance.PlayBGM(_titleBGMNumber);
 
                 // タイトルロゴの再生と終了までの待機
                 StartCoroutine(TitleLogoAnimationAndWait());
