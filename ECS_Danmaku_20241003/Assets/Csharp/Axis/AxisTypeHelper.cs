@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using UnityEngine.UIElements;
 #endif
 
+// リファクタリング済み
+
 /// <summary>
 /// AxisTypeの補助
 /// </summary>
@@ -31,11 +33,12 @@ static public class AxisTypeHelper
             case AxisType.Z:
                 return position.z;
 
+            case AxisType.None:
             default:
 #if UNITY_EDITOR
-                Debug.LogError("AxisType = default");
+                Debug.LogError("AxisTypeが未設定、または例外");
 #endif
-                return new float();
+                return 0.0f;
         }
     }
 
@@ -59,7 +62,7 @@ static public class AxisTypeHelper
 
             default:
 #if UNITY_EDITOR
-                Debug.LogError("AxisType = default");
+                Debug.LogError("AxisTypeが未設定、または例外");
 #endif
                 return Vector3.zero;
         }
