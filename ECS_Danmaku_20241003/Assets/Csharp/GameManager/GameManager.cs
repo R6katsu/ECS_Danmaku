@@ -81,7 +81,7 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
         {
              case GameState.Start:
                 // BGMŠJn
-                AudioManager.Instance.PlayBGM(0);
+                AudioPlayManager.Instance.PlayBGM(0);
 
                 // Game‚ÉˆÚs
                 MyGameState = GameState.Game;
