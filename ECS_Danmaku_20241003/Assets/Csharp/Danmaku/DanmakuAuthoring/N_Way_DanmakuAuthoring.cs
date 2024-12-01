@@ -1,9 +1,10 @@
+using System;
 using Unity.Entities;
+using System.Collections;
 using UnityEngine;
 using static DanmakuHelper;
 
 #if UNITY_EDITOR
-using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
 #endif
@@ -11,7 +12,7 @@ using Unity.Mathematics;
 /// <summary>
 /// n-Wayíe
 /// </summary>
-public struct N_Way_DanmakuData : IComponentData, IDataDeletion
+public struct N_Way_DanmakuData : IComponentData, IEnumerable//, IDataDeletion
 {
     [Tooltip("êÓÇÃëÂÇ´Ç≥")]
     public readonly int fanAngle;
@@ -31,7 +32,13 @@ public struct N_Way_DanmakuData : IComponentData, IDataDeletion
     [Tooltip("åoâﬂéûä‘")]
     public float elapsedTime;
 
-    public bool IsDataDeletion { get; set; }
+    public bool IsDataDeletion;
+
+    public N_Way_DanmakuData aaaa()
+    {
+        this.IsDataDeletion = true;
+        return this;
+    }
 
     /// <summary>
     /// n-Wayíe
@@ -49,6 +56,11 @@ public struct N_Way_DanmakuData : IComponentData, IDataDeletion
         this.bulletLocalScale = bulletLocalScale;
         elapsedTime = 0.0f;
         IsDataDeletion = false;
+    }
+
+    public IEnumerator GetEnumerator()
+    {
+        throw new NotImplementedException();
     }
 }
 
