@@ -3118,7 +3118,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 197363f04e0713947819c461bb17fe62, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _axisType: 2
+  _axisType: 3
   _scrollSpeed: -45
   _backGroundSize: {x: 30, y: 0, z: 180}
   _backGround: {fileID: 1755750402}
