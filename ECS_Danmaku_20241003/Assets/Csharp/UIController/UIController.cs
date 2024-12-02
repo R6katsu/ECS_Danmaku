@@ -26,17 +26,22 @@ public class UIController : MonoBehaviour, IDisposable
         [SerializeField, Header("水平垂直の入力回数")]
         private int2 _axisInput;
 
+        [SerializeField, Header("ボタン画像")]
+        private RectTransform _buttonImage;
+
         [SerializeField, Header("水平垂直の入力回数と紐つけて呼び出される関数")]
         private UnityEvent _axisInputEvent;
 
         public int2 AxisInput => _axisInput;
+        public RectTransform ButtonImage => _buttonImage;
         public UnityEvent AxisInputEvent => _axisInputEvent;
+        public (RectTransform, UnityEvent) ButtonImage_AxisInputEvent => (_buttonImage, _axisInputEvent);
     }
 
     [SerializeField, Header("水平垂直の入力回数とUnityEventの情報の配列")]
     private AxisInputEventInfo[] _axisInputEventInfos = null;
 
-    private UnityEvent[,] _unityEvents = null;
+    private (RectTransform, UnityEvent)[,] _unityEvents = null;
 
     [Tooltip("入力方向に負の値が含まれているか")]
     private bool _hasNegativeValue = false;
@@ -50,10 +55,16 @@ public class UIController : MonoBehaviour, IDisposable
     // InputSystem
     private PlayerControls _playerInput;
 
+    // 各成分の最大値、最小値
+    private int _xValueMax = 0;
+    private int _yValueMax = 0;
+    private int _xValueMin = 0;
+    private int _yValueMin = 0;
+
     /// <summary>
     /// 水平垂直の入力回数とUnityEventの情報の多次元配列
     /// </summary>
-    private UnityEvent[,] AxisInputEventInfos
+    private (RectTransform, UnityEvent)[,] AxisInputEventInfos
     {
         get
         {
@@ -61,18 +72,27 @@ public class UIController : MonoBehaviour, IDisposable
             if (_unityEvents == null)
             {
                 // 多次元配列を作成し、構造体内のint2を多次元配列に置き換える
-                var xMax = _axisInputEventInfos.Max(info => info.AxisInput.x);
-                var yMax = _axisInputEventInfos.Max(info => info.AxisInput.y);
-
-                _unityEvents = new UnityEvent[xMax, yMax];
+                _unityEvents = new (RectTransform, UnityEvent)[_xValueMax, _yValueMax];
 
                 foreach (var info in _axisInputEventInfos)
                 {
-                    _unityEvents[info.AxisInput.x, info.AxisInput.y] = info.AxisInputEvent;
+                    _unityEvents[info.AxisInput.x, info.AxisInput.y] = info.ButtonImage_AxisInputEvent;
                 }
             }
 
             return _unityEvents;
+        }
+    }
+
+    private void OnEnable()
+    {
+        // 既に有効だった
+        if (_isUIEnabled) { return; }
+
+        // ボタン画像を無効化
+        foreach (var info in _axisInputEventInfos)
+        {
+            info.ButtonImage_AxisInputEvent.Item1.gameObject.SetActive(false);
         }
     }
 
@@ -81,16 +101,17 @@ public class UIController : MonoBehaviour, IDisposable
     /// </summary>
     public void Enable()
     {
-        // ボタンと選択中のボタンの強調
-        // 範囲外に出た時に反対側に戻ってくる処理
+        // 最大値を取得
+        _xValueMax = _axisInputEventInfos.Max(info => info.AxisInput.x);
+        _yValueMax = _axisInputEventInfos.Max(info => info.AxisInput.y);
 
         // 最小値を取得
-        var xMin = _axisInputEventInfos.Min(info => info.AxisInput.x);
-        var yMin = _axisInputEventInfos.Min(info => info.AxisInput.y);
+        _xValueMin = _axisInputEventInfos.Min(info => info.AxisInput.x);
+        _yValueMin = _axisInputEventInfos.Min(info => info.AxisInput.y);
 
         // 各成分のいずれかの最小値が負の値だった場合、
         // "負の値が含まれているか"というフラグを立てる
-        _hasNegativeValue = (xMin < 0 || yMin < 0) ? true : false;
+        _hasNegativeValue = (_xValueMin < 0 || _yValueMin < 0) ? true : false;
 
         // メインスレッドで処理するActionに登録
         MainThreadExecutor.Instance.Enqueue
@@ -106,7 +127,7 @@ public class UIController : MonoBehaviour, IDisposable
             var confirm = _playerInput.UI.Confirm;
             confirm.started += (context) =>
             {
-                var uiEvent = GetANHFAJON();
+                UnityEvent uiEvent = GetANHFAJON().Value.Item2;
 
                 // メインスレッドで処理するActionに登録
                 MainThreadExecutor.Instance.Enqueue
@@ -149,6 +170,12 @@ public class UIController : MonoBehaviour, IDisposable
                 }
             };
 
+            // ボタン画像を有効化
+            foreach (var info in _axisInputEventInfos)
+            {
+                info.ButtonImage_AxisInputEvent.Item1.gameObject.SetActive(true);
+            }
+
             // 操作の有効化
             _isUIEnabled = true;
         }
@@ -178,12 +205,12 @@ public class UIController : MonoBehaviour, IDisposable
     /// 
     /// </summary>
     /// <returns></returns>
-    public UnityEvent GetANHFAJON()
+    public (RectTransform, UnityEvent)? GetANHFAJON()
     {
         // UIの操作が無効だった
         if (!_isUIEnabled) { return null; }
 
-        UnityEvent unityEvent = null;
+        (RectTransform, UnityEvent) unityEvent = new();
 
         //  取得可能なイベントの入力方向に負の値が含まれている
         if (_hasNegativeValue)
@@ -194,7 +221,7 @@ public class UIController : MonoBehaviour, IDisposable
                 if (axisInputEventInfo.AxisInput.x == _selectedUIEvent.x &&
                     axisInputEventInfo.AxisInput.y == _selectedUIEvent.y)
                 {
-                    unityEvent = axisInputEventInfo.AxisInputEvent;
+                    unityEvent = axisInputEventInfo.ButtonImage_AxisInputEvent;
                 }
             }
 
@@ -211,20 +238,74 @@ public class UIController : MonoBehaviour, IDisposable
     /// <summary>
     /// 水平入力をインクリメント
     /// </summary>
-    public void SelectedHorizontalIncrement() => _selectedUIEvent.x++;
+    public void SelectedHorizontalIncrement()
+    {
+        AAAAA();
+
+        _selectedUIEvent.x++;
+
+        // x方向の最大値を超過した場合は最小値を代入
+        _selectedUIEvent.x = (_selectedUIEvent.x > _xValueMax) ? _xValueMin : _selectedUIEvent.x;
+
+        BBBBB();
+    }
 
     /// <summary>
     /// 水平入力をデクリメント
     /// </summary>
-    public void SelectedHorizontalDecrement() => _selectedUIEvent.x--;
+    public void SelectedHorizontalDecrement()
+    {
+        AAAAA();
+
+        _selectedUIEvent.x--;
+
+        // x方向の最小値未満だった場合は最大値を代入
+        _selectedUIEvent.x = (_selectedUIEvent.x < _xValueMin) ? _xValueMax : _selectedUIEvent.x;
+
+        BBBBB();
+    }
 
     /// <summary>
     /// 垂直入力をインクリメント
     /// </summary>
-    public void SelectedVerticalIncrement() => _selectedUIEvent.y++;
+    public void SelectedVerticalIncrement()
+    {
+        AAAAA();
+
+        _selectedUIEvent.y++;
+
+        // y方向の最大値を超過した場合は最小値を代入
+        _selectedUIEvent.y = (_selectedUIEvent.y > _yValueMax) ? _yValueMin : _selectedUIEvent.y;
+
+        BBBBB();
+    }
 
     /// <summary>
     /// 垂直入力をデクリメント
     /// </summary>
-    public void SelectedVerticalDecrement() => _selectedUIEvent.y--;
+    public void SelectedVerticalDecrement()
+    {
+        AAAAA();
+
+        _selectedUIEvent.y--;
+
+        // y方向の最小値未満だった場合は最大値を代入
+        _selectedUIEvent.y = (_selectedUIEvent.y < _yValueMin) ? _yValueMax : _selectedUIEvent.y;
+
+        BBBBB();
+    }
+
+    private void AAAAA()
+    {
+        RectTransform buttonImage = GetANHFAJON().Value.Item1;
+        buttonImage.localScale = Vector2.one;
+    }
+
+    private void BBBBB()
+    {
+        // 前回選択していた画像を求めて大きさを元に戻す
+        // 今回選択中のボタンを大きくする
+        RectTransform buttonImage = GetANHFAJON().Value.Item1;
+        buttonImage.localScale = Vector2.one * 1.5f;
+    }
 }
