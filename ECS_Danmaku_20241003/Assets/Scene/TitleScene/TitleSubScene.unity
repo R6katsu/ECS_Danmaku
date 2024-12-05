@@ -154,27 +154,27 @@ MonoBehaviour:
   _playerMovementRangeSingletonData:
     playerMovementRange:
       movementRange:
-        x: 18
+        x: 35
         y: 0
-        z: 10
+        z: 20
       movementRangeCenter:
         x: 0
         y: 0
         z: 0
     bulletMovementRange:
       movementRange:
-        x: 25
+        x: 35
         y: 0
-        z: 15
+        z: 30
       movementRangeCenter:
         x: 0
         y: 0
         z: 0
     enemyMovementRange:
       movementRange:
-        x: 25
+        x: 35
         y: 0
-        z: 15
+        z: 30
       movementRangeCenter:
         x: 0
         y: 0
@@ -315,8 +315,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 11.936609, y: 2.3824263, z: 10}
-  m_Center: {x: 0.088578224, y: 2.5639377, z: 0}
+  m_Size: {x: 25, y: 3.5, z: 30}
+  m_Center: {x: 0, y: 5, z: 0}
 --- !u!114 &1866377909
 MonoBehaviour:
   m_ObjectHideFlags: 0

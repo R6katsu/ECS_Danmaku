@@ -83,7 +83,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _rotationData:
-    axisType: 1
+    axisType: 2
     rotationSpeed: 20
 --- !u!114 &1816249590449528686
 MonoBehaviour:
@@ -115,7 +115,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efc42c4b17fc57b40abda17d1784d481, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _audioType: 1
+  _audioType: 2
 --- !u!114 &-6169371648977484334
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -144,7 +144,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _moveParam:
     _speed: -5
-  _axisType: 2
+  _axisType: 3
 --- !u!135 &7489738364080410858
 SphereCollider:
   m_ObjectHideFlags: 0

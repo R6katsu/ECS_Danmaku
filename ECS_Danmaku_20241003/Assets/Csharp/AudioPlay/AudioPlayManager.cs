@@ -39,6 +39,18 @@ public class AudioPlayManager : SingletonMonoBehaviour<AudioPlayManager>
     }
 
     /// <summary>
+    /// BGMÄ¶
+    /// </summary>
+    /// <param name="num">‰¹Œ¹”Ô†</param>
+    public void PauseBGM()
+    {
+        if (_bgmAudioSource == null) { return; }
+
+        // ‰¹Œ¹ˆê’â~
+        _bgmAudioSource.Pause();
+    }
+
+    /// <summary>
     /// SEÄ¶
     /// </summary>
     /// <param name="num">‰¹Œ¹”Ô†</param>

@@ -5,11 +5,11 @@ using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Events;
 using System.Linq;
+
+#if UNITY_EDITOR
 using Unity.VisualScripting;
 using static UnityEditor.Searcher.SearcherWindow.Alignment;
 using UnityEngine.InputSystem;
-
-#if UNITY_EDITOR
 #endif
 
 /// <summary>
