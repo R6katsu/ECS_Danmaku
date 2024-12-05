@@ -1,9 +1,9 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using System.Collections;
 
 
 #if UNITY_EDITOR
+using UnityEngine.SceneManagement;
 using UnityEngine.Rendering;
 using System.Collections.Generic;
 #endif
@@ -65,6 +65,12 @@ public class TitleScene : MonoBehaviour
         switch (_titleSceneState)
         {
             case TitleSceneState.Start:
+                // カーソルを画面中央にロックする
+                Cursor.lockState = CursorLockMode.Locked;
+
+                // カーソル非表示
+                Cursor.visible = false;
+
                 if (!_transitionTransform.TryGetComponent(out _transition))
                 {
 #if UNITY_EDITOR

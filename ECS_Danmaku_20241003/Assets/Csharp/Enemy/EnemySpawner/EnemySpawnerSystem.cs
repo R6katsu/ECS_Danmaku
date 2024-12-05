@@ -73,6 +73,7 @@ public partial struct EnemySpawnerSystem : ISystem
             if (bossNumber <= 0)
             {
                 if (bossNumber != 0) { continue; }
+                if (_elapsed < 10) { continue; }
 
                 // ボスを生成
                 var bossEnemy = ecb.Instantiate(array.bossEnemyEntity);
@@ -179,7 +180,7 @@ public partial struct EnemySpawnerSystem : ISystem
         _elapsed = 0.0f;
         currentPattern = new();
         currentInfoNumber = 0;
-        bossNumber = 1;
+        bossNumber = 3;
 
         Debug.LogError("マジックナンバー");
     }

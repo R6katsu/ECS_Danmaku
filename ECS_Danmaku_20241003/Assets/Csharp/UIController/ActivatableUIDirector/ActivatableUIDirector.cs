@@ -1,12 +1,12 @@
-using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using System.Collections.Generic;
 using System;
 
 
 #if UNITY_EDITOR
+using TMPro;
 using System.Collections;
-using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 #endif
 
 /// <summary>

@@ -288,6 +288,17 @@
                     "isPartOfComposite": false
                 },
                 {
+                    "name": "",
+                    "id": "6f3ce895-a77e-42fd-913c-327d5245f96b",
+                    "path": "<Keyboard>/space",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Confirm",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
                     "name": "AD",
                     "id": "5707c73e-2dc8-4008-8b71-646d04967f62",
                     "path": "1DAxis",
