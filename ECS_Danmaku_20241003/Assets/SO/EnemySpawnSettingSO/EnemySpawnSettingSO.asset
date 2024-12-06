@@ -33,11 +33,8 @@ MonoBehaviour:
       _spawnPointType: 4
   - arrays:
     - _enemyName: 1
-      _creationDelay: 5
+      _creationDelay: 0
       _spawnPointType: 1
     - _enemyName: 1
-      _creationDelay: 5
+      _creationDelay: 0
       _spawnPointType: 3
-    - _enemyName: 2
-      _creationDelay: 10
-      _spawnPointType: 2

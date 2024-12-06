@@ -28,11 +28,8 @@ public class TitleScene : MonoBehaviour
     [SerializeField, Min(0), Header("タイトルBGMの番号")]
     private int _titleBGMNumber = 0;
 
-    [SerializeField, Header("シーン遷移のトランジション")]
-    private Transform _transitionTransform = null;
-
-    [Tooltip("シーン遷移のトランジション")]
-    private ITransition _transition = null;
+    [SerializeField, Header("シーン遷移のトランジションの名称")]
+    private TransitionName _transitionName = 0;
 
     [Tooltip("タイトルシーンの状態")]
     private TitleSceneState _titleSceneState = 0;
@@ -70,15 +67,6 @@ public class TitleScene : MonoBehaviour
 
                 // カーソル非表示
                 Cursor.visible = false;
-
-                if (!_transitionTransform.TryGetComponent(out _transition))
-                {
-#if UNITY_EDITOR
-                    Debug.LogError("_transitionTransformがITransitionを有していない");
-#endif
-                    enabled = false;
-                    return;
-                }
 
                 TitleLogoSingleton.Instance.breakAction = () =>
                 {
@@ -165,6 +153,14 @@ public class TitleScene : MonoBehaviour
         // タイトルロゴを壊す
         yield return StartCoroutine(TitleLogoSingleton.Instance.TitleLogoBreakAnimation());
 
-        _transition.StartTransition();
+        var transition = TransitionDirector.Instance.GetTransition(_transitionName);
+
+        // 現在のシーンの番号を取得
+        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+
+        // 現在のシーン番号をインクリメント
+        currentSceneIndex++;
+
+        transition.StartTransition(currentSceneIndex);
     }
 }

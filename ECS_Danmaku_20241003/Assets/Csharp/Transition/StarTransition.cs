@@ -45,7 +45,7 @@ public class StarTransition : MonoBehaviour, ITransition
     /// <summary>
     /// トランジションの開始
     /// </summary>
-    public void StartTransition()
+    public void StartTransition(int sceneNumber)
     {
         if (_instance == null)
         {
@@ -56,16 +56,14 @@ public class StarTransition : MonoBehaviour, ITransition
             DontDestroyOnLoad(gameObject);
         }
 
-        StartCoroutine(Transition());
+        StartCoroutine(Transition(sceneNumber));
     }
 
     /// <summary>
     /// トランジション
     /// </summary>
-    public IEnumerator Transition()
+    public IEnumerator Transition(int sceneNumber)
     {
-        enabled = true;
-
         // トランジションを開始
         TransitionAnimator.SetTrigger(_transitionStartTriggerName);
 
@@ -86,14 +84,8 @@ public class StarTransition : MonoBehaviour, ITransition
         float animationLength = stateInfo.length;
         yield return new WaitForSeconds(animationLength);
 
-        // 現在のシーンの番号を取得
-        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
-
-        // 現在のシーン番号をインクリメント
-        currentSceneIndex++;
-
         // シーン遷移
-        yield return SceneManager.LoadSceneAsync(currentSceneIndex);
+        yield return SceneManager.LoadSceneAsync(sceneNumber);
 
         // トランジションを終了
         TransitionAnimator.SetTrigger(_transitionEndTriggerName);
@@ -114,7 +106,5 @@ public class StarTransition : MonoBehaviour, ITransition
         // アニメーション終了まで待機
         animationLength = stateInfo.length;
         yield return new WaitForSeconds(animationLength);
-
-        enabled = false;
     }
 }

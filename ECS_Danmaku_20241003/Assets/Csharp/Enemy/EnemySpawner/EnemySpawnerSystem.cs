@@ -8,6 +8,8 @@ using static EnemyHelper;
 
 using Random = UnityEngine.Random;
 using static SpawnPointSingletonData;
+using System.Linq;
+
 
 
 #if UNITY_EDITOR
@@ -55,11 +57,21 @@ public partial struct EnemySpawnerSystem : ISystem
 
         var ecb = new EntityCommandBuffer(Allocator.Temp);
 
+        bool hasEnemy = false;
+        foreach (var _ in SystemAPI.Query<EnemyTag>())
+        {
+            hasEnemy = true;
+            break;
+        }
+
         // Entityと一緒にDataを取得する
         foreach (var (array, entity) in SystemAPI.Query<EnemySpawnPatternArraySingletonData>().WithEntityAccess())
         {
             if (currentPattern.Equals(default) || currentPattern.infos.Length <= currentInfoNumber)
             {
+                // EnemyTagを持つEntityが1体以上存在する場合はコンテニュー
+                if (hasEnemy) { continue; }
+
                 var patternNumber = Random.Range(0, array.infos.Length);
 
                 currentPattern = array.infos[patternNumber];
@@ -73,7 +85,6 @@ public partial struct EnemySpawnerSystem : ISystem
             if (bossNumber <= 0)
             {
                 if (bossNumber != 0) { continue; }
-                if (_elapsed < 10) { continue; }
 
                 // ボスを生成
                 var bossEnemy = ecb.Instantiate(array.bossEnemyEntity);

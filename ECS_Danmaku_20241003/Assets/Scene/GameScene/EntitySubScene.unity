@@ -5598,9 +5598,6 @@ MonoBehaviour:
   - _enemyPrefabs: {fileID: 8435925510417071167, guid: 06ca7b2726170de4d934167f4802b3ba,
       type: 3}
     _enemyName: 1
-  - _enemyPrefabs: {fileID: 7335266874570631441, guid: 2fd396d231ed2854c9320d404cb2adfc,
-      type: 3}
-    _enemyName: 2
 --- !u!4 &1874963044
 Transform:
   m_ObjectHideFlags: 0
