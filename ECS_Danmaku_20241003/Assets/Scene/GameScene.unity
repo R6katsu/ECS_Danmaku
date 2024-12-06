@@ -1364,6 +1364,7 @@ MonoBehaviour:
   _activatableUIControllerElements:
   - {fileID: 194156143}
   - {fileID: 194156143}
+  _transitionName: 0
 --- !u!4 &1038386190
 Transform:
   m_ObjectHideFlags: 0

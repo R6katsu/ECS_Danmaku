@@ -16,13 +16,16 @@ public class GameSceneUIDirector : SingletonMonoBehaviour<GameSceneUIDirector>
     [SerializeField, Header("UI操作の配列")]
     private UIController[] _activatableUIControllerElements = null;
 
+    [SerializeField, Header("シーン遷移のトランジションの名称")]
+    private TransitionName _transitionName = 0;
+
     public void Retry()
     {
         // 現在のシーンのインデックスを取得
         int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
 
-        // 現在のシーンを読み込む
-        SceneManager.LoadScene(currentSceneIndex);
+        var transition = TransitionDirector.Instance.GetTransition(_transitionName);
+        transition.StartTransition(currentSceneIndex);
     }
 
     public void GameEnd()

@@ -39,11 +39,14 @@ public partial class BossEnemySystem : SystemBase
     [Tooltip("ボス敵の状態")]
     private BossEnemyState _bossEnemyState = BossEnemyState.None;
 
+    [Tooltip("前回のボス敵の状態")]
+    private BossEnemyState _lastBossEnemyState = BossEnemyState.None;
+
     [Tooltip("攻撃が切り替わるまでの時間")]
     private float _attackSwitchTime = 10.0f;     // インスペクタから設定できるようにする
 
     [Tooltip("現在の攻撃が切り替わるまでの時間")]
-    private float _currentAttackSwitchTime = 0.0f;
+    private float _currentAttackSwitchTime = 0.0f;//last
 
     /// <summary>
     /// ボス敵の状態
@@ -56,6 +59,9 @@ public partial class BossEnemySystem : SystemBase
             // 前回から変更があった
             if (_bossEnemyState != value)
             {
+                // 保持
+                _lastBossEnemyState = MyBossEnemyState;
+
                 // 反映
                 _bossEnemyState = value;
 
@@ -125,7 +131,8 @@ public partial class BossEnemySystem : SystemBase
 
             case BossEnemyState.None:
             default:
-                MyBossEnemyState = GetRandomBossEnemyState();
+                var bossEnemyState = GetRandomBossEnemyState();
+                MyBossEnemyState = (_lastBossEnemyState == bossEnemyState) ? MyBossEnemyState: bossEnemyState;
                 break;
         }
     }
