@@ -15,8 +15,10 @@ using Unity.VisualScripting;
 using static BulletHelper;
 #endif
 
+// リファクタリング済み
+
 /// <summary>
-/// 背景スクロールの情報
+/// 背景をスクロールさせる為に必要な情報
 /// </summary>
 public struct BackGroundScrollData : IComponentData
 {
@@ -61,7 +63,7 @@ public struct BackGroundScrollData : IComponentData
 }
 
 /// <summary>
-/// 背景スクロールの設定
+/// 背景をスクロールさせる為の設定
 /// </summary>
 #if UNITY_EDITOR
 [ExecuteInEditMode]
@@ -70,6 +72,8 @@ public class BackGroundScrollAuthoring : MonoBehaviour
 {
     private void OnDrawGizmos()
     {
+        if (Application.isPlaying) { return; }
+
         // 黄色
         Gizmos.color = Color.yellow;
 

@@ -1,17 +1,19 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 #if UNITY_EDITOR
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine.EventSystems;
 #endif
 
+// リファクタリング済み
+
 /// <summary>
-/// 背景スクロールの処理
+/// 背景スクロール
 /// </summary>
 [BurstCompile]
 public partial struct BackGroundScrollSystem : ISystem
@@ -20,15 +22,20 @@ public partial struct BackGroundScrollSystem : ISystem
     {
         var entityManager = state.EntityManager;
 
+        // 背景をスクロール
         foreach (var (backGroundScroll, localTfm) in
                  SystemAPI.Query
                  <RefRO<BackGroundScrollData>,
                  RefRW<LocalTransform>>())
         {
+            // ValueRO変数をローカル変数に代入
             var initialPosition = backGroundScroll.ValueRO.initialPosition;
             var startPosition = backGroundScroll.ValueRO.startPosition;
             var endLength = backGroundScroll.ValueRO.endLength;
             var axisType = backGroundScroll.ValueRO.axisType;
+
+            // 正の値の 1を定義
+            var positiveOne = 1.0f;
 
             // 今回のフレームでの移動量
             var frameMovement = Time.deltaTime * backGroundScroll.ValueRO.moveDirection;
@@ -40,7 +47,7 @@ public partial struct BackGroundScrollSystem : ISystem
             bool isMovingBackwards = math.length(startPosition) > 0.0f;
 
             // 反転していたら符号を反転させる
-            endLength *= (isMovingBackwards) ? -1.0f : 1.0f;
+            endLength *= (isMovingBackwards) ? -positiveOne : positiveOne;
 
             // AxisTypeに対応する各成分を取得
             var initialPositionValue = AxisTypeHelper.GetAxisValue(axisType, initialPosition);
