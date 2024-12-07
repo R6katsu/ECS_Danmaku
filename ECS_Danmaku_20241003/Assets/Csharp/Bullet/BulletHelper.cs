@@ -10,6 +10,8 @@ using UnityEngine;
 using static UnityEngine.EventSystems.EventTrigger;
 #endif
 
+// リファクタリング済み
+
 /// <summary>
 /// 弾の補助
 /// </summary>
@@ -59,6 +61,8 @@ static public class BulletHelper
         public T DealDamage<T>(T healthPoint, Entity entity) where T : IHealthPoint
         {
             healthPoint.DamageHP(damageAmount, entity);
+
+            // IHealthPointのインスタンス更新の為に返す
             return healthPoint;
         }
     }

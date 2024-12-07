@@ -34,7 +34,7 @@ public struct TitleLogoSingletonData : IComponentData
     {
         this.imageSwapCount = imageSwapCount;
         this.damageSENumber = damageSENumber;
-        currentImageSwapCount = 0;
+        currentImageSwapCount = this.imageSwapCount;
         isNextImage = false;
     }
 

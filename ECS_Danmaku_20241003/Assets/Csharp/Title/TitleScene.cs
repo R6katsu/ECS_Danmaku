@@ -87,7 +87,6 @@ public class TitleScene : MonoBehaviour
 
             case TitleSceneState.Title:
                 // タイトル画面の処理を開始
-                StartCoroutine(TitleUpdate());
                 break;
 
             case TitleSceneState.TitleClose:
@@ -115,41 +114,10 @@ public class TitleScene : MonoBehaviour
     }
 
     /// <summary>
-    /// タイトル画面の処理
-    /// </summary>
-    /// <returns>null</returns>
-    private IEnumerator TitleUpdate()
-    {
-        yield return null;
-
-        Debug.Log("ここから続き");
-
-        // PLを登場させ、射撃できるようにする
-        // タイトルロゴに攻撃できるようにする
-        // WASDやShiftの操作説明を出現させる
-        // タイトルロゴを攻撃した時、壊せ！という文字が表示されるようにする
-
-        /*
-        while (_titleSceneState == TitleSceneState.Title)
-        {
-            yield return null;
-
-            // 入力がなかった
-            if (!Input.anyKeyDown) { continue; }
-
-            // タイトル画面の処理を終了
-            MyTitleSceneState = TitleSceneState.TitleClose;            
-        }
-        */
-    }
-
-    /// <summary>
     /// タイトル画面を閉じ、新しいシーンを読み込む
     /// </summary>
     private IEnumerator TitleClose()
     {
-        Debug.Log("TitleClose");
-
         // タイトルロゴを壊す
         yield return StartCoroutine(TitleLogoSingleton.Instance.TitleLogoBreakAnimation());
 

@@ -1,14 +1,16 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Drawing;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Transforms;
-using UnityEngine;
 using static BulletHelper;
 
 #if UNITY_EDITOR
+using System.Collections;
+using System.Collections.Generic;
+using System.Drawing;
+using UnityEngine;
 #endif
+
+// リファクタリング済み
 
 /// <summary>
 /// 弾の処理

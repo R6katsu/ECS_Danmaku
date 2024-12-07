@@ -9,6 +9,8 @@ using System.Collections;
 using System.Collections.Generic;
 #endif
 
+// リファクタリング済み
+
 /// <summary>
 /// 弾の設定
 /// </summary>
