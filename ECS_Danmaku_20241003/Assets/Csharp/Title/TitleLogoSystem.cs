@@ -118,7 +118,7 @@ public partial struct TitleLogoTriggerJob : ITriggerEventsJob
         titleLogoSingleton.currentImageSwapCount--;
 
         // ‰æ‘œ‚ğØ‚è‘Ö‚¦‚é‚Ü‚Å‚Ì‰ñ”‚ª0‚æ‚è‘å‚«‚©‚Á‚½
-        if (titleLogoSingleton.currentImageSwapCount > 0) 
+        if (titleLogoSingleton.currentImageSwapCount > 0)
         {
             // •ÏX‚ğ”½‰f
             titleLogoSingletonLookup[entityB] = titleLogoSingleton;
