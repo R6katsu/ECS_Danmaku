@@ -1,6 +1,22 @@
 using Unity.Entities;
 using System;
+
+#if UNITY_EDITOR
 using UnityEngine;
+#endif
+
+// ƒŠƒtƒ@ƒNƒ^ƒŠƒ“ƒOÏ‚İ
+
+/// <summary>
+/// Entity‚Ìw‰c‚Ìí—Ş
+/// </summary>
+public enum EntityCampsType : byte
+{
+    Unknown,
+    Enemy,
+    Player,
+    BossEnemy
+}
 
 /// <summary>
 /// Entity‚Ìw‰c‚Ì•â•
@@ -14,6 +30,7 @@ static public class EntityCampsHelper
     /// <returns>‘Î‰‚·‚éTag‚ÌŒ^</returns>
     static public Type GetCampsTagType(EntityCampsType campsType)
     {
+        // CampsType‚É‰‚¶‚½Tag‚ÌŒ^‚ğ•Ô‚·
         switch (campsType)
         {
             case EntityCampsType.Enemy:
@@ -32,30 +49,19 @@ static public class EntityCampsHelper
     }
 
     /// <summary>
-    /// Entity‚Ìw‰c‚Ìí—Ş
-    /// </summary>
-    public enum EntityCampsType
-    {
-        Unknown,
-        Enemy,
-        Player,
-        BossEnemy
-    }
-
-    /// <summary>
     /// ©w‰c‚Ìí—Ş‚Ìî•ñ
     /// </summary>
     public struct EntityCampsData : IComponentData
     {
-        public EntityCampsType myCampsType;
+        public EntityCampsType campsType;
 
         /// <summary>
         /// ©w‰c‚Ìí—Ş‚Ìî•ñ
         /// </summary>
-        /// <param name="myCampsType">w‰c‚Ìí—Ş</param>
-        public EntityCampsData(EntityCampsType myCampsType)
+        /// <param name="campsType">w‰c‚Ìí—Ş</param>
+        public EntityCampsData(EntityCampsType campsType)
         {
-            this.myCampsType = myCampsType;
+            this.campsType = campsType;
         }
     }
 

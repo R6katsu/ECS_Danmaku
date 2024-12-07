@@ -1,11 +1,14 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Entities;
 using UnityEngine;
 using static EnemyHelper;
-using static EntityCampsHelper;
 using static EntityCategoryHelper;
 using static HealthPointDatas;
+
+#if UNITY_EDITOR
+using System.Collections;
+using System.Collections.Generic;
+using static EntityCampsHelper;
+#endif
 
 /// <summary>
 /// ìGÇÃê›íË

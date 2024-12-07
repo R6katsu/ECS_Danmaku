@@ -1,12 +1,15 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Entities;
-using Unity.Mathematics;
 using UnityEngine;
-using static BulletHelper;
-using static EntityCampsHelper;
 using static EntityCategoryHelper;
 using static MoveHelper;
+
+#if UNITY_EDITOR
+using System.Collections;
+using System.Collections.Generic;
+using static BulletHelper;
+using static EntityCampsHelper;
+using Unity.Mathematics;
+#endif
 
 /// <summary>
 /// ‘ÎÛ‚ÉŒü‚©‚Á‚Ä’¼üˆÚ“®‚·‚éˆ×‚Ìî•ñ
