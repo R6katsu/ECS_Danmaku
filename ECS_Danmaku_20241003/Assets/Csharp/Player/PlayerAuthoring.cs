@@ -1,17 +1,17 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Entities;
-using Unity.Mathematics;
-using Unity.Transforms;
 using UnityEngine;
 using static PlayerHelper;
-using static TriggerHelper;
-using static EntityCampsHelper;
 using static EntityCategoryHelper;
 using static HealthPointDatas;
 
 #if UNITY_EDITOR
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using Unity.Mathematics;
+using Unity.Transforms;
+using static TriggerHelper;
+using static EntityCampsHelper;
 using UnityEngine.Events;
 using static DanmakuJobs;
 using static HealthHelper;

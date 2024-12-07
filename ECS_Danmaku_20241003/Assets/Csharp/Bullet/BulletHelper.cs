@@ -1,8 +1,8 @@
 using Unity.Entities;
-using static EntityCampsHelper;
 using static HealthHelper;
 
 #if UNITY_EDITOR
+using static EntityCampsHelper;
 using static MoveHelper;
 using System.Collections;
 using System.Collections.Generic;
