@@ -83,9 +83,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _fanAngle: 360
-  _amountBullets: 9
+  _amountBullets: 18
   _firingInterval: 2
-  _bulletPrefab: {fileID: 4638527366984909, guid: a7c50ff89ed74f540b9838d375faa6e5,
+  _bulletPrefab: {fileID: 5706911903314413699, guid: af60f41348e9e01418bef400c406bfcc,
     type: 3}
 --- !u!114 &-1988456149972333103
 MonoBehaviour:

@@ -7,6 +7,7 @@ using Unity.Transforms;
 using UnityEngine;
 using static BulletHelper;
 using static EntityCampsHelper;
+using static HealthHelper;
 using static HealthPointDatas;
 using static TriggerJobs;
 using EventTrigger = UnityEngine.EventSystems.EventTrigger;
@@ -23,6 +24,7 @@ public partial struct TitleLogoSystem : ISystem
     private ComponentLookup<TitleLogoSingletonData> _titleLogoSingletonLookup;
     private ComponentLookup<BulletIDealDamageData> _dealDamageLookup;
     private ComponentLookup<DestroyableData> _destroyableLookup;
+    private ComponentLookup<AudioPlayData> _audioPlayLookup;
 
     public void OnCreate(ref SystemState state)
     {
@@ -30,6 +32,7 @@ public partial struct TitleLogoSystem : ISystem
         _titleLogoSingletonLookup = state.GetComponentLookup<TitleLogoSingletonData>(false);
         _dealDamageLookup = state.GetComponentLookup<BulletIDealDamageData>(false);
         _destroyableLookup = state.GetComponentLookup<DestroyableData>(false);
+        _audioPlayLookup = state.GetComponentLookup<AudioPlayData>(false);
     }
 
     public void OnUpdate(ref SystemState state)
@@ -38,13 +41,15 @@ public partial struct TitleLogoSystem : ISystem
         _titleLogoSingletonLookup.Update(ref state);
         _dealDamageLookup.Update(ref state);
         _destroyableLookup.Update(ref state);
+        _audioPlayLookup.Update(ref state);
 
         // タイトルロゴに弾が当たった時の処理を呼び出す
         var titleLogo = new TitleLogoTriggerJob()
         {
             titleLogoSingletonLookup = _titleLogoSingletonLookup,
             dealDamageLookup = _dealDamageLookup,
-            destroyableLookup = _destroyableLookup
+            destroyableLookup = _destroyableLookup,
+            audioPlayLookup = _audioPlayLookup
         };
 
         // TitleLogoTriggerJobをスケジュール
@@ -76,8 +81,7 @@ public partial struct TitleLogoTriggerJob : ITriggerEventsJob
     public ComponentLookup<TitleLogoSingletonData> titleLogoSingletonLookup;
     public ComponentLookup<BulletIDealDamageData> dealDamageLookup;
     public ComponentLookup<DestroyableData> destroyableLookup;
-    //public ComponentLookup<VFXCreationData> vfxCreationLookup;
-    //public ComponentLookup<AudioPlayData> audioPlayLookup;
+    public ComponentLookup<AudioPlayData> audioPlayLookup;
 
     public void Execute(TriggerEvent triggerEvent)
     {
@@ -100,9 +104,15 @@ public partial struct TitleLogoTriggerJob : ITriggerEventsJob
         destroyable.isKilled = true;
         destroyableLookup[entityA] = destroyable;
 
-        // タイトルロゴの被弾SEを再生
-        // メインスレッドから呼び出す為にAudioPlayDataを使う
-        //AudioPlayManager.Instance.PlaySE(titleLogoSingleton.damageSENumber);
+        // EntityBがAudioPlayDataを有していた
+        if (audioPlayLookup.HasComponent(entityB))
+        {
+            var audioPlay = audioPlayLookup[entityB];
+
+            // タイトルロゴの被弾SEを再生
+            audioPlay.AudioNumber = titleLogoSingleton.damageSENumber;
+            audioPlayLookup[entityB] = audioPlay;
+        }
 
         // 画像を切り替えるまでの回数をデクリメント
         titleLogoSingleton.currentImageSwapCount--;
