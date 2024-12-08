@@ -1,12 +1,26 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Entities;
 using System;
 using UnityEngine;
 
 #if UNITY_EDITOR
+using System.Collections;
+using System.Collections.Generic;
 using static EntityCampsHelper;
 #endif
+
+// リファクタリング済み
+
+/// <summary>
+/// Entityのカテゴリ
+/// </summary>
+public enum EntityCategory : byte
+{
+    [Tooltip("不明")] Unknown,
+    [Tooltip("破壊不可")] Indestructible,
+    [Tooltip("武器")] Weapon,
+    [Tooltip("弾幕")] Danmaku,
+    [Tooltip("生物")] LivingCreature
+}
 
 /// <summary>
 /// Entityのカテゴリの補助
@@ -36,32 +50,21 @@ static public class EntityCategoryHelper
                 return typeof(IndestructibleCategoryCampsTag);
         }
     }
-    /// <summary>
-    /// Entityのカテゴリ
-    /// </summary>
-    public enum EntityCategory
-    {
-        Unknown,
-        [Tooltip("破壊不可")] Indestructible,
-        [Tooltip("武器")] Weapon,
-        [Tooltip("弾幕")] Danmaku,
-        [Tooltip("生物")] LivingCreature
-    }
 
     /// <summary>
     /// Entityのカテゴリの情報
     /// </summary>
     public struct EntityCategoryData : IComponentData
     {
-        public EntityCategory myEntityCategory;
+        public readonly EntityCategory entityCategory;
 
         /// <summary>
         /// Entityのカテゴリの情報
         /// </summary>
-        /// <param name="EntityCategory">Entityのカテゴリ</param>
-        public EntityCategoryData(EntityCategory EntityCategory)
+        /// <param name="entityCategory">Entityのカテゴリ</param>
+        public EntityCategoryData(EntityCategory entityCategory)
         {
-            this.myEntityCategory = EntityCategory;
+            this.entityCategory = entityCategory;
         }
     }
 
