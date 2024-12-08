@@ -1,11 +1,12 @@
+#if UNITY_EDITOR
 using UnityEditor;
 using UnityEngine;
 using static DanmakuHelper;
 using Component = UnityEngine.Component;
-
-#if UNITY_EDITOR
 using System.ComponentModel;
 #endif
+
+// リファクタリング済み
 
 /// <summary>
 /// DanmakuTypeに変更があった時、必要なComponentのSetupを行う。
@@ -44,8 +45,7 @@ public sealed class DanmakuTypeSetup : MonoBehaviour
     private void OnEnable()
     {
         // ランタイム中は非有効化
-        if (Application.isPlaying)
-            enabled = false;
+        enabled = (Application.isPlaying) ? false : true;
     }
 
     /// <summary>
@@ -59,14 +59,15 @@ public sealed class DanmakuTypeSetup : MonoBehaviour
 
         // ランタイム中は無効
         if (Application.isPlaying) { return; }
-        // 
+
         // Prefabだった場合は変更せず返す
         if (EditorUtility.IsPersistent(this))
         {
             // Prefabを選択中に変更があった場合はメッセージ出力
             if (Selection.activeGameObject == this.gameObject)
-            { Debug.LogError("シーンに配置してから設定してください"); }
-
+            {
+                Debug.LogError("シーンに配置してから設定してください");
+            }
             return;
         }
 
@@ -82,28 +83,34 @@ public sealed class DanmakuTypeSetup : MonoBehaviour
 
             // ランタイム中なら破壊、elseなら遅延後に即時破壊
             if (Application.isPlaying)
+            {
                 Destroy(component);
+            }
             else
+            {
                 EditorApplication.delayCall += () =>
                 {
                     if (this != null)
+                    {
                         DestroyImmediate(component);
+                    }
                 };
+            }
         }
 
         // DanmakuTypeの内容に応じて必要なComponentをアタッチ
         switch (danmakuType)
         {
-            // 例外なら何もしない
-            default:
-            case DanmakuType.None:
-                break;
-
             case DanmakuType.N_Way:
                 AddComponent<N_Way_DanmakuAuthoring>();
                 break;
             case DanmakuType.TapShooting:
                 AddComponent<TapShooting_DanmakuAuthoring>();
+                break;
+
+            // 例外なら何もしない
+            default:
+            case DanmakuType.None:
                 break;
         }
     }
@@ -116,13 +123,19 @@ public sealed class DanmakuTypeSetup : MonoBehaviour
     {
         // ランタイム中なら追加、elseなら遅延後に追加
         if (Application.isPlaying)
+        {
             gameObject.AddComponent<T>();
+        }
         else
+        {
             EditorApplication.delayCall += () =>
             {
                 if (this != null)
+                {
                     gameObject.AddComponent<T>();
+                }
             };
+        }
     }
 #endif
 }

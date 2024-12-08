@@ -1,18 +1,20 @@
 using System;
 using Unity.Entities;
-using System.Collections;
 using UnityEngine;
 using static DanmakuHelper;
 
 #if UNITY_EDITOR
+using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
 #endif
 
+// ƒŠƒtƒ@ƒNƒ^ƒŠƒ“ƒOÏ‚İ
+
 /// <summary>
-/// n-Way’e
+/// n-Way’e‚É•K—v‚Èî•ñ
 /// </summary>
-public struct N_Way_DanmakuData : IComponentData, IEnumerable//, IDataDeletion
+public struct N_Way_DanmakuData : IComponentData
 {
     [Tooltip("î‚Ì‘å‚«‚³")]
     public readonly int fanAngle;
@@ -26,19 +28,8 @@ public struct N_Way_DanmakuData : IComponentData, IEnumerable//, IDataDeletion
     [Tooltip("’e‚ÌEntity")]
     public readonly Entity bulletEntity;
 
-    [Tooltip("’e‚ÌEntity‚Ì‘å‚«‚³")]
-    public readonly float bulletLocalScale;
-
     [Tooltip("Œo‰ßŠÔ")]
     public float elapsedTime;
-
-    public bool IsDataDeletion;
-
-    public N_Way_DanmakuData aaaa()
-    {
-        this.IsDataDeletion = true;
-        return this;
-    }
 
     /// <summary>
     /// n-Way’e
@@ -47,25 +38,20 @@ public struct N_Way_DanmakuData : IComponentData, IEnumerable//, IDataDeletion
     /// <param name="amountBullets">’e‚Ì—Ê</param>
     /// <param name="firingInterval">”­ËŠÔŠu</param>
     /// <param name="bulletPrefab">’e‚ÌPrefab</param>
-    public N_Way_DanmakuData(int fanAngle, int amountBullets, float firingInterval, Entity bulletPrefab, float bulletLocalScale)
+    public N_Way_DanmakuData(int fanAngle, int amountBullets, float firingInterval, Entity bulletPrefab)
     {
         this.fanAngle = fanAngle;
         this.amountBullets = amountBullets;
         this.firingInterval = firingInterval;
         this.bulletEntity = bulletPrefab;
-        this.bulletLocalScale = bulletLocalScale;
-        elapsedTime = 0.0f;
-        IsDataDeletion = false;
-    }
 
-    public IEnumerator GetEnumerator()
-    {
-        throw new NotImplementedException();
+        // ‰Šú’l
+        elapsedTime = 0.0f;
     }
 }
 
 /// <summary>
-/// n-Way’e‚Ìİ’è
+/// n-Way’e‚É•K—v‚Èİ’è
 /// </summary>
 [RequireComponent(typeof(DanmakuTypeSetup))]
 public class N_Way_DanmakuAuthoring : MonoBehaviour, IDanmakuAuthoring
@@ -91,17 +77,12 @@ public class N_Way_DanmakuAuthoring : MonoBehaviour, IDanmakuAuthoring
         {
             var bulletEntity = GetEntity(src._bulletPrefab, TransformUsageFlags.Dynamic);
 
-            // LocalTransform‚ÌScale‚ªfloat‚Å‚ ‚éˆ×Aˆê”Ô‘å‚«‚¢²‚ğ‹‚ß‚é‚±‚Æ‚É‚µ‚½
-            var localScale = src._bulletPrefab.localScale;
-            var localScaleMax = Mathf.Max(localScale.x, localScale.y, localScale.z);
-
             var n_Way_DanmakuData = new N_Way_DanmakuData
                 (
                     src._fanAngle,
                     src._amountBullets,
                     src._firingInterval,
-                    bulletEntity,
-                    localScaleMax
+                    bulletEntity
                 );
 
             AddComponent(GetEntity(TransformUsageFlags.Dynamic), n_Way_DanmakuData);

@@ -7,8 +7,10 @@ using System.Collections;
 using System.Collections.Generic;
 #endif
 
+// リファクタリング済み
+
 /// <summary>
-/// タップ撃ち弾幕の情報
+/// タップ撃ち弾幕に必要な情報
 /// </summary>
 public struct TapShooting_DanmakuData : IComponentData
 {
@@ -47,6 +49,7 @@ public struct TapShooting_DanmakuData : IComponentData
         this.firingInterval = firingInterval;
         this.bulletEntity = bulletEntity;
 
+        // 初期値
         currentShotCount = 0;
         singleSetNextTime = 0.0f;
         firingNextTime = 0.0f;
@@ -55,7 +58,7 @@ public struct TapShooting_DanmakuData : IComponentData
 
 
 /// <summary>
-/// タップ撃ち弾幕の設定
+/// タップ撃ち弾幕に必要な設定
 /// </summary>
 [RequireComponent(typeof(DanmakuTypeSetup))]
 public class TapShooting_DanmakuAuthoring : MonoBehaviour, IDanmakuAuthoring
@@ -85,6 +88,7 @@ public class TapShooting_DanmakuAuthoring : MonoBehaviour, IDanmakuAuthoring
                     src._firingInterval,
                     bulletPrefab
                 );
+
             AddComponent(GetEntity(TransformUsageFlags.Dynamic), tapShooting_DanmakuData);
         }
     }
