@@ -1,10 +1,15 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Entities;
 using UnityEngine;
 
+#if UNITY_EDITOR
+using System.Collections;
+using System.Collections.Generic;
+#endif
+
+// リファクタリング済み
+
 /// <summary>
-/// 削除に関する情報
+/// Entityの削除に必要なフラグ情報
 /// </summary>
 public struct DestroyableData : IComponentData
 {
