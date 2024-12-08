@@ -1,10 +1,15 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Transforms;
 using Unity.Mathematics;
 using UnityEngine;
+
+#if UNITY_EDITOR
+using System.Collections;
+using System.Collections.Generic;
+#endif
+
+// リファクタリング済み
 
 /// <summary>
 /// 弾幕のJobSystem
@@ -19,6 +24,8 @@ static public partial class DanmakuJobs
     public partial struct N_WayJob : IJobEntity
     {
         public EntityCommandBuffer.ParallelWriter commandBuffer;
+
+        [Tooltip("フレーム秒")]
         public float deltaTime;
 
         public void Execute(
@@ -28,26 +35,21 @@ static public partial class DanmakuJobs
             LocalToWorld localToWorld,
             [EntityIndexInQuery] int index)
         {
-            if (n_Way_DanmakuData.IsDataDeletion)
-            {
-                return;
-            }
-
-            // 経過時間を加算代入
+            // フレーム秒を加算代入
             n_Way_DanmakuData.elapsedTime += deltaTime;
 
             // 発射するための時間が経過していない場合は切り上げる
             if (n_Way_DanmakuData.elapsedTime < n_Way_DanmakuData.firingInterval) 
             {
-                // 更新を反映
+                // 加算代入したフレーム秒を反映
                 commandBuffer.SetComponent(index, entity, n_Way_DanmakuData);
-
                 return; 
             }
 
+            // 経過時間を初期化して以降は発射処理
             n_Way_DanmakuData.elapsedTime = 0.0f;
 
-            // 更新を反映
+            // 経過時間の初期化を反映
             commandBuffer.SetComponent(index, entity, n_Way_DanmakuData);
 
             float fanAngle = n_Way_DanmakuData.fanAngle;
@@ -72,12 +74,12 @@ static public partial class DanmakuJobs
                 // 正規化
                 quaternion normalizedRotation = math.normalize(localToWorld.Rotation);
 
-                // Transformを代入
+                // Transformを設定
                 commandBuffer.SetComponent(index, bulletEntity, new LocalTransform
                 {
                     Position = localToWorld.Position,
                     Rotation = math.mul(normalizedRotation, rotation),
-                    Scale = n_Way_DanmakuData.bulletLocalScale
+                    Scale = localTfm.Scale
                 });
             }
         }
@@ -90,6 +92,8 @@ static public partial class DanmakuJobs
     public partial struct TapShootingJob : IJobEntity
     {
         public EntityCommandBuffer.ParallelWriter commandBuffer;
+
+        [Tooltip("経過時間")]
         public double elapsedTime;
 
         public void Execute(
@@ -107,12 +111,12 @@ static public partial class DanmakuJobs
             // 弾を生成
             Entity bulletEntity = commandBuffer.Instantiate(index, tapShooting_DanmakuData.bulletEntity);
 
-            // Transformを代入
+            // Transformを設定
             commandBuffer.SetComponent(index, bulletEntity, new LocalTransform
             {
                 Position = localTfm.Position,
                 Rotation = localTfm.Rotation,
-                Scale = 1.0f
+                Scale = localTfm.Scale
             });
 
             // 現在の射撃回数をインクリメント
@@ -121,7 +125,7 @@ static public partial class DanmakuJobs
             // 現在の射撃回数がワンセットの射撃回数以上だった
             if (tapShooting_DanmakuData.currentShotCount >= tapShooting_DanmakuData.shootNSingleSet)
             {
-                //現在の射撃回数をリセット
+                //現在の射撃回数を初期化
                 tapShooting_DanmakuData.currentShotCount = 0;
 
                 // 次回のワンセット開始時刻を更新する

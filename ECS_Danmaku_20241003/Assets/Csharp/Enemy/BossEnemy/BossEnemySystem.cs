@@ -224,8 +224,7 @@ public partial class BossEnemySystem : SystemBase
                         120,
                         16,
                         0.5f,
-                        bossEnemySingleton.nWayBulletEntity,
-                        bossEnemySingleton.bulletLocalScale
+                        bossEnemySingleton.nWayBulletEntity
                     );
 
                     // ïœêîÇê›íË
@@ -261,8 +260,7 @@ public partial class BossEnemySystem : SystemBase
                         360,
                         3,
                         bossEnemySingleton.nWayFiringInterval,
-                        bossEnemySingleton.nWayBulletEntity,
-                        bossEnemySingleton.bulletLocalScale
+                        bossEnemySingleton.nWayBulletEntity
                     );
 
                     // ïœêîÇê›íË
@@ -283,8 +281,7 @@ public partial class BossEnemySystem : SystemBase
                         360,
                         6,
                         0.0f,
-                        bossEnemySingleton.nWayBulletEntity,
-                        bossEnemySingleton.bulletLocalScale
+                        bossEnemySingleton.nWayBulletEntity
                     );
 
                     // ïœêîÇê›íË
