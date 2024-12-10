@@ -17,7 +17,8 @@ using static EntityCampsHelper;
 [BurstCompile]
 public partial struct TriggerSystem : ISystem
 {
-    private ComponentLookup<HealthPointData> _enemyHealthPointLookup;
+    private ComponentLookup<PlayerSingletonData> _playerSingletonLookup;
+    private ComponentLookup<HealthPointData> _healthPointLookup;
     private ComponentLookup<BulletIDealDamageData> _dealDamageLookup;
     private ComponentLookup<DestroyableData> _destroyableLookup;
     private ComponentLookup<RemainingPierceCountData> _remainingPierceCountLookup;
@@ -29,7 +30,8 @@ public partial struct TriggerSystem : ISystem
     public void OnCreate(ref SystemState state)
     {
         // æ“¾‚·‚é
-        _enemyHealthPointLookup = state.GetComponentLookup<HealthPointData>(false);
+        _playerSingletonLookup = state.GetComponentLookup<PlayerSingletonData>(false);
+        _healthPointLookup = state.GetComponentLookup<HealthPointData>(false);
         _dealDamageLookup = state.GetComponentLookup<BulletIDealDamageData>(false);
         _destroyableLookup = state.GetComponentLookup<DestroyableData>(false);
         _remainingPierceCountLookup = state.GetComponentLookup<RemainingPierceCountData>(false);
@@ -44,7 +46,8 @@ public partial struct TriggerSystem : ISystem
         var currentTime = SystemAPI.Time.ElapsedTime;
 
         // XV‚·‚é
-        _enemyHealthPointLookup.Update(ref state);
+        _playerSingletonLookup.Update(ref state);
+        _healthPointLookup.Update(ref state);
         _dealDamageLookup.Update(ref state);
         _destroyableLookup.Update(ref state);
         _remainingPierceCountLookup.Update(ref state);
@@ -56,6 +59,7 @@ public partial struct TriggerSystem : ISystem
         // PL‚É’e‚ª“–‚½‚Á‚½‚Ìˆ—‚ğŒÄ‚Ño‚·
         var playerDamage = new PlayerDamageTriggerJob()
         {
+            playerSingletonLookup = _playerSingletonLookup,
             dealDamageLookup = _dealDamageLookup,
             destroyableLookup = _destroyableLookup,
             localTransformLookup = _localTransformLookup,
@@ -75,7 +79,7 @@ public partial struct TriggerSystem : ISystem
         // “G‚É’e‚ª“–‚½‚Á‚½‚Ìˆ—‚ğŒÄ‚Ño‚·
         var enemyDamage = new EnemyDamageTriggerJob()
         {
-            healthPointLookup = _enemyHealthPointLookup,
+            healthPointLookup = _healthPointLookup,
             dealDamageLookup = _dealDamageLookup,
             destroyableLookup = _destroyableLookup,
             remainingPierceCountLookup = _remainingPierceCountLookup,

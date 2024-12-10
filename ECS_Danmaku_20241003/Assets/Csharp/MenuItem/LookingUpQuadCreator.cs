@@ -2,6 +2,8 @@
 using UnityEngine;
 using UnityEditor;
 
+// リファクタリング済み
+
 /// <summary>
 /// MenuItemを使って、上を向いているQuadを生成できるようにする
 /// </summary>

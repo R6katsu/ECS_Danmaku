@@ -8,6 +8,8 @@ using System.Collections;
 using System.Collections.Generic;
 #endif
 
+// リファクタリング済み
+
 /// <summary>
 /// 移動の補助
 /// </summary>
@@ -24,7 +26,7 @@ static public class MoveHelper
     [Serializable]
     public struct MoveParameter
     {
-        [SerializeField]
+        [SerializeField, Header("移動速度")]
         private float _speed;
 
         /// <summary>
