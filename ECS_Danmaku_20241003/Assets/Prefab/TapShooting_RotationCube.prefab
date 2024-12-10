@@ -65,11 +65,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: facb67dd08f93f745b76572ffb4ac9cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _shootNSingleSet: 1
-  _singleSetRestTimeAfter: 0.05
-  _firingInterval: 0
-  _bulletPrefab: {fileID: 4638527366984909, guid: a7c50ff89ed74f540b9838d375faa6e5,
-    type: 3}
+  _tapShootingSettingParameter:
+    _shootNSingleSet: 1
+    _singleSetRestTimeAfter: 0
+    _firingInterval: 0
+    _bulletPrefab: {fileID: 4638527366984909, guid: a7c50ff89ed74f540b9838d375faa6e5,
+      type: 3}
 --- !u!114 &-494061229664181192
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -83,8 +84,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _rotationData:
-    axisType: 2
-    rotationSpeed: 20
+    _axisType: 2
+    _rotationSpeed: 20
 --- !u!114 &1816249590449528686
 MonoBehaviour:
   m_ObjectHideFlags: 0

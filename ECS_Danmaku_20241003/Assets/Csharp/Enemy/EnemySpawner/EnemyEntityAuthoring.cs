@@ -7,6 +7,8 @@ using System.Collections;
 using System.Collections.Generic;
 #endif
 
+// リファクタリング済み
+
 /// <summary>
 /// Entityに変換する敵Prefabの設定
 /// </summary>
@@ -64,18 +66,19 @@ public class EnemyEntityAuthoring : MonoBehaviour
         {
             foreach (var enemyPrefabSetting in src._enemyPrefabSettings)
             {
-                // 空のEntityを作成
+                // 空のEntityを作成、情報を保持するだけなのでNone
                 var tmpEnemy = CreateAdditionalEntity(TransformUsageFlags.None);
 
                 // 敵PrefabをEntityに変換
+                // 複製の為に参照するだけなのでNone
                 var enemyEntity = GetEntity(enemyPrefabSetting.EnemyPrefabs, TransformUsageFlags.None);
 
                 // 敵Entityの情報を保持
                 var enemyEntityData = new EnemyEntityData
-                    (
-                        enemyEntity,
-                        enemyPrefabSetting.MyEnemyName
-                    );
+                (
+                    enemyEntity,
+                    enemyPrefabSetting.MyEnemyName
+                );
 
                 AddComponent(tmpEnemy, enemyEntityData);
             }

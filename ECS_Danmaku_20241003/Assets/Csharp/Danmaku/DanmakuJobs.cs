@@ -30,7 +30,7 @@ static public partial class DanmakuJobs
 
         public void Execute(
             Entity entity,
-            N_Way_DanmakuData n_Way_DanmakuData,
+            NWay_DanmakuData n_Way_DanmakuData,
             LocalTransform localTfm,
             LocalToWorld localToWorld,
             [EntityIndexInQuery] int index)

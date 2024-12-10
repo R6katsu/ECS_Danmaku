@@ -103,7 +103,7 @@ namespace TMPro.Examples
                     // Get the index of the first vertex of the selected character.
                     int vertexIndex = m_TextMeshPro.textInfo.characterInfo[charIndex].vertexIndex;
 
-                    // Get a reference to the vertices infos.
+                    // Get a reference to the vertices enemySpawnInfos.
                     Vector3[] vertices = m_TextMeshPro.textInfo.meshInfo[materialIndex].vertices;
 
                     // Determine the center point of the character.
@@ -154,7 +154,7 @@ namespace TMPro.Examples
                     // Get the index of the last character's vertex attributes.
                     int lastVertexIndex = vertices.Length - 4;
 
-                    // Swap the current character's vertex attributes with those of the last element in the vertex attribute arrays.
+                    // Swap the current character's vertex attributes with those of the last element in the vertex attribute infos.
                     // We do this to make sure this character is rendered last and over other characters.
                     meshInfo.SwapVertexData(vertexIndex, lastVertexIndex);
 
@@ -343,7 +343,7 @@ namespace TMPro.Examples
             {
                 TMP_WordInfo wInfo = m_TextMeshPro.textInfo.wordInfo[m_selectedWord];
 
-                // Get a reference to the uiVertices infos.
+                // Get a reference to the uiVertices enemySpawnInfos.
                 UIVertex[] uiVertices = m_TextMeshPro.textInfo.meshInfo.uiVertices;
 
                 // Iterate through each of the characters of the word.
@@ -371,7 +371,7 @@ namespace TMPro.Examples
 
                 TMP_WordInfo wInfo = m_TextMeshPro.textInfo.wordInfo[wordIndex];
 
-                // Get a reference to the uiVertices infos.
+                // Get a reference to the uiVertices enemySpawnInfos.
                 UIVertex[] uiVertices = m_TextMeshPro.textInfo.meshInfo.uiVertices;
 
                 // Iterate through each of the characters of the word.

@@ -14,24 +14,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _bossEnemyPrefab: {fileID: 3532004193051288537, guid: 636e984adad873b40bec88be066ba522,
     type: 3}
-  _patterns:
-  - arrays:
+  _countdownBossSpawn: 2
+  _patternArrays:
+  - infos:
     - _enemyName: 0
       _creationDelay: 0
       _spawnPointType: 0
     - _enemyName: 0
       _creationDelay: 3
-      _spawnPointType: 1
-    - _enemyName: 1
-      _creationDelay: 6
       _spawnPointType: 2
     - _enemyName: 0
-      _creationDelay: 9
-      _spawnPointType: 3
-    - _enemyName: 0
-      _creationDelay: 12
+      _creationDelay: 6
       _spawnPointType: 4
-  - arrays:
+  - infos:
     - _enemyName: 1
       _creationDelay: 0
       _spawnPointType: 1

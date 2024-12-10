@@ -1,6 +1,7 @@
 using Unity.Entities;
 using UnityEngine;
 using static DanmakuHelper;
+using System;
 
 #if UNITY_EDITOR
 using System.Collections;
@@ -8,6 +9,45 @@ using System.Collections.Generic;
 #endif
 
 // リファクタリング済み
+
+/// <summary>
+/// タップ撃ち弾に必要なパラメータの設定
+/// </summary>
+[Serializable]
+public struct TapShootingSettingParameter
+{
+    [SerializeField, Header("ワンセットでn回撃つ")]
+    private int _shootNSingleSet;
+
+    [SerializeField, Header("ワンセット終了後の休息時間")]
+    private float _singleSetRestTimeAfter;
+
+    [SerializeField, Header("発射間隔")]
+    private float _firingInterval;
+
+    [SerializeField, Header("弾のPrefab")]
+    private Transform _bulletPrefab;
+
+    /// <summary>
+    /// ワンセットでn回撃つ
+    /// </summary>
+    public int ShootNSingleSet => _shootNSingleSet;
+
+    /// <summary>
+    /// ワンセット終了後の休息時間
+    /// </summary>
+    public float SingleSetRestTimeAfter => _singleSetRestTimeAfter;
+
+    /// <summary>
+    /// 発射間隔
+    /// </summary>
+    public float FiringInterval => _firingInterval;
+
+    /// <summary>
+    /// 弾のPrefab
+    /// </summary>
+    public Transform BulletPrefab => _bulletPrefab;
+}
 
 /// <summary>
 /// タップ撃ち弾幕に必要な情報
@@ -54,8 +94,25 @@ public struct TapShooting_DanmakuData : IComponentData
         singleSetNextTime = 0.0f;
         firingNextTime = 0.0f;
     }
-}
 
+    /// <summary>
+    /// タップ撃ち弾幕の情報
+    /// </summary>
+    /// <param name="tapShootingSettingParameter">タップ撃ち弾に必要なパラメータの設定</param>
+    /// <param name="bulletEntity">弾のPrefabEntity</param>
+    public TapShooting_DanmakuData(TapShootingSettingParameter tapShootingSettingParameter, Entity bulletEntity)
+    {
+        this.shootNSingleSet = tapShootingSettingParameter.ShootNSingleSet;
+        this.singleSetRestTimeAfter = tapShootingSettingParameter.SingleSetRestTimeAfter;
+        this.firingInterval = tapShootingSettingParameter.FiringInterval;
+        this.bulletEntity = bulletEntity;
+
+        // 初期値
+        currentShotCount = 0;
+        singleSetNextTime = 0.0f;
+        firingNextTime = 0.0f;
+    }
+}
 
 /// <summary>
 /// タップ撃ち弾幕に必要な設定
@@ -63,31 +120,20 @@ public struct TapShooting_DanmakuData : IComponentData
 [RequireComponent(typeof(DanmakuTypeSetup))]
 public class TapShooting_DanmakuAuthoring : MonoBehaviour, IDanmakuAuthoring
 {
-    [SerializeField,Min(0), Header("ワンセットでn回撃つ")]
-    private int _shootNSingleSet = 0;
-
-    [SerializeField, Min(0.0f), Header("ワンセット終了後の休息時間")]
-    private float _singleSetRestTimeAfter = 0.0f;
-
-    [SerializeField, Min(0.0f), Header("発射間隔")]
-    private float _firingInterval = 0.0f;
-
-    [SerializeField, Header("弾のPrefab")]
-    private Transform _bulletPrefab = null;
+    [SerializeField, Header("タップ撃ち弾に必要なパラメータの設定")]
+    private TapShootingSettingParameter _tapShootingSettingParameter = new();
 
     public class Baker : Baker<TapShooting_DanmakuAuthoring>
     {
         public override void Bake(TapShooting_DanmakuAuthoring src)
         {
-            var bulletPrefab = GetEntity(src._bulletPrefab, TransformUsageFlags.Dynamic);
+            var bulletPrefab = GetEntity(src._tapShootingSettingParameter.BulletPrefab, TransformUsageFlags.Dynamic);
 
             var tapShooting_DanmakuData = new TapShooting_DanmakuData
-                (
-                    src._shootNSingleSet,
-                    src._singleSetRestTimeAfter,
-                    src._firingInterval,
-                    bulletPrefab
-                );
+            (
+                src._tapShootingSettingParameter,
+                bulletPrefab
+            );
 
             AddComponent(GetEntity(TransformUsageFlags.Dynamic), tapShooting_DanmakuData);
         }

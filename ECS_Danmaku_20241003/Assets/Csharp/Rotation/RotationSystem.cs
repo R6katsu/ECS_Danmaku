@@ -28,8 +28,8 @@ public partial struct RotationSystem : ISystem
                  RefRW<LocalTransform>>()
                  .WithEntityAccess())
         {
-            var axisType = rotationData.ValueRO.axisType;
-            var rotationSpeed = rotationData.ValueRO.rotationSpeed;
+            var axisType = rotationData.ValueRO.AxisType;
+            var rotationSpeed = rotationData.ValueRO.RotationSpeed;
             var rotation = localTfm.ValueRW.Rotation;
 
             // ‰ñ“]—Ê‚ðŒvŽZ

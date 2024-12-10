@@ -12,20 +12,25 @@ using System.Collections.Generic;
 using static EnemySpawnPatternSettingSO;
 #endif
 
+// リファクタリング済み
+
 /// <summary>
 /// 敵生成設定の情報の設定
 /// </summary>
 [Serializable]
 public struct EnemySpawnInfo
 {
-    [SerializeField] // 生成する敵Entityの名称
+    // 生成する敵Entityの名称
+    [SerializeField]
     private EnemyName _enemyName;
 
-    [SerializeField, Min(0)] // 生成までの時間
+    // 生成までの時間
+    [SerializeField, Min(0)]
     private float _creationDelay;
 
-    [SerializeField] // 生成位置の種類
-    private SpawnPointSingletonData.SpawnPointType _spawnPointType;
+    // 生成位置の種類
+    [SerializeField]
+    private SpawnPointType _spawnPointType;
 
     /// <summary>
     /// 生成する敵Entityの名称
@@ -40,7 +45,7 @@ public struct EnemySpawnInfo
     /// <summary>
     /// 生成位置の種類
     /// </summary>
-    public SpawnPointSingletonData.SpawnPointType SpawnPointType => _spawnPointType;
+    public SpawnPointType SpawnPointType => _spawnPointType;
 }
 
 /// <summary>
@@ -50,7 +55,7 @@ public struct EnemySpawnInfo
 public struct EnemySpawnPatternArray
 {
     [Tooltip("敵生成関連の情報の配列の配列")]
-    public EnemySpawnInfo[] arrays;
+    public EnemySpawnInfo[] infos;
 }
 
 /// <summary>
@@ -62,8 +67,11 @@ public class EnemySpawnPatternSettingSO : ScriptableObject
     [SerializeField, Header("ボス敵Prefab")]
     private Transform _bossEnemyPrefab = null;
 
+    [SerializeField, Header("ボス生成までのカウントダウン")]
+    private int _countdownBossSpawn;
+
     [SerializeField, Header("敵生成関連の情報の配列の配列の配列")]
-    private EnemySpawnPatternArray[] _patterns = null;
+    private EnemySpawnPatternArray[] _patternArrays = null;
 
     /// <summary>
     /// ボス敵Prefab
@@ -71,7 +79,12 @@ public class EnemySpawnPatternSettingSO : ScriptableObject
     public Transform BossEnemyPrefab => _bossEnemyPrefab;
 
     /// <summary>
+    /// ボス生成までのカウントダウン
+    /// </summary>
+    public int CountdownBossSpawn => _countdownBossSpawn;
+
+    /// <summary>
     /// 敵生成関連の情報の配列の配列の配列
     /// </summary>
-    public EnemySpawnPatternArray[] Patterns => _patterns;
+    public EnemySpawnPatternArray[] PatternArrays => _patternArrays;
 }

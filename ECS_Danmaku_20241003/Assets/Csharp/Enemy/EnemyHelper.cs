@@ -1,15 +1,26 @@
-using System.Collections.Generic;
-using Unity.Collections;
 using Unity.Entities;
 using UnityEngine;
-using static HealthHelper;
-using static MoveHelper;
 
 #if UNITY_EDITOR
+using System.Collections.Generic;
+using Unity.Collections;
+using static HealthHelper;
+using static MoveHelper;
 using NUnit.Framework;
 using System.Security.Cryptography;
 using Unity.Core;
 #endif
+
+// リファクタリング済み
+
+/// <summary>
+/// 敵Entityの名称
+/// </summary>
+public enum EnemyName : byte
+{
+    [Tooltip("全方位弾")] AllDirectionBulletEnemy,
+    [Tooltip("回転撃ち")] SpinShootingEnemy,
+}
 
 /// <summary>
 /// 敵の補助

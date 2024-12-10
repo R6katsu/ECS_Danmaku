@@ -1,17 +1,19 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Transforms;
-using UnityEngine;
-using static BulletHelper;
 using static EnemyHelper;
 
 #if UNITY_EDITOR
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using static BulletHelper;
 #endif
 
+// リファクタリング済み
+
 /// <summary>
-/// 敵の処理
+/// EnemyTagを有するEntityの処理
 /// </summary>
 [BurstCompile]
 public partial struct EnemySystem : ISystem
@@ -31,7 +33,7 @@ public partial struct EnemySystem : ISystem
         var movementRangeCenter = enemyMovementRange.movementRangeCenter;
 
         // 半分の大きさを求める
-        var halfMovementRange = enemyMovementRange.movementRange / 2;
+        var halfMovementRange = enemyMovementRange.movementRange.Halve();
 
         // 中心位置を考慮した移動可能範囲を求める
         var minMovementRange = movementRangeCenter + -halfMovementRange;
