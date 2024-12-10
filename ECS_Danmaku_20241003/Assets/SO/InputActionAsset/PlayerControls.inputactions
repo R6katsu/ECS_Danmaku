@@ -6,7 +6,7 @@
             "id": "ee9658e0-36e6-4ee6-aea7-6710706044c7",
             "actions": [
                 {
-                    "name": "Shot",
+                    "name": "ChargeShot",
                     "type": "Button",
                     "id": "7e5f6341-1e62-421d-a6a6-93ba1542000a",
                     "expectedControlType": "Button",
@@ -50,7 +50,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Shot",
+                    "action": "ChargeShot",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -61,7 +61,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Shot",
+                    "action": "ChargeShot",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -72,7 +72,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Shot",
+                    "action": "ChargeShot",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

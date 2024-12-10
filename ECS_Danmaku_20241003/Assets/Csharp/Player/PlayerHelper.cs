@@ -1,8 +1,13 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Entities;
+
+#if UNITY_EDITOR
 using UnityEngine;
 using static HealthHelper;
+using System.Collections;
+using System.Collections.Generic;
+#endif
+
+// リファクタリング済み
 
 /// <summary>
 /// PLの補助

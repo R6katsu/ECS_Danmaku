@@ -363,11 +363,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ab2d338df7e16cb4a95e4750affb8f16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _playerMoveTilt: 30
   _moveSpeed: 5
   _slowMoveSpeed: 2.5
-  _maxHP: 1
   _firingInterval: 0.1
-  _isInvincibleTime: 1
   _killedSENumber: 2
   _playerBulletPrefab: {fileID: 5686516524955122670, guid: 3955ac77ee2c9374caa42be77715c017,
     type: 3}
