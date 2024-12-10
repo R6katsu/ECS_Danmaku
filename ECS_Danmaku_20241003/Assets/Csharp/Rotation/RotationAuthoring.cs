@@ -1,9 +1,9 @@
 using System;
 using Unity.Entities;
 using UnityEngine;
-using System.Collections;
 
 #if UNITY_EDITOR
+using System.Collections;
 using System.Collections.Generic;
 #endif
 
@@ -11,17 +11,33 @@ using System.Collections.Generic;
 /// ©g‚Ì‰ñ“]‚Ìî•ñ
 /// </summary>
 [Serializable]
-public struct RotationData : IComponentData, IEnumerable
+public struct RotationData : IComponentData
 {
-    [Header("‰ñ“]•ûŒü"), Tooltip("‰ñ“]•ûŒü")]
-    public AxisType axisType;
+    [SerializeField, Header("‰ñ“]•ûŒü")]
+    private AxisType _axisType;
 
-    [Header("‰ñ“]‘¬“xi•‰‚Ì’l‚Í‹t‰ñ“]j"), Tooltip("‰ñ“]‘¬“xi•‰‚Ì’l‚Í‹t‰ñ“]j")]
-    public float rotationSpeed;
+    [SerializeField, Header("‰ñ“]‘¬“xi•‰‚Ì’l‚Í‹t‰ñ“]j")]
+    private float _rotationSpeed;
 
-    public IEnumerator GetEnumerator()
+    /// <summary>
+    /// ‰ñ“]•ûŒü
+    /// </summary>
+    public AxisType AxisType => _axisType;
+
+    /// <summary>
+    /// ‰ñ“]‘¬“xi•‰‚Ì’l‚Í‹t‰ñ“]j
+    /// </summary>
+    public float RotationSpeed => _rotationSpeed;
+
+    /// <summary>
+    /// ©g‚Ì‰ñ“]‚Ìî•ñ
+    /// </summary>
+    /// <param name="axisType">‰ñ“]•ûŒü</param>
+    /// <param name="rotationSpeed">‰ñ“]‘¬“xi•‰‚Ì’l‚Í‹t‰ñ“]j</param>
+    public RotationData(AxisType axisType, float rotationSpeed)
     {
-        throw new NotImplementedException();
+        _axisType = axisType;
+        _rotationSpeed = rotationSpeed;
     }
 }
 

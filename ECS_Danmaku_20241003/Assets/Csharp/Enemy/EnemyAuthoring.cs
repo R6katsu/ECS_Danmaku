@@ -1,14 +1,16 @@
 using Unity.Entities;
 using UnityEngine;
 using static EnemyHelper;
-using static EntityCategoryHelper;
 using static HealthPointDatas;
 
 #if UNITY_EDITOR
+using static EntityCategoryHelper;
 using System.Collections;
 using System.Collections.Generic;
 using static EntityCampsHelper;
 #endif
+
+// リファクタリング済み
 
 /// <summary>
 /// 敵の設定
@@ -39,10 +41,18 @@ public class EnemyAuthoring : MonoBehaviour
         {
             var entity = GetEntity(TransformUsageFlags.Dynamic);
 
+            var enemyHealthPointData = new EnemyHealthPointData
+            (
+                src._maxHP,
+                src._isInvincibleTime,
+                src._hitSENumber,
+                src._killedSENumber
+            );
+
             // Dataをアタッチ
             AddComponent(entity, new EnemyTag());
             AddComponent(entity, new DestroyableData());
-            AddComponent(entity, new EnemyHealthPointData(src._maxHP, src._isInvincibleTime, src._hitSENumber, src._killedSENumber));
+            AddComponent(entity, enemyHealthPointData);
 
             // 陣営とカテゴリのTagをアタッチ
             AddComponent(entity, EntityCampsHelper.GetCampsTagType(src._campsType));

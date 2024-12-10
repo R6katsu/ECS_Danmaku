@@ -7,12 +7,11 @@ using UnityEngine;
 using static EnemyHelper;
 
 using Random = UnityEngine.Random;
-using static SpawnPointSingletonData;
-using System.Linq;
-
-
 
 #if UNITY_EDITOR
+using Unity.Physics;
+using static SpawnPointSingletonData;
+using System.Linq;
 using System.Linq.Expressions;
 using Unity.Jobs;
 using System;
@@ -23,106 +22,106 @@ using UnityEngine.Rendering;
 using static UnityEngine.EventSystems.EventTrigger;
 #endif
 
+// リファクタリング済み
+
 /// <summary>
 /// 敵の生成処理
 /// </summary>
 [BurstCompile]
 public partial struct EnemySpawnerSystem : ISystem
 {
+    [Tooltip("大きさの初期値")]
+    private const float DEFAULT_SCALE = 1.0f;
+
+    [Tooltip("未設定の値")]
+    private const int UNSET_VALUE = int.MinValue;
+
+    private EnemySpawnPattern _currentPattern;
+    private int _currentInfoNumber;
     private float _elapsed;
 
-    EnemySpawnPattern currentPattern;
-    int currentInfoNumber;
-
-    int bossNumber;
-
-    [Tooltip("EnemySpawnerSystemが有効か")]
-    public bool isSelfEnable;
-
-    public void OnCreate(ref SystemState state)
-    {
-        Initialize();
-    }
+    [Tooltip("ボス生成までのカウントダウン")]
+    private int _countdownBossSpawn;
 
     public void OnUpdate(ref SystemState state)
     {
-        // EnemySpawnPatternArraySingletonDataが存在しなかった
+        // EnemySpawnPatternArraySingletonDataが存在していなかった
         if (!SystemAPI.HasSingleton<EnemySpawnPatternArraySingletonData>())
         {
             // 初期化
             Initialize();
         }
 
+        // 経過時間にフレーム秒を加算代入
         _elapsed += SystemAPI.Time.DeltaTime;
 
+        // 一時的なBufferを作成
         var ecb = new EntityCommandBuffer(Allocator.Temp);
 
-        bool hasEnemy = false;
-        foreach (var _ in SystemAPI.Query<EnemyTag>())
-        {
-            hasEnemy = true;
-            break;
-        }
+        // 敵が存在するか
+        bool hasEnemy = HasEnemy(ref state);
 
-        // Entityと一緒にDataを取得する
-        foreach (var (array, entity) in SystemAPI.Query<EnemySpawnPatternArraySingletonData>().WithEntityAccess())
+        // EntityとDataを取得する
+        foreach (var (array, entity)
+            in SystemAPI.Query<EnemySpawnPatternArraySingletonData>()
+            .WithEntityAccess())
         {
-            if (currentPattern.Equals(default) || currentPattern.infos.Length <= currentInfoNumber)
+            // パターンの数が0以下だった
+            if (array.enemySpawnPatterns.Length <= 0)
+            {
+#if UNITY_EDITOR
+                Debug.LogError("敵を生成するパターンが存在しない");
+#endif
+                continue;
+            }
+
+            // ボス生成までのカウントダウンが未設定なら初期化
+            _countdownBossSpawn = (_countdownBossSpawn == UNSET_VALUE) ? array.countdownBossSpawn : _countdownBossSpawn;
+
+            // _currentPatternがdefault、
+            // またはenemySpawnInfosの長さを_currentInfoNumberが超過していたら初期化
+            if (_currentPattern.Equals(default) 
+                || _currentPattern.enemySpawnInfos.Length <= _currentInfoNumber)
             {
                 // EnemyTagを持つEntityが1体以上存在する場合はコンテニュー
                 if (hasEnemy) { continue; }
 
-                var patternNumber = Random.Range(0, array.infos.Length);
+                // 次に生成する敵パターンを抽選
+                var patternNumber = Random.Range(0, array.enemySpawnPatterns.Length);
+                _currentPattern = array.enemySpawnPatterns[patternNumber];
 
-                currentPattern = array.infos[patternNumber];
+                // ボス生成までのカウントダウンをデクリメント
+                _countdownBossSpawn--;
 
-                currentInfoNumber = 0;
+                // 初期化
+                _currentInfoNumber = 0;
                 _elapsed = 0.0f;
-                bossNumber--;
             }
 
-            // 0以下になった
-            if (bossNumber <= 0)
+            // ボス生成までのカウントダウンが 0以下になった
+            if (_countdownBossSpawn <= 0)
             {
-                if (bossNumber != 0) { continue; }
+                // ボス敵を生成
+                BossEnemyInstantiate(ref state, ecb, array);
 
-                // ボスを生成
-                var bossEnemy = ecb.Instantiate(array.bossEnemyEntity);
-
-                // SpawnPointSingletonDataが存在していた
-                if (SystemAPI.HasSingleton<SpawnPointSingletonData>())
+                // EnemySpawnPatternArraySingletonDataが存在していた
+                if (SystemAPI.HasSingleton<EnemySpawnPatternArraySingletonData>())
                 {
-                    // シングルトンデータの取得
-                    var spawnPointSingleton = SystemAPI.GetSingleton<SpawnPointSingletonData>();
-
-                    // 生成位置を取得
-                    var spawnPoint = spawnPointSingleton.GetSpawnPoint
-                        (
-                            SpawnPointType.Center
-                        );
-
-                    // nullチェック。nullだったら原点に生成
-                    spawnPoint = (spawnPoint == null) ? float3.zero : spawnPoint;
-
-                    // LocalTransformを設定する
-                    ecb.SetComponent(bossEnemy, new LocalTransform
-                    {
-                        Position = (float3)spawnPoint,
-                        Rotation = quaternion.identity,
-                        Scale = 1.0f
-                    });
+                    // EnemySpawnPatternArraySingletonDataをアタッチされたEntityから削除する
+                    var enemySpawnPatternArraySingletonDataEntity = SystemAPI.GetSingletonEntity<EnemySpawnPatternArraySingletonData>();
+                    ecb.RemoveComponent<EnemySpawnPatternArraySingletonData>(enemySpawnPatternArraySingletonDataEntity);
                 }
-
-                bossNumber--;
-                continue;
+                break;
             }
 
-            var currentInfo = currentPattern.infos[currentInfoNumber];
+            // 現在のenemySpawnInfoを取得
+            var currentInfo = _currentPattern.enemySpawnInfos[_currentInfoNumber];
 
             // 経過時間が敵生成時間未満だったらコンテニュー
             if (currentInfo.CreationDelay > _elapsed) { continue; }
 
-            currentInfoNumber++;
+            // 生成中の敵番号をインクリメント
+            _currentInfoNumber++;
 
             // EnemyNameに対応する敵Entityを取得
             var enemyEntity = GetEnemyEntity(ref state, currentInfo.MyEnemyName);
@@ -141,9 +140,9 @@ public partial struct EnemySpawnerSystem : ISystem
 
                 // 生成位置を取得
                 var spawnPoint = spawnPointSingleton.GetSpawnPoint
-                    (
-                        currentInfo.SpawnPointType
-                    );
+                (
+                    currentInfo.SpawnPointType
+                );
 
                 // nullチェック。nullだったら原点に生成
                 spawnPoint = (spawnPoint == null) ? float3.zero : spawnPoint;
@@ -153,7 +152,7 @@ public partial struct EnemySpawnerSystem : ISystem
                 {
                     Position = (float3)spawnPoint,
                     Rotation = quaternion.identity,
-                    Scale = 1.0f
+                    Scale = DEFAULT_SCALE
                 });
             }
         }
@@ -171,8 +170,6 @@ public partial struct EnemySpawnerSystem : ISystem
     {
         foreach (var enemyEntityData in SystemAPI.Query<EnemyEntityData>())
         {
-            Debug.Log($"enemyEntityData:{enemyEntityData.enemyName}, enemyName:{enemyName}");
-
             if (enemyEntityData.enemyName == enemyName)
             {
                 return enemyEntityData.enemyEntity;
@@ -184,15 +181,56 @@ public partial struct EnemySpawnerSystem : ISystem
     }
 
     /// <summary>
+    /// 敵が存在するか
+    /// </summary>
+    /// <returns></returns>
+    private bool HasEnemy(ref SystemState state)
+    {
+        foreach (var enemyTag in SystemAPI.Query<EnemyTag>())
+        {
+            return true;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// ボス敵を生成
+    /// </summary>
+    private void BossEnemyInstantiate(ref SystemState state, EntityCommandBuffer ecb, EnemySpawnPatternArraySingletonData array)
+    {
+        // ボスを生成
+        var bossEnemy = ecb.Instantiate(array.bossEnemyEntity);
+
+        // SpawnPointSingletonDataが存在していた
+        if (SystemAPI.HasSingleton<SpawnPointSingletonData>())
+        {
+            // シングルトンデータの取得
+            var spawnPointSingleton = SystemAPI.GetSingleton<SpawnPointSingletonData>();
+
+            // 生成位置を取得
+            var spawnPoint = spawnPointSingleton.GetSpawnPoint(SpawnPointType.Center);
+
+            // nullチェック。nullだったら原点に生成
+            spawnPoint = (spawnPoint == null) ? float3.zero : spawnPoint;
+
+            // LocalTransformを設定する
+            ecb.SetComponent(bossEnemy, new LocalTransform
+            {
+                Position = (float3)spawnPoint,
+                Rotation = quaternion.identity,
+                Scale = DEFAULT_SCALE
+            });
+        }
+    }
+
+    /// <summary>
     /// 初期化
     /// </summary>
     private void Initialize()
     {
+        _currentPattern = new();
         _elapsed = 0.0f;
-        currentPattern = new();
-        currentInfoNumber = 0;
-        bossNumber = 3;
-
-        Debug.LogError("マジックナンバー");
+        _currentInfoNumber = 0;
+        _countdownBossSpawn = UNSET_VALUE;
     }
 }

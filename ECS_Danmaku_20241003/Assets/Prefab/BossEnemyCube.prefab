@@ -134,17 +134,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1dc08b7700f1ba24f91edeccbec773a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _rotationSpeed: 4
-  _fanAngle: 40
-  _amountBullets: 2
-  _nWayFiringInterval: 0
-  _nWayBulletPrefab: {fileID: 5706911903314413699, guid: af60f41348e9e01418bef400c406bfcc,
-    type: 3}
-  _shootNSingleSet: 1
-  _singleSetRestTimeAfter: 0
-  _tapFiringInterval: 0
-  _tapBulletPrefab: {fileID: 5706911903314413699, guid: af60f41348e9e01418bef400c406bfcc,
-    type: 3}
+  _playerTrackingNWay:
+    _fanAngle: 120
+    _amountBullets: 24
+    _firingInterval: 1
+    _bulletPrefab: {fileID: 5706911903314413699, guid: af60f41348e9e01418bef400c406bfcc,
+      type: 3}
+  _rotationNWay:
+    _fanAngle: 360
+    _amountBullets: 3
+    _firingInterval: 0
+    _bulletPrefab: {fileID: 5706911903314413699, guid: af60f41348e9e01418bef400c406bfcc,
+      type: 3}
+  _randomSpreadBulletsNWay:
+    _fanAngle: 360
+    _amountBullets: 6
+    _firingInterval: 0
+    _bulletPrefab: {fileID: 5706911903314413699, guid: af60f41348e9e01418bef400c406bfcc,
+      type: 3}
+  _rotationData:
+    _axisType: 2
+    _rotationSpeed: 5
+  _attackSwitchTime: 10
 --- !u!1001 &4678724876317834204
 PrefabInstance:
   m_ObjectHideFlags: 0

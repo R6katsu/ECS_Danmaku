@@ -1,10 +1,10 @@
-using System;
 using Unity.Entities;
 using UnityEngine;
 using Unity.Mathematics;
 using Unity.Collections;
 
 #if UNITY_EDITOR
+using System;
 using System.Security.Cryptography.X509Certificates;
 using System.Collections;
 using System.Collections.Generic;
@@ -18,27 +18,41 @@ using static EnemyHelper;
 using static UnityEngine.EventSystems.EventTrigger;
 #endif
 
+// リファクタリング済み
+
+/// <summary>
+/// 生成位置の種類
+/// </summary>
+public enum SpawnPointType : byte
+{
+    [Tooltip("左")] Left,
+    [Tooltip("中心と左の間")] LeftSpacer,
+    [Tooltip("中心")] Center,
+    [Tooltip("中心と右の間")] RightSpacer,
+    [Tooltip("右")] Right
+}
+
 /// <summary>
 /// 敵生成設定の情報の配列
 /// </summary>
 public struct EnemySpawnPattern
 {
     [Tooltip("敵生成設定の情報の配列")]
-    public readonly FixedList64Bytes<EnemySpawnInfo> infos;
+    public readonly FixedList64Bytes<EnemySpawnInfo> enemySpawnInfos;
 
     /// <summary>
     /// 敵生成関連の情報の配列
     /// </summary>
-    /// <param name="enemySpawnSettingDatas">配列の要素をFixedList64Bytesに代入</param>
-    public EnemySpawnPattern(EnemySpawnInfo[] enemySpawnSettingDatas)
+    /// <param name="enemySpawnInfos">配列の要素をFixedList64Bytesに代入</param>
+    public EnemySpawnPattern(EnemySpawnInfo[] enemySpawnInfos)
     {
         // 初期割り当て
-        this.infos = new();
+        this.enemySpawnInfos = new();
 
         // 配列の要素をFixedList64Bytesに代入
-        foreach (var enemySpawnSettingData in enemySpawnSettingDatas)
+        foreach (var enemySpawnInfo in enemySpawnInfos)
         {
-            this.infos.Add(enemySpawnSettingData);
+            this.enemySpawnInfos.Add(enemySpawnInfo);
         }
     }
 }
@@ -49,45 +63,53 @@ public struct EnemySpawnPattern
 public struct EnemySpawnPatternArraySingletonData : IComponentData
 {
     [Tooltip("敵生成設定の情報の配列")]
-    public FixedList4096Bytes<EnemySpawnPattern> infos;
+    public FixedList4096Bytes<EnemySpawnPattern> enemySpawnPatterns;
 
     [Tooltip("ボス敵Entity")]
     public readonly Entity bossEnemyEntity;
 
+    [Tooltip("ボス生成までのカウントダウン")]
+    public readonly int countdownBossSpawn;
+
     /// <summary>
     /// 敵生成関連の情報の配列
     /// </summary>
-    /// <param name="enemySpawnInfoArrayDatas">配列の要素をFixedList4096Bytesに代入</param>
-    public EnemySpawnPatternArraySingletonData(EnemySpawnPatternArray[] enemySpawnInfoArrayDatas, Entity bossEnemyEntity)
+    /// <param name="enemySpawnPatternArrays">配列の要素をFixedList4096Bytesに代入</param>
+    /// <param name="bossEnemyEntity">ボス敵Entity</param>
+    /// <param name="countdownBossSpawn">ボス生成までのカウントダウン</param>
+    public EnemySpawnPatternArraySingletonData
+    (
+        EnemySpawnPatternArray[] enemySpawnPatternArrays,
+        Entity bossEnemyEntity, 
+        int countdownBossSpawn)
     {
         this.bossEnemyEntity = bossEnemyEntity;
+        this.countdownBossSpawn = countdownBossSpawn;
 
         // 初期割り当て
-        this.infos = new();
-        var tempInfos = new FixedList4096Bytes<EnemySpawnPattern>();
+        this.enemySpawnPatterns = new();
 
-        if (enemySpawnInfoArrayDatas == null)
+        if (enemySpawnPatternArrays == null)
         {
-            Debug.LogError("enemySpawnInfoArrayDatasがnull！");
+#if UNITY_EDITOR
+            Debug.LogError("enemySpawnInfoArrayDatasがnull");
+#endif
             return;
         }
 
-        for (int i = 0; i < enemySpawnInfoArrayDatas.Length; i++)
+        for (int i = 0; i < enemySpawnPatternArrays.Length; i++)
         {
-            //var jfoa = new EnemySpawnInfo[enemySpawnInfoArrayDatas.Length];
-            var jfoa = new EnemySpawnInfo[enemySpawnInfoArrayDatas[i].arrays.Length];
+            var currentArraysLength = enemySpawnPatternArrays[i].infos.Length;
+            var enemySpawnInfo = new EnemySpawnInfo[currentArraysLength];
 
-            for (int j = 0; j < enemySpawnInfoArrayDatas[i].arrays.Length; j++)
+            for (int j = 0; j < currentArraysLength; j++)
             {
-                jfoa[j] = enemySpawnInfoArrayDatas[i].arrays[j];
+                enemySpawnInfo[j] = enemySpawnPatternArrays[i].infos[j];
             }
 
-            var koda = new EnemySpawnPattern(jfoa);
-            tempInfos.Add(koda);
+            var enemySpawnPattern = new EnemySpawnPattern(enemySpawnInfo);
+            enemySpawnPatterns.Add(enemySpawnPattern);
         }
-
-        // 配列の要素をFixedList4096Bytesに代入
-        this.infos = tempInfos;
     }
 }
 
@@ -96,18 +118,6 @@ public struct EnemySpawnPatternArraySingletonData : IComponentData
 /// </summary>
 public struct SpawnPointSingletonData : IComponentData
 {
-    /// <summary>
-    /// 生成位置の種類
-    /// </summary>
-    public enum SpawnPointType
-    {
-        [Tooltip("左")] Left,
-        [Tooltip("中心と左の間")] LeftSpacer,
-        [Tooltip("中心")] Center,
-        [Tooltip("中心と右の間")] RightSpacer,
-        [Tooltip("右")] Right
-    }
-
     [Tooltip("左の生成位置")]
     public readonly float3 leftPoint;
 
@@ -133,13 +143,10 @@ public struct SpawnPointSingletonData : IComponentData
         this.leftPoint = leftPoint;
         this.rightPoint = rightPoint;
 
-        // /2を定義
-        float averageFactor = 2.0f;
-
         // 左右以外の生成位置を計算
-        centerPoint = (leftPoint + rightPoint) / averageFactor;
-        leftSpacerPoint = (leftPoint + centerPoint) / averageFactor;
-        rightSpacerPoint = (rightPoint + centerPoint) / averageFactor;
+        centerPoint = (leftPoint + rightPoint).Halve();
+        leftSpacerPoint = (leftPoint + centerPoint).Halve();
+        rightSpacerPoint = (rightPoint + centerPoint).Halve();
     }
 
     /// <summary>
@@ -172,7 +179,7 @@ public struct SpawnPointSingletonData : IComponentData
 }
 
 /// <summary>
-/// 敵の生成設定
+/// 敵の生成に必要な設定
 /// </summary>
 public class EntityEnemySpawnAuthoring : SingletonMonoBehaviour<EntityEnemySpawnAuthoring>
 {
@@ -191,21 +198,25 @@ public class EntityEnemySpawnAuthoring : SingletonMonoBehaviour<EntityEnemySpawn
         {
             // 生成位置の情報を保持するシングルトンを作成
             var spawnPointSingletonData = new SpawnPointSingletonData
-                (
-                    src._leftPoint,
-                    src._rightPoint
-                );
+            (
+                src._leftPoint,
+                src._rightPoint
+            );
 
+            // 情報を保持するだけなのでNone
             var entity = GetEntity(TransformUsageFlags.None);
             AddComponent(entity, spawnPointSingletonData);
 
             var bossEntity = GetEntity(src._enemySpawnSettingSO.BossEnemyPrefab, TransformUsageFlags.None);
 
-            // 敵生成設定の配列の配列
-            var aaaa = new EnemySpawnPatternArraySingletonData(src._enemySpawnSettingSO.Patterns, bossEntity);
-            AddComponent(entity, aaaa);
+            var enemySpawnPatternArraySingletonData = new EnemySpawnPatternArraySingletonData
+            (
+                src._enemySpawnSettingSO.PatternArrays, 
+                bossEntity, 
+                src._enemySpawnSettingSO.CountdownBossSpawn
+            );
 
-            Debug.Log("動くかの確認段階。リファクタリング必須");
+            AddComponent(entity, enemySpawnPatternArraySingletonData);
         }
     }
 }

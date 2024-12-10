@@ -24,7 +24,15 @@ public class GameSceneUIDirector : SingletonMonoBehaviour<GameSceneUIDirector>
         // 現在のシーンのインデックスを取得
         int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
 
-        var transition = TransitionDirector.Instance.GetTransition(_transitionName);
+        var transition = TransitionDirector.Instance?.GetTransition(_transitionName);
+
+        if (transition == null)
+        {
+#if UNITY_EDITOR
+            Debug.LogError("transitionの取得に失敗。タイトルから始めてください");
+#endif
+        }
+
         transition.StartTransition(currentSceneIndex);
     }
 
@@ -34,8 +42,8 @@ public class GameSceneUIDirector : SingletonMonoBehaviour<GameSceneUIDirector>
         // プレイモードを終了
         UnityEditor.EditorApplication.isPlaying = false;
 #else
-            // ビルドされたゲームを終了
-            Application.Quit();
+        // ビルドされたゲームを終了
+        Application.Quit();
 #endif
     }
 

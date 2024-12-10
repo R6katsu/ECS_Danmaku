@@ -2,23 +2,22 @@ using Unity.Entities;
 using Unity.Transforms;
 using UnityEngine;
 using System;
+
 using Random = UnityEngine.Random;
+
+#if UNITY_EDITOR
 using Unity.Collections;
 using static HealthPointDatas;
 using static BulletHelper;
-
 using static EntityCampsHelper;
-
-
-
-
-#if UNITY_EDITOR
 using static UnityEngine.RuleTile.TilingRuleOutput;
 using static UnityEngine.EventSystems.EventTrigger;
 using System.Collections;
 using System.Collections.Generic;
 using System.Net.Security;
 #endif
+
+// リファクタリング済み
 
 /// <summary>
 /// ボス敵の処理
@@ -36,17 +35,19 @@ public partial class BossEnemySystem : SystemBase
         [Tooltip("ランダムに弾をばら撒く")] RandomSpreadBullets
     }
 
+    [Tooltip("円周のラジアン値")]
+    private const float FULL_CIRCLE_RADIANS = Mathf.PI * 2;
+
     [Tooltip("ボス敵の状態")]
     private BossEnemyState _bossEnemyState = BossEnemyState.None;
 
     [Tooltip("前回のボス敵の状態")]
     private BossEnemyState _lastBossEnemyState = BossEnemyState.None;
 
-    [Tooltip("攻撃が切り替わるまでの時間")]
-    private float _attackSwitchTime = 10.0f;     // インスペクタから設定できるようにする
-
     [Tooltip("現在の攻撃が切り替わるまでの時間")]
-    private float _currentAttackSwitchTime = 0.0f;//last
+    private float _currentAttackSwitchTime = 0.0f;
+
+    private EntityCommandBufferSystem _ecbSystem = null;
 
     /// <summary>
     /// ボス敵の状態
@@ -59,7 +60,7 @@ public partial class BossEnemySystem : SystemBase
             // 前回から変更があった
             if (_bossEnemyState != value)
             {
-                // 保持
+                // 前回のBossEnemyStateとして保持
                 _lastBossEnemyState = MyBossEnemyState;
 
                 // 反映
@@ -71,12 +72,10 @@ public partial class BossEnemySystem : SystemBase
         }
     }
 
-    private EntityCommandBufferSystem ecbSystem;
-
     protected override void OnCreate()
     {
-        // EndSimulationEntityCommandBufferSystem を取得
-        ecbSystem = World.GetExistingSystemManaged<EndSimulationEntityCommandBufferSystem>();
+        // EndSimulationEntityCommandBufferSystemで最後に反映
+        _ecbSystem = World.GetExistingSystemManaged<EndSimulationEntityCommandBufferSystem>();
     }
 
     protected override void OnUpdate()
@@ -103,11 +102,12 @@ public partial class BossEnemySystem : SystemBase
         if (_currentAttackSwitchTime <= 0.0f)
         {
             // 攻撃が切り替わるまでの時間を最大値へ回復
-            _currentAttackSwitchTime = _attackSwitchTime;
+            _currentAttackSwitchTime = bossEnemySingleton.attackSwitchTime;
 
             // BossEnemyStateに対応するリセット処理
             ResetBossEnemyState(_bossEnemyState);
 
+            // 1フレーム待機の為にNoneを経由
             MyBossEnemyState = BossEnemyState.None;
             return;
         }
@@ -131,8 +131,9 @@ public partial class BossEnemySystem : SystemBase
 
             case BossEnemyState.None:
             default:
+                // 前回の攻撃と同じだったら変更しない
                 var bossEnemyState = GetRandomBossEnemyState();
-                MyBossEnemyState = (_lastBossEnemyState == bossEnemyState) ? MyBossEnemyState: bossEnemyState;
+                MyBossEnemyState = (_lastBossEnemyState == bossEnemyState) ? MyBossEnemyState : bossEnemyState;
                 break;
         }
     }
@@ -151,15 +152,15 @@ public partial class BossEnemySystem : SystemBase
         // Entityを取得
         Entity entity = SystemAPI.GetSingletonEntity<BossEnemySingletonData>();
 
-        EntityCommandBuffer ecb = ecbSystem.CreateCommandBuffer();
+        EntityCommandBuffer ecb = _ecbSystem.CreateCommandBuffer();
 
         switch (bossEnemyState)
         {
             case BossEnemyState.PlayerTrackingNWay:
                 // N_Way_DanmakuDataを有していた
-                if (SystemAPI.HasComponent<N_Way_DanmakuData>(entity))
+                if (SystemAPI.HasComponent<NWay_DanmakuData>(entity))
                 {
-                    ecb.RemoveComponent<N_Way_DanmakuData>(entity);
+                    ecb.RemoveComponent<NWay_DanmakuData>(entity);
                 }
                 break;
 
@@ -171,17 +172,17 @@ public partial class BossEnemySystem : SystemBase
                 }
 
                 // N_Way_DanmakuDataを有していた
-                if (SystemAPI.HasComponent<N_Way_DanmakuData>(entity))
+                if (SystemAPI.HasComponent<NWay_DanmakuData>(entity))
                 {
-                    ecb.RemoveComponent<N_Way_DanmakuData>(entity);
+                    ecb.RemoveComponent<NWay_DanmakuData>(entity);
                 }
                 break;
 
             case BossEnemyState.RandomSpreadBullets:
                 // N_Way_DanmakuDataを有していた
-                if (SystemAPI.HasComponent<N_Way_DanmakuData>(entity))
+                if (SystemAPI.HasComponent<NWay_DanmakuData>(entity))
                 {
-                    ecb.RemoveComponent<N_Way_DanmakuData>(entity);
+                    ecb.RemoveComponent<NWay_DanmakuData>(entity);
                 }
                 break;
 
@@ -190,8 +191,8 @@ public partial class BossEnemySystem : SystemBase
                 break;
         }
 
-        // フレーム終了時に操作を適用
-        ecbSystem.AddJobHandleForProducer(Dependency);
+        // フレーム終了時に適用
+        _ecbSystem.AddJobHandleForProducer(Dependency);
     }
 
     /// <summary>
@@ -211,24 +212,22 @@ public partial class BossEnemySystem : SystemBase
         switch (bossEnemyState)
         {
             case BossEnemyState.PlayerTrackingNWay:
-                // N_Way_DanmakuDataを有していなかった
-                if (!SystemAPI.HasComponent<N_Way_DanmakuData>(entity))
+                // NWay_DanmakuDataを有していなかった
+                if (!SystemAPI.HasComponent<NWay_DanmakuData>(entity))
                 {
                     // アタッチ
-                    EntityManager.AddComponent<N_Way_DanmakuData>(entity);
+                    EntityManager.AddComponent<NWay_DanmakuData>(entity);
 
-                    Debug.LogError("マジックナンバー。インスペクタから設定する際の方法を考える");
-
-                    var nWay_DanmakuData = new N_Way_DanmakuData
+                    var nWay_DanmakuData = new NWay_DanmakuData
                     (
-                        120,
-                        16,
-                        0.5f,
-                        bossEnemySingleton.nWayBulletEntity
+                        bossEnemySingleton.playerTrackingNWay.fanAngle,
+                        bossEnemySingleton.playerTrackingNWay.amountBullets,
+                        bossEnemySingleton.playerTrackingNWay.firingInterval,
+                        bossEnemySingleton.playerTrackingNWay.bulletEntity
                     );
 
                     // 変数を設定
-                    EntityManager.SetComponentData<N_Way_DanmakuData>(entity, nWay_DanmakuData);
+                    EntityManager.SetComponentData(entity, nWay_DanmakuData);
                 }
                 break;
 
@@ -239,53 +238,53 @@ public partial class BossEnemySystem : SystemBase
                     // アタッチ
                     EntityManager.AddComponent<RotationData>(entity);
 
-                    var rotationData = new RotationData()
-                    {
-                        axisType = AxisType.Y,
-                        rotationSpeed = bossEnemySingleton.rotationSpeed
-                    };
-
-                    // 変数を設定
-                    EntityManager.SetComponentData<RotationData>(entity, rotationData);
-                }
-
-                // N_Way_DanmakuDataを有していなかった
-                if (!SystemAPI.HasComponent<N_Way_DanmakuData>(entity))
-                {
-                    // アタッチ
-                    EntityManager.AddComponent<N_Way_DanmakuData>(entity);
-
-                    var nWay_DanmakuData = new N_Way_DanmakuData
+                    var rotationData = new RotationData
                     (
-                        360,
-                        3,
-                        bossEnemySingleton.nWayFiringInterval,
-                        bossEnemySingleton.nWayBulletEntity
+                        bossEnemySingleton.rotation.AxisType,
+                        bossEnemySingleton.rotation.RotationSpeed
                     );
 
                     // 変数を設定
-                    EntityManager.SetComponentData<N_Way_DanmakuData>(entity, nWay_DanmakuData);
+                    EntityManager.SetComponentData(entity, rotationData);
+                }
+
+                // NWay_DanmakuDataを有していなかった
+                if (!SystemAPI.HasComponent<NWay_DanmakuData>(entity))
+                {
+                    // アタッチ
+                    EntityManager.AddComponent<NWay_DanmakuData>(entity);
+
+                    var nWay_DanmakuData = new NWay_DanmakuData
+                    (
+                        bossEnemySingleton.rotationNWay.fanAngle,
+                        bossEnemySingleton.rotationNWay.amountBullets,
+                        bossEnemySingleton.rotationNWay.firingInterval,
+                        bossEnemySingleton.rotationNWay.bulletEntity
+                    );
+
+                    // 変数を設定
+                    EntityManager.SetComponentData(entity, nWay_DanmakuData);
                 }
 
                 break;
 
             case BossEnemyState.RandomSpreadBullets:
-                // N_Way_DanmakuDataを有していなかった
-                if (!SystemAPI.HasComponent<N_Way_DanmakuData>(entity))
+                // NWay_DanmakuDataを有していなかった
+                if (!SystemAPI.HasComponent<NWay_DanmakuData>(entity))
                 {
                     // アタッチ
-                    EntityManager.AddComponent<N_Way_DanmakuData>(entity);
+                    EntityManager.AddComponent<NWay_DanmakuData>(entity);
 
-                    var nWay_DanmakuData = new N_Way_DanmakuData
+                    var nWay_DanmakuData = new NWay_DanmakuData
                     (
-                        360,
-                        6,
-                        0.0f,
-                        bossEnemySingleton.nWayBulletEntity
+                        bossEnemySingleton.randomSpreadBulletsNWay.fanAngle,
+                        bossEnemySingleton.randomSpreadBulletsNWay.amountBullets,
+                        bossEnemySingleton.randomSpreadBulletsNWay.firingInterval,
+                        bossEnemySingleton.randomSpreadBulletsNWay.bulletEntity
                     );
 
                     // 変数を設定
-                    EntityManager.SetComponentData<N_Way_DanmakuData>(entity, nWay_DanmakuData);
+                    EntityManager.SetComponentData(entity, nWay_DanmakuData);
                 }
                 break;
 
@@ -302,11 +301,12 @@ public partial class BossEnemySystem : SystemBase
     private BossEnemyState GetRandomBossEnemyState()
     {
         // BossEnemyStateの要素を全て取得
-        Array allStates = Enum.GetValues(typeof(BossEnemyState));
+        Array bossEnemyStateArray = Enum.GetValues(typeof(BossEnemyState));
 
         // 初期状態を除外
-        BossEnemyState[] validStates = Array.FindAll(
-            allStates as BossEnemyState[],
+        BossEnemyState[] validStates = Array.FindAll
+        (
+            bossEnemyStateArray as BossEnemyState[],
             state => state != BossEnemyState.None
         );
 
@@ -370,9 +370,6 @@ public partial class BossEnemySystem : SystemBase
     /// </summary>
     private void RandomSpreadBullets()
     {
-        // なんか物足りない。簡単に避けられる
-        // ボス敵自体が縦横無尽に移動しながらばら撒いたら凶悪なのでは？
-
         // BossEnemySingletonDataが存在していなかった
         if (!SystemAPI.HasSingleton<BossEnemySingletonData>()) { return; }
 
@@ -389,10 +386,10 @@ public partial class BossEnemySystem : SystemBase
         var localTfm = SystemAPI.GetComponent<LocalTransform>(entity);
 
         // 円周のランダムな位置を計算
-        float theta = Random.Range(0f, Mathf.PI * 2);   // 0度から360度までのランダムな角度
-        float x = Mathf.Cos(theta);                     // Cos値を計算（余弦）
-        float y = 0.0f;                                 // 高さを定義
-        float z = Mathf.Sin(theta);                     // Sin値を計算（正弦）
+        float theta = Random.Range(0f, FULL_CIRCLE_RADIANS);    // 0度から360度までのランダムな角度
+        float x = Mathf.Cos(theta);                             // Cos値を計算（余弦）
+        float y = 0.0f;                                         // 高さを定義
+        float z = Mathf.Sin(theta);                             // Sin値を計算（正弦）
         Vector3 randomDirection = new Vector3(x, y, z);
 
         // 回転を適用

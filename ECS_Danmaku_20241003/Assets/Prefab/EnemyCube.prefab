@@ -82,11 +82,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 904894cf16fb6534c93a9e0de247379a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _fanAngle: 360
-  _amountBullets: 18
-  _firingInterval: 2
-  _bulletPrefab: {fileID: 5706911903314413699, guid: af60f41348e9e01418bef400c406bfcc,
-    type: 3}
+  _nWay_DanmakuSettingParameter:
+    _fanAngle: 360
+    _amountBullets: 36
+    _firingInterval: 1
+    _bulletPrefab: {fileID: 5706911903314413699, guid: af60f41348e9e01418bef400c406bfcc,
+      type: 3}
+    _elapsedTime: 0
 --- !u!114 &-1988456149972333103
 MonoBehaviour:
   m_ObjectHideFlags: 0
