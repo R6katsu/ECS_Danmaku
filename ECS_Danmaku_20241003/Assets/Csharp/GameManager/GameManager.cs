@@ -1,34 +1,33 @@
 using System.Collections;
-using System.Collections.Generic;
 using TMPro;
-using Unity.Entities;
-using Unity.Mathematics;
 using UnityEngine;
 
 #if UNITY_EDITOR
+using System.Collections.Generic;
+using Unity.Entities;
+using Unity.Mathematics;
 #endif
 
+// リファクタリング済み
+
 /// <summary>
-/// ゲーム管理
+/// ゲームの状態
+/// </summary>
+public enum GameState : byte
+{
+    [Tooltip("初期値")] Loading,
+    [Tooltip("ゲーム開始")] Start,
+    [Tooltip("ゲーム中")] Game,
+    [Tooltip("ゲームクリア")] GameClear,
+    [Tooltip("ゲームオーバー")] GameOver,
+    [Tooltip("ゲーム終了")] End
+}
+
+/// <summary>
+/// ゲームの進行を管理
 /// </summary>
 public class GameManager : SingletonMonoBehaviour<GameManager>
 {
-    // ゲームが開始するまではジングルを再生
-    // PLを動かせるようになったらBGMを再生する
-
-    /// <summary>
-    /// ゲームの状態
-    /// </summary>
-    public enum GameState
-    { 
-        Loading,
-        Start,
-        Game,
-        GameClear,
-        GameOver,
-        End
-    }
-
     /// <summary>
     /// UIの名称
     /// </summary>
@@ -40,6 +39,9 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
 
     [SerializeField, Header("経過時間のテキスト")]
     private TextMeshProUGUI _elapsedTimeUGUI = null;
+
+    [SerializeField, Min(0), Header("BGMの番号")]
+    private int _bgmNumber = 0;
 
     private GameState _gameState = 0;
 
@@ -81,7 +83,7 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
         {
              case GameState.Start:
                 // BGM開始
-                AudioPlayManager.Instance.PlayBGM(0);
+                AudioPlayManager.Instance.PlayBGM(_bgmNumber);
 
                 // Gameに移行
                 MyGameState = GameState.Game;
@@ -92,9 +94,6 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
                 break;
 
             case GameState.GameClear:
-                // アニメーションが終わってからボタンを表示する
-                // アニメーション側でボタンを表示するタイミングを考えないといけない
-
                 ActivatableUIDirector.Instance.ActivateSingleUIElement((int)UIName.GameClearUI);
 
                 MainThreadExecutor.Instance.Enqueue(() =>

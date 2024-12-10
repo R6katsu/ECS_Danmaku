@@ -117,7 +117,9 @@ public struct TapShooting_DanmakuData : IComponentData
 /// <summary>
 /// タップ撃ち弾幕に必要な設定
 /// </summary>
+#if UNITY_EDITOR
 [RequireComponent(typeof(DanmakuTypeSetup))]
+#endif
 public class TapShooting_DanmakuAuthoring : MonoBehaviour, IDanmakuAuthoring
 {
     [SerializeField, Header("タップ撃ち弾に必要なパラメータの設定")]

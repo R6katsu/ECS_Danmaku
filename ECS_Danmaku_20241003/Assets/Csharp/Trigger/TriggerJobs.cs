@@ -113,7 +113,7 @@ static public partial class TriggerJobs
                 if (isKilled)
                 {
                     // ゲームオーバー処理を開始する
-                    GameManager.Instance.MyGameState = GameManager.GameState.GameOver;
+                    GameManager.Instance.MyGameState = GameState.GameOver;
 
                     // EntityBがVFXCreationDataを有していた
                     if (vfxCreationLookup.HasComponent(entityB))
@@ -240,7 +240,7 @@ static public partial class TriggerJobs
                     if (bossEnemyCampsLookup.HasComponent(entityB))
                     {
                         // ボスが倒されたためゲームクリア
-                        GameManager.Instance.MyGameState = GameManager.GameState.GameClear;
+                        GameManager.Instance.MyGameState = GameState.GameClear;
                     }
                 }
             }
