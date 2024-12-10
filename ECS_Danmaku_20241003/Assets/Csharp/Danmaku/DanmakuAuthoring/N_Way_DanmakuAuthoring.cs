@@ -119,7 +119,9 @@ public struct NWay_DanmakuData : IComponentData
 /// <summary>
 /// n-Way弾に必要な設定
 /// </summary>
+#if UNITY_EDITOR
 [RequireComponent(typeof(DanmakuTypeSetup))]
+#endif
 public class N_Way_DanmakuAuthoring : MonoBehaviour, IDanmakuAuthoring
 {
     [SerializeField, Header("Way弾に必要なパラメータの設定")]

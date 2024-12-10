@@ -4,7 +4,6 @@ using UnityEngine;
 using static DanmakuHelper;
 using Component = UnityEngine.Component;
 using System.ComponentModel;
-#endif
 
 // リファクタリング済み
 
@@ -12,12 +11,9 @@ using System.ComponentModel;
 /// DanmakuTypeに変更があった時、必要なComponentのSetupを行う。
 /// ビルド後は空のMonoBehaviourになる。
 /// </summary>
-#if UNITY_EDITOR
 [ExecuteInEditMode]
-#endif
 public sealed class DanmakuTypeSetup : MonoBehaviour
 {
-#if UNITY_EDITOR
     [SerializeField, Header("弾幕の種類")]
     private DanmakuType _danmakuType = 0;
 
@@ -137,5 +133,5 @@ public sealed class DanmakuTypeSetup : MonoBehaviour
             };
         }
     }
-#endif
 }
+#endif
