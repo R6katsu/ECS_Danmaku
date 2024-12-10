@@ -2411,33 +2411,33 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _playerMovementRangeSingletonData:
-    playerMovementRange:
+    _playerMovementRange:
       movementRange:
-        x: 17
+        x: 50
         y: 0
-        z: 16.5
+        z: 30
       movementRangeCenter:
         x: 0
         y: 0
         z: 3.5
-    bulletMovementRange:
+    _bulletMovementRange:
       movementRange:
-        x: 30
+        x: 50
         y: 0
         z: 30
       movementRangeCenter:
         x: 0
         y: 0
-        z: 8.25
-    enemyMovementRange:
+        z: 0
+    _enemyMovementRange:
       movementRange:
-        x: 30
+        x: 50
         y: 0
         z: 30
       movementRangeCenter:
         x: 0
         y: 0
-        z: 8.25
+        z: 0
 --- !u!4 &908662118
 Transform:
   m_ObjectHideFlags: 0

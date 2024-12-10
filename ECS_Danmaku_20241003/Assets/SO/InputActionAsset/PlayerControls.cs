@@ -28,7 +28,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             ""id"": ""ee9658e0-36e6-4ee6-aea7-6710706044c7"",
             ""actions"": [
                 {
-                    ""name"": ""Shot"",
+                    ""name"": ""ChargeShot"",
                     ""type"": ""Button"",
                     ""id"": ""7e5f6341-1e62-421d-a6a6-93ba1542000a"",
                     ""expectedControlType"": ""Button"",
@@ -72,7 +72,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Shot"",
+                    ""action"": ""ChargeShot"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -83,7 +83,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Shot"",
+                    ""action"": ""ChargeShot"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -94,7 +94,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Shot"",
+                    ""action"": ""ChargeShot"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -459,7 +459,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
 }");
         // Player
         m_Player = asset.FindActionMap("Player", throwIfNotFound: true);
-        m_Player_Shot = m_Player.FindAction("Shot", throwIfNotFound: true);
+        m_Player_ChargeShot = m_Player.FindAction("ChargeShot", throwIfNotFound: true);
         m_Player_Horizontal = m_Player.FindAction("Horizontal", throwIfNotFound: true);
         m_Player_Vertical = m_Player.FindAction("Vertical", throwIfNotFound: true);
         m_Player_Slowdown = m_Player.FindAction("Slowdown", throwIfNotFound: true);
@@ -529,7 +529,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     // Player
     private readonly InputActionMap m_Player;
     private List<IPlayerActions> m_PlayerActionsCallbackInterfaces = new List<IPlayerActions>();
-    private readonly InputAction m_Player_Shot;
+    private readonly InputAction m_Player_ChargeShot;
     private readonly InputAction m_Player_Horizontal;
     private readonly InputAction m_Player_Vertical;
     private readonly InputAction m_Player_Slowdown;
@@ -537,7 +537,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     {
         private @PlayerControls m_Wrapper;
         public PlayerActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
-        public InputAction @Shot => m_Wrapper.m_Player_Shot;
+        public InputAction @ChargeShot => m_Wrapper.m_Player_ChargeShot;
         public InputAction @Horizontal => m_Wrapper.m_Player_Horizontal;
         public InputAction @Vertical => m_Wrapper.m_Player_Vertical;
         public InputAction @Slowdown => m_Wrapper.m_Player_Slowdown;
@@ -550,9 +550,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         {
             if (instance == null || m_Wrapper.m_PlayerActionsCallbackInterfaces.Contains(instance)) return;
             m_Wrapper.m_PlayerActionsCallbackInterfaces.Add(instance);
-            @Shot.started += instance.OnShot;
-            @Shot.performed += instance.OnShot;
-            @Shot.canceled += instance.OnShot;
+            @ChargeShot.started += instance.OnChargeShot;
+            @ChargeShot.performed += instance.OnChargeShot;
+            @ChargeShot.canceled += instance.OnChargeShot;
             @Horizontal.started += instance.OnHorizontal;
             @Horizontal.performed += instance.OnHorizontal;
             @Horizontal.canceled += instance.OnHorizontal;
@@ -566,9 +566,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
 
         private void UnregisterCallbacks(IPlayerActions instance)
         {
-            @Shot.started -= instance.OnShot;
-            @Shot.performed -= instance.OnShot;
-            @Shot.canceled -= instance.OnShot;
+            @ChargeShot.started -= instance.OnChargeShot;
+            @ChargeShot.performed -= instance.OnChargeShot;
+            @ChargeShot.canceled -= instance.OnChargeShot;
             @Horizontal.started -= instance.OnHorizontal;
             @Horizontal.performed -= instance.OnHorizontal;
             @Horizontal.canceled -= instance.OnHorizontal;
@@ -659,7 +659,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     public UIActions @UI => new UIActions(this);
     public interface IPlayerActions
     {
-        void OnShot(InputAction.CallbackContext context);
+        void OnChargeShot(InputAction.CallbackContext context);
         void OnHorizontal(InputAction.CallbackContext context);
         void OnVertical(InputAction.CallbackContext context);
         void OnSlowdown(InputAction.CallbackContext context);

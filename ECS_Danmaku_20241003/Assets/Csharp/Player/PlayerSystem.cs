@@ -3,13 +3,11 @@ using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Unity.Mathematics;
+
+#if UNITY_EDITOR
 using static UnityEngine.Rendering.DebugUI;
 using Unity.Collections;
 using System;
-
-
-
-#if UNITY_EDITOR
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
@@ -18,31 +16,63 @@ using static HealthHelper;
 using static PlayerHelper;
 #endif
 
+// リファクタリング済み
+
 /// <summary>
 /// PLの処理
 /// </summary>
 public partial class PlayerSystem : SystemBase
 {
     // InputSystem
-    private PlayerControls _playerInput;
+    private PlayerControls _playerInput = null;
 
     // 入力
-    private float _horizontalValue;
-    private float _verticalValue;
+    private float _horizontalValue = 0.0f;
+    private float _verticalValue = 0.0f;
 
-    [Tooltip("射撃中かのフラグ")]
-    private bool _isShot;
+    [Tooltip("溜め攻撃中")]
+    private bool _isChargeShot = false;
+
+    [Tooltip("減速中")]
+    private bool _isSlowdown = false;
+
+    [Tooltip("最後に攻撃が当たった時間")]
+    private double _lastShotTime = 0.0f;
+
+    [Tooltip("現在のチャージ時間")]
+    private float _currentChargeTime = 0.0f;
+
+    /// <summary>
+    /// 現在のチャージ時間
+    /// </summary>
+    private float CurrentChargeTime
+    {
+        get => _currentChargeTime;
+        set
+        {
+            _currentChargeTime = value;
+
+            if (_currentChargeTime <= 0)
+            {
+                // チャージ最大
+                // いや、離したら0になるって感じでいいのでは？
+                // チャージ時間がn以上だった場合はチャージ完了のため離したら溜め攻撃！でいいか
+                // 段階分けできたらする
+            }
+        }
+    }
 
     protected override void OnCreate()
     {
         // ShooterControlsをインスタンス化し、有効にする
+        // リソース解放の為にフィールド変数として保持する
         _playerInput = new PlayerControls();
         _playerInput.Enable();
 
-        // Shotに割り当てる
-        var shot = _playerInput.Player.Shot;
-        shot.started += (context) => _isShot = true;
-        shot.canceled += (context) => _isShot = false;
+        // ChargeShotに割り当てる
+        var chargeShot = _playerInput.Player.ChargeShot;
+        chargeShot.started += (context) => _isChargeShot = true;
+        chargeShot.canceled += (context) => _isChargeShot = false;
 
         // Horizontalに割り当てる
         var horizontal = _playerInput.Player.Horizontal;
@@ -58,8 +88,8 @@ public partial class PlayerSystem : SystemBase
 
         // Slowdownに割り当てる
         var slowdown = _playerInput.Player.Slowdown;
-        slowdown.started += Slowdown;
-        slowdown.canceled += Slowdown;
+        slowdown.started += (context) => _isSlowdown = true;
+        slowdown.canceled += (context) => _isSlowdown = false;
     }
 
     protected override void OnUpdate()
@@ -79,21 +109,19 @@ public partial class PlayerSystem : SystemBase
         // PLからLocalTransformを取得
         var playerTransform = SystemAPI.GetComponent<LocalTransform>(playerEntity);
 
-        // フレーム秒数、経過時間
-        var delta = SystemAPI.Time.DeltaTime;
-        var elapsed = SystemAPI.Time.ElapsedTime;
+        var delta = SystemAPI.Time.DeltaTime;       // フレーム秒数
+        var elapsed = SystemAPI.Time.ElapsedTime;   // 経過時間
 
         // 移動処理
         PlayerMove(delta, playerEntity, playerSingleton, playerTransform);
 
-        if (_isShot)
+        if (_isChargeShot)
         {
-            // PlayerTagの付いたShooterで発射する
-            // AutoShooterはShotを押さなくても勝手に射撃する
-            // 敵についても、敵から直接発射するのではなくShooterPrefabから発射するように設計する
-
-
-
+            _currentChargeTime += delta;
+            //chargeTime
+        }
+        else
+        {
             // 射撃処理
             PlayerShot(elapsed, playerEntity, playerSingleton, playerTransform);
         }
@@ -124,38 +152,6 @@ public partial class PlayerSystem : SystemBase
     }
 
     /// <summary>
-    /// 減速入力の処理
-    /// </summary>
-    /// <param name="context"></param>
-    private void Slowdown(InputAction.CallbackContext context)
-    {
-        // PlayerSingletonDataが存在しなかった
-        if (!SystemAPI.HasSingleton<PlayerSingletonData>()) { return; }
-
-        // シングルトンデータの取得
-        var playerSingleton = SystemAPI.GetSingleton<PlayerSingletonData>();
-
-        switch (context.phase)
-        {
-            case InputActionPhase.Started:
-                // 減速フラグを立てる
-                playerSingleton.isSlowdown = true;
-                break;
-
-            case InputActionPhase.Canceled:
-                // 減速フラグを折る
-                playerSingleton.isSlowdown = false;
-                break;
-        }
-
-        // PlayerSingletonDataを持つEntityを取得
-        Entity playerEntity = SystemAPI.GetSingletonEntity<PlayerSingletonData>();
-
-        // 変更を反映
-        SystemAPI.SetComponent(playerEntity, playerSingleton);
-    }
-
-    /// <summary>
     /// PLの移動処理
     /// </summary>
     /// <param name="delta">現在のフレーム秒数</param>
@@ -180,7 +176,7 @@ public partial class PlayerSystem : SystemBase
         var movementRangeCenter = playerMovementRange.movementRangeCenter;
 
         // 半分の大きさを求める
-        var halfMovementRange = playerMovementRange.movementRange / 2;
+        var halfMovementRange = playerMovementRange.movementRange.Halve();
 
         // 中心位置を考慮した移動可能範囲を求める
         var minMovementRange = movementRangeCenter + -halfMovementRange;
@@ -190,10 +186,10 @@ public partial class PlayerSystem : SystemBase
         var currentPosition = playerTransform.Position;
 
         // 移動速度
-        var speed = (playerSingleton.isSlowdown) ? playerSingleton.slowMoveSpeed : playerSingleton.moveSpeed;
+        var speed = (_isSlowdown) ? playerSingleton.slowMoveSpeed : playerSingleton.moveSpeed;
 
         // 水平入力、垂直入力からfloat3を作成
-        var movementDirection = new float3(_horizontalValue, new float(), _verticalValue);
+        var movementDirection = new float3(_horizontalValue, 0.0f, _verticalValue);
 
         // 入力がある場合は正規化
         movementDirection = (math.lengthsq(movementDirection) > 0) ?
@@ -217,34 +213,42 @@ public partial class PlayerSystem : SystemBase
         SystemAPI.SetComponent(playerEntity, playerTransform);
     }
 
+    /// <summary>
+    /// PLの通常攻撃
+    /// </summary>
+    /// <param name="elapsed">経過時間</param>
+    /// <param name="playerEntity">PLEntity</param>
+    /// <param name="playerSingleton">PLData</param>
+    /// <param name="playerTransform">PLTfm</param>
     public void PlayerShot(double elapsed, Entity playerEntity, PlayerSingletonData playerSingleton, LocalTransform playerTransform)
     {
         // 最後に射撃した時刻と現在の時間から経過時間を求め、射撃間隔を満たしていなければ切り上げる
-        if (elapsed - playerSingleton.lastShotTime <= playerSingleton.firingInterval) { return; }
+        if (elapsed - _lastShotTime <= playerSingleton.firingInterval) { return; }
 
         // 最後に射撃した時刻を更新
-        playerSingleton.lastShotTime = elapsed;
+        _lastShotTime = elapsed;
 
         // PLの弾を生成
         var playerBulletEntity = EntityManager.Instantiate(playerSingleton.playerBulletEntity);
 
         // 弾のLocalTransformを取得
-        var localTransform = SystemAPI.GetComponent<LocalTransform>(playerBulletEntity);
+        var bulletTfm = SystemAPI.GetComponent<LocalTransform>(playerBulletEntity);
 
         // 現在地を代入
-        localTransform.Position = playerTransform.Position;
+        bulletTfm.Position = playerTransform.Position;
 
         // 現在の回転を代入
-        localTransform.Rotation = playerTransform.Rotation;
+        bulletTfm.Rotation = playerTransform.Rotation;
 
         // 変更を適用
-        SystemAPI.SetComponent(playerBulletEntity, localTransform);
+        SystemAPI.SetComponent(playerBulletEntity, bulletTfm);
         SystemAPI.SetComponent(playerEntity, playerSingleton);
     }
 
     /// <summary>
     /// 移動時に体を傾ける処理を開始
     /// </summary>
+    /// <param name="context"></param>
     private void TiltOnMoveStart(InputAction.CallbackContext context)
     {
         // PlayerSingletonDataが存在しなかった
@@ -265,17 +269,15 @@ public partial class PlayerSystem : SystemBase
         // 1、0、-1の整数に変換
         var dir = (int)math.sign(_horizontalValue);
 
-        var aaa = 30;
-        // Y軸を定義する必要もある
-
         // 変更を適用
-        playerTransform.Rotation = quaternion.EulerXYZ(0, math.radians(aaa * dir), 0);
+        playerTransform.Rotation = quaternion.EulerXYZ(0, math.radians(playerSingleton.playerMoveTilt * dir), 0);
         SystemAPI.SetComponent(modelEntity, playerTransform);
     }
 
     /// <summary>
     /// 移動時に体を傾ける処理を終了
     /// </summary>
+    /// <param name="context"></param>
     public void TiltOnMoveEnd(InputAction.CallbackContext context)
     {
         // PlayerSingletonDataが存在しなかった
@@ -293,9 +295,8 @@ public partial class PlayerSystem : SystemBase
         // ModelからLocalTransformを取得
         var playerTransform = SystemAPI.GetComponent<LocalTransform>(modelEntity);
 
-        // Y軸を回転
-        float3 rotationEuler = float3.zero;
-        playerTransform.Rotation = quaternion.EulerXYZ(0, 0, 0);
+        // 傾きを初期化
+        playerTransform.Rotation = Quaternion.identity;
 
         // 変更を適用
         SystemAPI.SetComponent(modelEntity, playerTransform);
