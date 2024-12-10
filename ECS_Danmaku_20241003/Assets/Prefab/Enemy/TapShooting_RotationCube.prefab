@@ -99,7 +99,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _maxHP: 5
-  _isInvincibleTime: 0
   _hitSENumber: 0
   _killedSENumber: 1
   _campsType: 1
@@ -143,9 +142,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a4336e008cf3264195ad4d8f4b79f96, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _moveParam:
-    _speed: -5
-  _axisType: 3
+  _straightMoveData:
+    _moveParam:
+      _speed: 3
+    _axisType: 4
 --- !u!135 &7489738364080410858
 SphereCollider:
   m_ObjectHideFlags: 0

@@ -1,11 +1,16 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Entities;
 using Unity.Transforms;
 using Unity.Mathematics;
+using Unity.Burst;
+
+#if UNITY_EDITOR
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using static MoveHelper;
-using Unity.Burst;
+#endif
+
+// リファクタリング済み
 
 /// <summary>
 /// 直進移動の処理
@@ -23,8 +28,8 @@ public partial struct StraightMoveSystem : ISystem
                                  RefRW<LocalTransform>>())
         {
             // 進行方向に移動する
-            float3 direction = AxisTypeHelper.GetAxisDirection(straightMove.ValueRO.axisType);
-            localTfm.ValueRW.Position += direction * straightMove.ValueRO.moveParam.Speed * delta;
+            float3 direction = AxisTypeHelper.GetAxisDirection(straightMove.ValueRO.AxisType);
+            localTfm.ValueRW.Position += direction * straightMove.ValueRO.MoveParameter.Speed * delta;
         }
     }
 }

@@ -1,4 +1,5 @@
 using Unity.Entities;
+using System;
 using UnityEngine;
 using static MoveHelper;
 
@@ -9,16 +10,29 @@ using static BulletHelper;
 using static UnityEngine.EventSystems.EventTrigger;
 #endif
 
+// リファクタリング済み
+
 /// <summary>
 /// 直進移動の情報
 /// </summary>
+[Serializable]
 public struct StraightMoveData : IComponentData
 {
-    [Tooltip("移動の設定値")]
-    public readonly MoveParameter moveParam;
+    [SerializeField, Header("移動の設定値")]
+    private MoveParameter _moveParam;
 
-    [Tooltip("進行方向")]
-    public readonly AxisType axisType;
+    [SerializeField, Header("進行方向")]
+    private AxisType _axisType;
+
+    /// <summary>
+    /// 移動の設定値
+    /// </summary>
+    public MoveParameter MoveParameter => _moveParam;
+
+    /// <summary>
+    /// 進行方向
+    /// </summary>
+    public AxisType AxisType => _axisType;
 
     /// <summary>
     /// 直進移動の情報
@@ -27,8 +41,8 @@ public struct StraightMoveData : IComponentData
     /// <param name="axisType">進行方向</param>
     public StraightMoveData(MoveParameter moveParam, AxisType axisType)
     {
-        this.moveParam = moveParam;
-        this.axisType = axisType;
+        _moveParam = moveParam;
+        _axisType = axisType;
     }
 }
 
@@ -37,11 +51,8 @@ public struct StraightMoveData : IComponentData
 /// </summary>
 public class StraightMoveAuthoring : MonoBehaviour
 {
-    [SerializeField]
-    private MoveParameter _moveParam = new();
-
-    [SerializeField, Header("進行方向")]
-    private AxisType _axisType = 0;
+    [SerializeField, Header("直進移動の情報")]
+    private StraightMoveData _straightMoveData = new();
 
     public class Baker : Baker<StraightMoveAuthoring>
     {
@@ -49,16 +60,8 @@ public class StraightMoveAuthoring : MonoBehaviour
         {
             var entity = GetEntity(TransformUsageFlags.Dynamic);
 
-            var straightMoveData = new StraightMoveData
-                (
-                    src._moveParam, 
-                    src._axisType
-                );
-
-            var straightMove = straightMoveData;
-
             // Dataをアタッチ
-            AddComponent(entity, straightMove);
+            AddComponent(entity, src._straightMoveData);
             AddComponent(entity, new MoveTag());
         }
     }

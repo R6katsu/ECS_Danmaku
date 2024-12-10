@@ -72,7 +72,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _maxHP: 300
-  _isInvincibleTime: 0
   _hitSENumber: 0
   _killedSENumber: 1
   _campsType: 3
@@ -116,12 +115,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56fc9efd2668bc84dbb3e057e807f40a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _moveParam:
-    _speed: 5
-  _targetPoint:
-    x: 0
-    y: 0
-    z: 3.5
+  _moveToTargetPointData:
+    _moveParameter:
+      _speed: 6
+    _targetPoint:
+      x: 0
+      y: 0
+      z: 3.5
 --- !u!114 &9007835146448407338
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -137,7 +137,7 @@ MonoBehaviour:
   _playerTrackingNWay:
     _fanAngle: 120
     _amountBullets: 24
-    _firingInterval: 1
+    _firingInterval: 0.25
     _bulletPrefab: {fileID: 5706911903314413699, guid: af60f41348e9e01418bef400c406bfcc,
       type: 3}
   _rotationNWay:

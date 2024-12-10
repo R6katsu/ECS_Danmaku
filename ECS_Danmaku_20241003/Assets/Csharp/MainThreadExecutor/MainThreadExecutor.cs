@@ -6,6 +6,8 @@ using UnityEngine;
 using System.Collections;
 #endif
 
+// リファクタリング済み
+
 /// <summary>
 /// メインスレッドで処理を実行する
 /// </summary>

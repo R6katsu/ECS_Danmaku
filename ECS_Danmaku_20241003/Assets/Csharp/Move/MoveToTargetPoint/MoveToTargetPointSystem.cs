@@ -1,15 +1,22 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
+using Unity.Burst;
+
+#if UNITY_EDITOR
 using UnityEngine;
 using static UnityEngine.EventSystems.EventTrigger;
+using System.Collections;
+using System.Collections.Generic;
+#endif
+
+// リファクタリング済み
 
 /// <summary>
 /// 目標位置まで移動する処理
 /// </summary>
+[BurstCompile]
 public partial struct MoveToTargetPointSystem : ISystem
 {
     public void OnUpdate(ref SystemState state)
@@ -28,10 +35,10 @@ public partial struct MoveToTargetPointSystem : ISystem
             float3 currentPosition = localTfm.ValueRW.Position;
 
             // 目標位置を取得
-            float3 targetPosition = moveToTargetPoint.ValueRO.targetPoint;
+            float3 targetPosition = moveToTargetPoint.ValueRO.TargetPoint;
 
             // 移動速度を取得
-            float moveSpeed = moveToTargetPoint.ValueRO.moveParam.Speed;
+            float moveSpeed = moveToTargetPoint.ValueRO.MoveParameter.Speed;
 
             // 移動方向を計算
             float3 direction = math.normalize(targetPosition - currentPosition);

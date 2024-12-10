@@ -52,7 +52,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _maxHP: 15
-  _isInvincibleTime: 0
   _hitSENumber: 0
   _killedSENumber: 1
   _campsType: 1
@@ -88,7 +87,6 @@ MonoBehaviour:
     _firingInterval: 1
     _bulletPrefab: {fileID: 5706911903314413699, guid: af60f41348e9e01418bef400c406bfcc,
       type: 3}
-    _elapsedTime: 0
 --- !u!114 &-1988456149972333103
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -101,9 +99,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a4336e008cf3264195ad4d8f4b79f96, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _moveParam:
-    _speed: -1.5
-  _axisType: 3
+  _straightMoveData:
+    _moveParam:
+      _speed: 1.5
+    _axisType: 4
 --- !u!114 &5046027235216254825
 MonoBehaviour:
   m_ObjectHideFlags: 0

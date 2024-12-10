@@ -8,5 +8,6 @@ public enum AxisType : byte
     None,
     X,
     Y,
-    Z
+    Z,
+    MinusZ
 }

@@ -1,10 +1,15 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
+
+#if UNITY_EDITOR
 using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+#endif
+
+// リファクタリング済み
 
 /// <summary>
 /// 向いている方向に移動する処理
@@ -25,7 +30,7 @@ public partial struct FacingDirectionMoveSystem : ISystem
             float3 forward = math.forward(localTfm.ValueRO.Rotation);
 
             // 移動を反映
-            localTfm.ValueRW.Position += forward * facingDirection.ValueRO.moveParam.Speed * delta;
+            localTfm.ValueRW.Position += forward * facingDirection.ValueRO.MoveParameter.Speed * delta;
         }
     }
 }

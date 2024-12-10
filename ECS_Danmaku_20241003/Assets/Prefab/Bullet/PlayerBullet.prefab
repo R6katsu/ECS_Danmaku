@@ -75,8 +75,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c62fe557fb8cf6f4da3f2fd605d152d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _moveParam:
-    _speed: 10
+  _facingDirectionMoveData:
+    _moveParameter:
+      _speed: 6.5
 --- !u!114 &5290675376412532668
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -161,8 +162,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _rotationData:
-    axisType: 2
-    rotationSpeed: 2.5
+    _axisType: 2
+    _rotationSpeed: 5
 --- !u!1001 &3171553748664277067
 PrefabInstance:
   m_ObjectHideFlags: 0
