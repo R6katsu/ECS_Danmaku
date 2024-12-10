@@ -17,8 +17,7 @@ using static EntityCampsHelper;
 [BurstCompile]
 public partial struct TriggerSystem : ISystem
 {
-    private ComponentLookup<PlayerHealthPointData> _playerHealthPointLookup;
-    private ComponentLookup<EnemyHealthPointData> _enemyHealthPointLookup;
+    private ComponentLookup<HealthPointData> _enemyHealthPointLookup;
     private ComponentLookup<BulletIDealDamageData> _dealDamageLookup;
     private ComponentLookup<DestroyableData> _destroyableLookup;
     private ComponentLookup<RemainingPierceCountData> _remainingPierceCountLookup;
@@ -30,8 +29,7 @@ public partial struct TriggerSystem : ISystem
     public void OnCreate(ref SystemState state)
     {
         // éÊìæÇ∑ÇÈ
-        _playerHealthPointLookup = state.GetComponentLookup<PlayerHealthPointData>(false);
-        _enemyHealthPointLookup = state.GetComponentLookup<EnemyHealthPointData>(false);
+        _enemyHealthPointLookup = state.GetComponentLookup<HealthPointData>(false);
         _dealDamageLookup = state.GetComponentLookup<BulletIDealDamageData>(false);
         _destroyableLookup = state.GetComponentLookup<DestroyableData>(false);
         _remainingPierceCountLookup = state.GetComponentLookup<RemainingPierceCountData>(false);
@@ -46,7 +44,6 @@ public partial struct TriggerSystem : ISystem
         var currentTime = SystemAPI.Time.ElapsedTime;
 
         // çXêVÇ∑ÇÈ
-        _playerHealthPointLookup.Update(ref state);
         _enemyHealthPointLookup.Update(ref state);
         _dealDamageLookup.Update(ref state);
         _destroyableLookup.Update(ref state);
@@ -59,10 +56,8 @@ public partial struct TriggerSystem : ISystem
         // PLÇ…íeÇ™ìñÇΩÇ¡ÇΩéûÇÃèàóùÇåƒÇ—èoÇ∑
         var playerDamage = new PlayerDamageTriggerJob()
         {
-            healthPointLookup = _playerHealthPointLookup,
             dealDamageLookup = _dealDamageLookup,
             destroyableLookup = _destroyableLookup,
-            remainingPierceCountLookup = _remainingPierceCountLookup,
             localTransformLookup = _localTransformLookup,
             vfxCreationLookup = _vfxCreationLookup,
             audioPlayLookup = _audioPlayLookup,

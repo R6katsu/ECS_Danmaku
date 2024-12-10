@@ -25,6 +25,10 @@ using System;
 //[BurstCompile]
 static public partial class TriggerJobs
 {
+    // 弾が当たったら消える処理は弾専用のJobで実装すればいい
+
+
+
     /// <summary>
     /// 接触時にダメージを受ける
     /// </summary>
@@ -32,10 +36,9 @@ static public partial class TriggerJobs
     public partial struct PlayerDamageTriggerJob : ITriggerEventsJob
     {
         // インスタンスの取得に必要な変数
-        public ComponentLookup<PlayerHealthPointData> healthPointLookup;
+        public ComponentLookup<PlayerSingletonData> playerSingletonLookup;
         public ComponentLookup<BulletIDealDamageData> dealDamageLookup;
         public ComponentLookup<DestroyableData> destroyableLookup;
-        public ComponentLookup<RemainingPierceCountData> remainingPierceCountLookup;
         public ComponentLookup<LocalTransform> localTransformLookup;
         public ComponentLookup<VFXCreationData> vfxCreationLookup;
         public ComponentLookup<AudioPlayData> audioPlayLookup;
@@ -57,13 +60,10 @@ static public partial class TriggerJobs
 
             // entityAがBulletIDealDamageDataを有していない。
             // あるいは、entityBがPlayerHealthPointDataを有していなければ切り上げる
-            if (!dealDamageLookup.HasComponent(entityA) || !healthPointLookup.HasComponent(entityB)) { return; }
+            if (!dealDamageLookup.HasComponent(entityA) || !playerSingletonLookup.HasComponent(entityB)) { return; }
 
             // entityBからPlayerHealthPointDataを取得
-            var healthPoint = healthPointLookup[entityB];
-
-            // 前回被弾した時間から無敵時間の長さを経過していない
-            if (currentTime - healthPoint.lastHitTime <= healthPoint.isInvincibleTime) { return; }
+            var playerSingleton = playerSingletonLookup[entityB];
 
             // entityAからBulletIDealDamageDataを取得
             var dealDamage = dealDamageLookup[entityA];
@@ -71,37 +71,12 @@ static public partial class TriggerJobs
             // ダメージ源の陣営の種類がPlayerだったら切り上げる
             if (dealDamage.campsType == EntityCampsType.Player) { return; }
 
-            // ダメージを与え、変更されたインスタンスを反映する
-            healthPoint = dealDamage.DealDamage(healthPoint, entityA);
-            healthPointLookup[entityB] = healthPoint;
-
-            // ダメージ源がRemainingPierceCountDataを有していた
-            if (remainingPierceCountLookup.HasComponent(entityA))
-            {
-                // 残り貫通回数をデクリメント
-                var remainingPierceCount = remainingPierceCountLookup[entityA];
-                remainingPierceCount.remainingPierceCount--;
-                remainingPierceCountLookup[entityA] = remainingPierceCount;
-
-                // ダメージ源がDestroyableDataを有していた
-                if (destroyableLookup.HasComponent(entityA))
-                {
-                    var destroyable = destroyableLookup[entityA];
-
-                    // 残り貫通回数が0以下か
-                    destroyable.isKilled = (remainingPierceCount.remainingPierceCount <= 0) ? true : false;
-
-                    // 変更を反映
-                    destroyableLookup[entityA] = destroyable;
-                }
-            }
-
             // 攻撃を受けた対象がDestroyableDataを有していた
             if (destroyableLookup.HasComponent(entityB))
             {
                 var destroyable = destroyableLookup[entityB];
 
-                var isKilled = healthPoint.isKilled;
+                var isKilled = destroyable.isKilled;
 
                 // HPの削除フラグを代入する
                 destroyable.isKilled = isKilled;
@@ -110,6 +85,7 @@ static public partial class TriggerJobs
                 destroyableLookup[entityB] = destroyable;
 
                 // 削除フラグが立った
+                // これはEntityが削除される時の処理として追加できないか
                 if (isKilled)
                 {
                     // ゲームオーバー処理を開始する
@@ -127,7 +103,7 @@ static public partial class TriggerJobs
                     if (audioPlayLookup.HasComponent(entityB))
                     {
                         var audioPlay = audioPlayLookup[entityB];
-                        audioPlay.AudioNumber = healthPoint.killedSENumber;
+                        audioPlay.AudioNumber = playerSingleton.killedSENumber;
                         audioPlayLookup[entityB] = audioPlay;
                     }
                 }
@@ -142,7 +118,7 @@ static public partial class TriggerJobs
     public partial struct EnemyDamageTriggerJob : ITriggerEventsJob
     {
         // インスタンスの取得に必要な変数
-        public ComponentLookup<EnemyHealthPointData> healthPointLookup;
+        public ComponentLookup<HealthPointData> healthPointLookup;
         public ComponentLookup<BulletIDealDamageData> dealDamageLookup;
         public ComponentLookup<DestroyableData> destroyableLookup;
         public ComponentLookup<RemainingPierceCountData> remainingPierceCountLookup;
@@ -205,7 +181,7 @@ static public partial class TriggerJobs
             {
                 var destroyable = destroyableLookup[entityB];
 
-                var isKilled = healthPoint.isKilled;
+                var isKilled = destroyable.isKilled;
 
                 // HPの削除フラグを代入する
                 destroyable.isKilled = isKilled;

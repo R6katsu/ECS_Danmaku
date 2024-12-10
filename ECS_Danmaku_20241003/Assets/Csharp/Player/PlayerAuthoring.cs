@@ -38,6 +38,9 @@ public struct PlayerSingletonData : IComponentData
     [Tooltip("ËŒ‚ŠÔŠu")]
     public readonly float firingInterval;
 
+    [Tooltip("€–S‚ÌŒø‰Ê‰¹”Ô†")]
+    public readonly int killedSENumber;
+
     [Tooltip("PL‚Ì’e‚ÌPrefabEntity")]
     public readonly Entity playerBulletEntity;
 
@@ -53,12 +56,14 @@ public struct PlayerSingletonData : IComponentData
     /// <param name="moveSpeed">ˆÚ“®‘¬“x</param>
     /// <param name="moveSlowSpeed">Œ¸‘¬’†‚ÌˆÚ“®‘¬“x</param>
     /// <param name="firingInterval">ËŒ‚ŠÔŠu</param>
+    /// <param name="killedSENumber">€–S‚ÌŒø‰Ê‰¹”Ô†</param>
     /// <param name="playerBulletEntity">PL‚Ì’e‚ÌPrefabEntity</param>
     public PlayerSingletonData
         (
         float moveSpeed,
         float moveSlowSpeed, 
-        float firingInterval, 
+        float firingInterval,
+        int killedSENumber,
         Entity playerBulletEntity,
         Entity playerModelEntity
         )
@@ -66,6 +71,7 @@ public struct PlayerSingletonData : IComponentData
         this.moveSpeed = moveSpeed;
         this.slowMoveSpeed = moveSlowSpeed;
         this.firingInterval = firingInterval;
+        this.killedSENumber = killedSENumber;
         this.playerBulletEntity = playerBulletEntity;
         this.playerModelEntity = playerModelEntity;
 
@@ -85,17 +91,11 @@ public class PlayerAuthoring : SingletonMonoBehaviour<PlayerAuthoring>
     [SerializeField, Min(0.0f), Header("Œ¸‘¬’†‚ÌˆÚ“®‘¬“x")]
     private float _slowMoveSpeed = 0.0f;
 
-    [SerializeField, Min(0.0f), Header("Å‘å‘Ì—Í")]
-    private float _maxHP = 0.0f;
-
     [SerializeField, Min(0.0f), Header("ËŒ‚ŠÔŠu")]
     private float _firingInterval = 0.0f;
 
-    [SerializeField, Min(0.0f), Header("–³“GŠÔ‚Ì’·‚³")]
-    private float _isInvincibleTime = 0.0f;
-
-    [SerializeField, Min(0.0f), Header("€–S‚ÌŒø‰Ê‰¹”Ô†")]
-    private int _killedSENumber;
+    [SerializeField, Min(0), Header("€–S‚ÌŒø‰Ê‰¹”Ô†")]
+    private int _killedSENumber = 0;
 
     [SerializeField, Header("PL‚Ì’e‚ÌPrefab")]
     private Transform _playerBulletPrefab = null;
@@ -122,6 +122,7 @@ public class PlayerAuthoring : SingletonMonoBehaviour<PlayerAuthoring>
                 src._moveSpeed, 
                 src._slowMoveSpeed,
                 src._firingInterval,
+                src._killedSENumber,
                 playerBulletEntity,
                 playerModelEntity
             );
@@ -130,7 +131,6 @@ public class PlayerAuthoring : SingletonMonoBehaviour<PlayerAuthoring>
             AddComponent(entity, playerData);
             AddComponent(entity, new PlayerTag());
             AddComponent(entity, new DestroyableData());
-            AddComponent(entity, new PlayerHealthPointData(src._maxHP, src._isInvincibleTime, src._killedSENumber));
 
             // w‰c‚ÆƒJƒeƒSƒŠ‚ÌTag‚ğƒAƒ^ƒbƒ`
             AddComponent(entity, EntityCampsHelper.GetCampsTagType(src._campsType));

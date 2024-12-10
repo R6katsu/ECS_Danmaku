@@ -9,6 +9,8 @@ using static HealthHelper;
 using static PlayerAuthoring;
 #endif
 
+// リファクタリング済み
+
 /// <summary>
 /// HPの補助
 /// </summary>
@@ -32,11 +34,6 @@ static public class HealthHelper
         /// <param name="heal">回復量</param>
         /// <param name="entity">相手</param>
         public void HealHP(float heal, Entity entity);
-
-        /// <summary>
-        /// 倒れる
-        /// </summary>
-        public void Down();
     }
 
     /// <summary>
