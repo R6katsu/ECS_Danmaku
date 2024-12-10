@@ -174,7 +174,7 @@ public partial class PlayerSystem : SystemBase
         var movementRangeSingleton = SystemAPI.GetSingleton<MovementRangeSingletonData>();
 
         // PL‚ÌˆÚ“®‰Â”\”ÍˆÍ‚ğæ“¾
-        var playerMovementRange = movementRangeSingleton.playerMovementRange;
+        var playerMovementRange = movementRangeSingleton.PlayerMovementRange;
 
         // ’†SˆÊ’u
         var movementRangeCenter = playerMovementRange.movementRangeCenter;

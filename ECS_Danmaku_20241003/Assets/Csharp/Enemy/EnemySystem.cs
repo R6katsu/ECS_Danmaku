@@ -27,7 +27,7 @@ public partial struct EnemySystem : ISystem
         var movementRangeSingleton = SystemAPI.GetSingleton<MovementRangeSingletonData>();
 
         // “G‚ÌˆÚ“®‰Â”\”ÍˆÍ‚ğæ“¾
-        var enemyMovementRange = movementRangeSingleton.enemyMovementRange;
+        var enemyMovementRange = movementRangeSingleton.EnemyMovementRange;
 
         // ’†SˆÊ’u
         var movementRangeCenter = enemyMovementRange.movementRangeCenter;
