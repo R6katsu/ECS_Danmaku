@@ -27,7 +27,7 @@ public partial struct BulletSystem : ISystem
         var movementRangeSingleton = SystemAPI.GetSingleton<MovementRangeSingletonData>();
 
         // ’e‚ÌˆÚ“®‰Â”\”ÍˆÍ‚ğæ“¾
-        var bulletMovementRange = movementRangeSingleton.bulletMovementRange;
+        var bulletMovementRange = movementRangeSingleton.BulletMovementRange;
 
         // ’†SˆÊ’u
         var movementRangeCenter = bulletMovementRange.movementRangeCenter;
