@@ -56,7 +56,7 @@ static public partial class DanmakuJobs
             int amountBullets = n_Way_DanmakuData.amountBullets;
 
             // ”­Ë‚·‚é’e‚Ì‰ŠúŠp“x
-            float startAngle = -fanAngle / 2f;
+            float startAngle = -fanAngle.Halve();
 
             // 1‚Â‚Ì’e‚²‚Æ‚ÌŠp“x‚Ì‘‰Á
             float angleStep = fanAngle / (amountBullets);

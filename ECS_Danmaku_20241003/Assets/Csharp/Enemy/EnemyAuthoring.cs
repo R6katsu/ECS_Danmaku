@@ -20,9 +20,6 @@ public class EnemyAuthoring : MonoBehaviour
     [SerializeField, Min(0.0f), Header("最大体力")]
     private float _maxHP = 0.0f;
 
-    [SerializeField, Min(0.0f), Header("無敵時間の長さ")]
-    private float _isInvincibleTime = 0.0f;
-
     [SerializeField, Min(0), Header("被弾時の効果音番号")]
     private int _hitSENumber = 0;
 
@@ -41,10 +38,9 @@ public class EnemyAuthoring : MonoBehaviour
         {
             var entity = GetEntity(TransformUsageFlags.Dynamic);
 
-            var enemyHealthPointData = new EnemyHealthPointData
+            var healthPointData = new HealthPointData
             (
                 src._maxHP,
-                src._isInvincibleTime,
                 src._hitSENumber,
                 src._killedSENumber
             );
@@ -52,7 +48,7 @@ public class EnemyAuthoring : MonoBehaviour
             // Dataをアタッチ
             AddComponent(entity, new EnemyTag());
             AddComponent(entity, new DestroyableData());
-            AddComponent(entity, enemyHealthPointData);
+            AddComponent(entity, healthPointData);
 
             // 陣営とカテゴリのTagをアタッチ
             AddComponent(entity, EntityCampsHelper.GetCampsTagType(src._campsType));
