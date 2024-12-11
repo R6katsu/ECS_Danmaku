@@ -1,15 +1,17 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Transforms;
-using UnityEngine;
-using static BulletHelper;
 using Unity.Mathematics;
 using Unity.Collections;
 
 #if UNITY_EDITOR
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using static BulletHelper;
 #endif
+
+// リファクタリング済み
 
 /// <summary>
 /// 自身の回転の処理
@@ -19,9 +21,9 @@ public partial struct RotationSystem : ISystem
 {
     public void OnUpdate(ref SystemState state)
     {
-        // EntityCommandBufferを作成
         var ecb = new EntityCommandBuffer(Allocator.TempJob);
 
+        // RotationDataを有するEntityに回転を実行
         foreach (var (rotationData, localTfm, entity) in
              SystemAPI.Query
                  <RefRO<RotationData>,

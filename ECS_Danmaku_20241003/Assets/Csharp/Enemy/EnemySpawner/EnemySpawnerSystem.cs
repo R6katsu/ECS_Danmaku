@@ -114,47 +114,8 @@ public partial struct EnemySpawnerSystem : ISystem
                 break;
             }
 
-            // 現在のenemySpawnInfoを取得
-            var currentInfo = _currentPattern.enemySpawnInfos[_currentInfoNumber];
-
-            // 経過時間が敵生成時間未満だったらコンテニュー
-            if (currentInfo.CreationDelay > _elapsed) { continue; }
-
-            // 生成中の敵番号をインクリメント
-            _currentInfoNumber++;
-
-            // EnemyNameに対応する敵Entityを取得
-            var enemyEntity = GetEnemyEntity(ref state, currentInfo.MyEnemyName);
-
-            // 敵EntityがNullだったらコンテニュー
-            if (enemyEntity == Entity.Null) { continue; }
-
             // 敵を生成
-            var enemy = ecb.Instantiate(enemyEntity);
-
-            // SpawnPointSingletonDataが存在していた
-            if (SystemAPI.HasSingleton<SpawnPointSingletonData>())
-            {
-                // シングルトンデータの取得
-                var spawnPointSingleton = SystemAPI.GetSingleton<SpawnPointSingletonData>();
-
-                // 生成位置を取得
-                var spawnPoint = spawnPointSingleton.GetSpawnPoint
-                (
-                    currentInfo.SpawnPointType
-                );
-
-                // nullチェック。nullだったら原点に生成
-                spawnPoint = (spawnPoint == null) ? float3.zero : spawnPoint;
-
-                // LocalTransformを設定する
-                ecb.SetComponent(enemy, new LocalTransform
-                {
-                    Position = (float3)spawnPoint,
-                    Rotation = quaternion.identity,
-                    Scale = DEFAULT_SCALE
-                });
-            }
+            EnemyInstantiate(ref state, ecb, array);
         }
 
         ecb.Playback(state.EntityManager);
@@ -181,9 +142,9 @@ public partial struct EnemySpawnerSystem : ISystem
     }
 
     /// <summary>
-    /// 敵が存在するか
+    /// 敵が存在するかのフラグを返す
     /// </summary>
-    /// <returns></returns>
+    /// <returns>敵が存在するか</returns>
     private bool HasEnemy(ref SystemState state)
     {
         foreach (var enemyTag in SystemAPI.Query<EnemyTag>())
@@ -196,6 +157,9 @@ public partial struct EnemySpawnerSystem : ISystem
     /// <summary>
     /// ボス敵を生成
     /// </summary>
+    /// <param name="state">SystemAPIに必要</param>
+    /// <param name="ecb">変更の反映に必要</param>
+    /// <param name="array">敵生成に必要なもの</param>
     private void BossEnemyInstantiate(ref SystemState state, EntityCommandBuffer ecb, EnemySpawnPatternArraySingletonData array)
     {
         // ボスを生成
@@ -215,6 +179,57 @@ public partial struct EnemySpawnerSystem : ISystem
 
             // LocalTransformを設定する
             ecb.SetComponent(bossEnemy, new LocalTransform
+            {
+                Position = (float3)spawnPoint,
+                Rotation = quaternion.identity,
+                Scale = DEFAULT_SCALE
+            });
+        }
+    }
+
+    /// <summary>
+    /// 敵を生成
+    /// </summary>
+    /// <param name="state">SystemAPIに必要</param>
+    /// <param name="ecb">変更の反映に必要</param>
+    /// <param name="array">敵生成に必要なもの</param>
+    private void EnemyInstantiate(ref SystemState state, EntityCommandBuffer ecb, EnemySpawnPatternArraySingletonData array)
+    {
+        // 現在のenemySpawnInfoを取得
+        var currentInfo = _currentPattern.enemySpawnInfos[_currentInfoNumber];
+
+        // 経過時間が敵生成時間未満だったらコンテニュー
+        if (currentInfo.CreationDelay > _elapsed) { return; }
+
+        // 生成中の敵番号をインクリメント
+        _currentInfoNumber++;
+
+        // EnemyNameに対応する敵Entityを取得
+        var enemyEntity = GetEnemyEntity(ref state, currentInfo.MyEnemyName);
+
+        // 敵EntityがNullだったらコンテニュー
+        if (enemyEntity == Entity.Null) { return; }
+
+        // 敵を生成
+        var enemy = ecb.Instantiate(enemyEntity);
+
+        // SpawnPointSingletonDataが存在していた
+        if (SystemAPI.HasSingleton<SpawnPointSingletonData>())
+        {
+            // シングルトンデータの取得
+            var spawnPointSingleton = SystemAPI.GetSingleton<SpawnPointSingletonData>();
+
+            // 生成位置を取得
+            var spawnPoint = spawnPointSingleton.GetSpawnPoint
+            (
+                currentInfo.SpawnPointType
+            );
+
+            // nullチェック。nullだったら原点に生成
+            spawnPoint = (spawnPoint == null) ? float3.zero : spawnPoint;
+
+            // LocalTransformを設定する
+            ecb.SetComponent(enemy, new LocalTransform
             {
                 Position = (float3)spawnPoint,
                 Rotation = quaternion.identity,
