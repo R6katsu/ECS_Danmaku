@@ -1,10 +1,12 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 #if UNITY_EDITOR
+using System.Collections.Generic;
 #endif
+
+// リファクタリング済み
 
 /// <summary>
 /// タイトルロゴのシングルトン
@@ -14,7 +16,7 @@ using UnityEngine;
 public class TitleLogoSingleton : SingletonMonoBehaviour<TitleLogoSingleton>
 {
     [Tooltip("タイトルロゴが破壊可能な状態か")]
-    private bool _isHFIOAHFIO = false;
+    private bool _isTitleLogoDestructible = false;
 
     [Tooltip("現在の画像番号")]
     private int _currentImageNumber = 0;
@@ -60,7 +62,7 @@ public class TitleLogoSingleton : SingletonMonoBehaviour<TitleLogoSingleton>
     /// <returns>次に切り替える画像が存在しない場合はfalse</returns>
     public bool? NextImage()
     {
-        if (!_isHFIOAHFIO) { return null; }
+        if (!_isTitleLogoDestructible) { return null; }
 
         // あとでリファクタリングする
         GetComponent<SpriteRenderer>().enabled = false;
@@ -92,7 +94,7 @@ public class TitleLogoSingleton : SingletonMonoBehaviour<TitleLogoSingleton>
     /// <summary>
     /// タイトルロゴを再生
     /// </summary>
-    /// <returns>null</returns>
+    /// <returns></returns>
     public IEnumerator TitleLogoAnimation()
     {
         // あとでリファクタリングする
@@ -100,21 +102,21 @@ public class TitleLogoSingleton : SingletonMonoBehaviour<TitleLogoSingleton>
 
         // タイトルロゴのアニメーションを再生
         yield return UIAnimationAndEndAction.Instance.AnimationAndEndAction
-            (
-                TitleLogoAnimator,
-                _titleLogoTriggerName
-            );
+        (
+            TitleLogoAnimator,
+            _titleLogoTriggerName
+        );
 
-        _isHFIOAHFIO = true;
+        _isTitleLogoDestructible = true;
     }
 
     /// <summary>
     /// タイトルロゴを破壊して破片にする
     /// </summary>
-    /// <returns>null</returns>
+    /// <returns></returns>
     public IEnumerator TitleLogoBreakAnimation()
     {
-        _isHFIOAHFIO = false;
+        _isTitleLogoDestructible = false;
 
         // あとでリファクタリングする
         GetComponent<SpriteRenderer>().enabled = true;
@@ -127,9 +129,9 @@ public class TitleLogoSingleton : SingletonMonoBehaviour<TitleLogoSingleton>
 
         // タイトルロゴの破壊アニメーションを再生
         yield return UIAnimationAndEndAction.Instance.AnimationAndEndAction
-            (
-                TitleLogoAnimator,
-                _titleLogoBreakTriggerName
-            );
+        (
+            TitleLogoAnimator,
+            _titleLogoBreakTriggerName
+        );
     }
 }

@@ -1,12 +1,14 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel.Design;
 using Unity.Entities;
 using UnityEngine;
 
 #if UNITY_EDITOR
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.ComponentModel.Design;
 #endif
+
+// リファクタリング済み
 
 /// <summary>
 /// タイトルロゴの情報（シングルトン前提）
@@ -78,10 +80,10 @@ public class TitleLogoAuthoring : MonoBehaviour
             var entity = GetEntity(TransformUsageFlags.Dynamic);
 
             var titleLogoSingletonData = new TitleLogoSingletonData
-                (
-                    src._imageSwapCount,
-                    src._damageSENumber
-                );
+            (
+                src._imageSwapCount,
+                src._damageSENumber
+            );
 
             AddComponent(entity, titleLogoSingletonData);
         }
