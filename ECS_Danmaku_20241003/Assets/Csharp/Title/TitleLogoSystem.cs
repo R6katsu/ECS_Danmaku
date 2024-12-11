@@ -1,24 +1,26 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.Burst;
 using Unity.Entities;
 using Unity.Physics;
+using static BulletHelper;
+using Unity.Burst;
+
+#if UNITY_EDITOR
+using System.Collections;
+using System.Collections.Generic;
 using Unity.Transforms;
 using UnityEngine;
-using static BulletHelper;
 using static EntityCampsHelper;
 using static HealthHelper;
 using static HealthPointDatas;
 using static TriggerJobs;
 using EventTrigger = UnityEngine.EventSystems.EventTrigger;
-
-#if UNITY_EDITOR
 #endif
+
+// リファクタリング済み
 
 /// <summary>
 /// タイトルロゴの処理
 /// </summary>
-//[BurstCompile]
+[BurstCompile]
 public partial struct TitleLogoSystem : ISystem
 {
     private ComponentLookup<TitleLogoSingletonData> _titleLogoSingletonLookup;
@@ -53,7 +55,11 @@ public partial struct TitleLogoSystem : ISystem
         };
 
         // TitleLogoTriggerJobをスケジュール
-        var titleLogoJobHandle = titleLogo.Schedule(SystemAPI.GetSingleton<SimulationSingleton>(), state.Dependency);
+        var titleLogoJobHandle = titleLogo.Schedule
+        (
+            SystemAPI.GetSingleton<SimulationSingleton>(),
+            state.Dependency
+        );
 
         // ジョブの依存関係を更新する
         state.Dependency = titleLogoJobHandle;
@@ -61,21 +67,36 @@ public partial struct TitleLogoSystem : ISystem
         // ジョブ完了を待機してから次の処理を実行する
         titleLogoJobHandle.Complete();
 
-        foreach (var (titleLogoSingleton, entity) in SystemAPI.Query<TitleLogoSingletonData>().WithEntityAccess())
-        {
-            // 次の画像に切り替える
-            titleLogoSingleton.NextImage();
+        // 次の画像に切り替える
+        NextImage(ref state);
+    }
 
-            // isNextImage の値を実際のエンティティに反映
-            state.EntityManager.SetComponentData(entity, titleLogoSingleton);
-        }
+    /// <summary>
+    /// 次の画像に切り替える
+    /// </summary>
+    private void NextImage(ref SystemState state)
+    {
+        // TitleLogoSingletonDataが存在しなかった
+        if (!SystemAPI.HasSingleton<TitleLogoSingletonData>()) { return; }
+
+        // シングルトンデータの取得
+        var titleLogoSingleton = SystemAPI.GetSingleton<TitleLogoSingletonData>();
+
+        // 次の画像に切り替える
+        titleLogoSingleton.NextImage();
+
+        // TitleLogoSingletonDataを持つEntityを取得
+        Entity playerEntity = SystemAPI.GetSingletonEntity<TitleLogoSingletonData>();
+
+        // isNextImageの値を実際のエンティティに反映
+        state.EntityManager.SetComponentData(playerEntity, titleLogoSingleton);
     }
 }
 
 /// <summary>
-/// 
+/// タイトルロゴの衝突時の処理
 /// </summary>
-//[BurstCompile]
+[BurstCompile]
 public partial struct TitleLogoTriggerJob : ITriggerEventsJob
 {
     public ComponentLookup<TitleLogoSingletonData> titleLogoSingletonLookup;

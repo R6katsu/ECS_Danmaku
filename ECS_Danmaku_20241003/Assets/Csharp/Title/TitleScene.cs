@@ -7,6 +7,8 @@ using UnityEngine.Rendering;
 using System.Collections.Generic;
 #endif
 
+// リファクタリング済み
+
 /// <summary>
 /// タイトルシーン
 /// </summary>
@@ -56,23 +58,24 @@ public class TitleScene : MonoBehaviour
         MyTitleSceneState = TitleSceneState.Start;
     }
 
+    /// <summary>
+    /// TitleSceneStateに対応する処理を実行
+    /// </summary>
     private void ChangeTitleSceneState()
     {
         switch (_titleSceneState)
         {
             case TitleSceneState.Start:
-                // カーソルを画面中央にロックする
-                Cursor.lockState = CursorLockMode.Locked;
+                Cursor.lockState = CursorLockMode.Locked;   // カーソルを画面中央にロックする
+                Cursor.visible = false;                     // カーソル非表示
 
-                // カーソル非表示
-                Cursor.visible = false;
-
+                // タイトルロゴが壊れた時の処理を登録
                 TitleLogoSingleton.Instance.breakAction = () =>
                 {
-                    Debug.Log("TitleLogoSingleton.Instance.breakAction");
                     MyTitleSceneState = TitleSceneState.TitleClose;
                 };
 
+                // タイトルロゴの処理に移行
                 MyTitleSceneState = TitleSceneState.TitleLogo;
                 break;
 
@@ -102,7 +105,7 @@ public class TitleScene : MonoBehaviour
     /// <summary>
     /// タイトルロゴの再生と終了までの待機
     /// </summary>
-    /// <returns>null</returns>
+    /// <returns></returns>
     private IEnumerator TitleLogoAnimationAndWait()
     {
         // タイトルロゴを再生
@@ -115,6 +118,7 @@ public class TitleScene : MonoBehaviour
     /// <summary>
     /// タイトル画面を閉じ、新しいシーンを読み込む
     /// </summary>
+    /// <returns></returns>
     private IEnumerator TitleClose()
     {
         // タイトルロゴを壊す
