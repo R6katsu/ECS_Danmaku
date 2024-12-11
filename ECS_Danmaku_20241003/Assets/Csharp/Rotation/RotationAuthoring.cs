@@ -7,6 +7,8 @@ using System.Collections;
 using System.Collections.Generic;
 #endif
 
+// リファクタリング済み
+
 /// <summary>
 /// 自身の回転の情報
 /// </summary>
