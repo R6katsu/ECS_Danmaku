@@ -1,12 +1,14 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using NUnit.Framework.Constraints;
-
 
 #if UNITY_EDITOR
+using UnityEditor;
+using NUnit.Framework.Constraints;
 using System.Collections.Generic;
 #endif
+
+// リファクタリング済み
 
 /// <summary>
 /// 星型のトランジション
@@ -14,6 +16,9 @@ using System.Collections.Generic;
 [RequireComponent(typeof(Animator))]
 public class StarTransition : MonoBehaviour, ITransition
 {
+    [Tooltip("アニメーションの長さの最大値")]
+    const float DEFAULT_ANIMATION_LENGTH = 1.0f;
+
     [Tooltip("自身のインスタンス")]
     private StarTransition _instance = null;
 
@@ -54,7 +59,7 @@ public class StarTransition : MonoBehaviour, ITransition
             _instance = this;
 
             // シーンを跨いで存在する
-            DontDestroyOnLoad(transform.parent.gameObject);
+            DontDestroyOnLoad(transform.parent.gameObject); // Canvas
             DontDestroyOnLoad(gameObject);
         }
 
@@ -67,7 +72,24 @@ public class StarTransition : MonoBehaviour, ITransition
     public IEnumerator Transition(int sceneNumber)
     {
         // トランジションを開始
-        TransitionAnimator.SetTrigger(_transitionStartTriggerName);
+        yield return StartCoroutine(PlayAnimationAndWait(_transitionStartTriggerName));
+
+        // シーン遷移
+        yield return SceneManager.LoadSceneAsync(sceneNumber);
+
+        // トランジションを終了
+        yield return StartCoroutine(PlayAnimationAndWait(_transitionEndTriggerName));
+    }
+
+    /// <summary>
+    /// アニメーションを再生し、終了まで待機する
+    /// </summary>
+    /// <param name="triggerName">アニメーション再生時のTriggerの名称</param>
+    /// <returns></returns>
+    public IEnumerator PlayAnimationAndWait(string triggerName)
+    {
+        // トランジションを終了
+        TransitionAnimator.SetTrigger(triggerName);
 
         // アニメーションの遷移を待つ
         yield return null;
@@ -76,7 +98,7 @@ public class StarTransition : MonoBehaviour, ITransition
         AnimatorStateInfo stateInfo = TransitionAnimator.GetCurrentAnimatorStateInfo(0);
 
         // 正しい長さが取得できるまで待機
-        while (stateInfo.length == 1)
+        while (stateInfo.length == DEFAULT_ANIMATION_LENGTH)
         {
             yield return null;
             stateInfo = TransitionAnimator.GetCurrentAnimatorStateInfo(0);
@@ -84,29 +106,6 @@ public class StarTransition : MonoBehaviour, ITransition
 
         // アニメーション終了まで待機
         float animationLength = stateInfo.length;
-        yield return new WaitForSeconds(animationLength);
-
-        // シーン遷移
-        yield return SceneManager.LoadSceneAsync(sceneNumber);
-
-        // トランジションを終了
-        TransitionAnimator.SetTrigger(_transitionEndTriggerName);
-
-        // アニメーションの遷移を待つ
-        yield return null;
-
-        // アニメーション情報の取得
-        stateInfo = TransitionAnimator.GetCurrentAnimatorStateInfo(0);
-
-        // 正しい長さが取得できるまで待機
-        while (stateInfo.length == 1)
-        {
-            yield return null;
-            stateInfo = TransitionAnimator.GetCurrentAnimatorStateInfo(0);
-        }
-
-        // アニメーション終了まで待機
-        animationLength = stateInfo.length;
         yield return new WaitForSeconds(animationLength);
     }
 }

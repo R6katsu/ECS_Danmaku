@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using UnityEngine;
 #endif
 
+// リファクタリング済み
+
 /// <summary>
 /// トランジションの実装
 /// </summary>

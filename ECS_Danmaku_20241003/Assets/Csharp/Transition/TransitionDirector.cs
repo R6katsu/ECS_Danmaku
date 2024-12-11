@@ -5,12 +5,14 @@ using System.Collections;
 using System.Collections.Generic;
 #endif
 
+// リファクタリング済み
+
 /// <summary>
 /// トランジションの名称
 /// </summary>
 public enum TransitionName : int
 {
-    Star
+    [Tooltip("星型の場面転換")] Star,
 }
 
 /// <summary>
