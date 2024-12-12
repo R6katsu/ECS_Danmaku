@@ -12,6 +12,8 @@ using Unity.Entities;
 using static VFXCreationBridge;
 #endif
 
+// リファクタリング済み
+
 /// <summary>
 /// VFXを生成する。VFXとECSを連携させる架け橋となるclass
 /// </summary>
@@ -33,13 +35,12 @@ public class VFXCreationBridge : SingletonMonoBehaviour<VFXCreationBridge>
     private Dictionary<VisualEffectName, GraphicsBuffer> _sizeBuffers = new();
 
     /// <summary>
-    /// VisualEffectの名称。<br/>
-    /// 配列と連携する場合、0番目はNoneであるため要素数は-1すること。
+    /// VisualEffectの名称
     /// </summary>
-    public enum VisualEffectName : byte
+    public enum VisualEffectName : sbyte
     {
-        None = 0,
-        Test20241017Graph,
+        None = -1,
+        Explosion,
     }
 
     private void OnDestroy()
@@ -72,28 +73,29 @@ public class VFXCreationBridge : SingletonMonoBehaviour<VFXCreationBridge>
             return;
         }
 
-        // 途中から1個前の位置にエフェクトが生成されるようになる
-        // 最初は問題なく倒した位置に生成されることもあり、原因が分からない
-
+        // 既に追加されていたら追加しない
         if (!_positions.ContainsKey(visualEffectName))
         { _positions.Add(visualEffectName, new List<Vector3>()); }
 
         if (!_sizes.ContainsKey(visualEffectName))
         { _sizes.Add(visualEffectName, new List<float>()); }
 
+        // 書き込む為のリストに追加
         _positions[visualEffectName].Add(position);
         _sizes[visualEffectName].Add(size);
 
+        // ここから書き込み処理
         _positionBuffers[visualEffectName] = new GraphicsBuffer(GraphicsBuffer.Target.Structured, _positions[visualEffectName].Count, sizeof(float) * 3);
         _sizeBuffers[visualEffectName] = new GraphicsBuffer(GraphicsBuffer.Target.Structured, _sizes[visualEffectName].Count, sizeof(float));
 
         _positionBuffers[visualEffectName].SetData(_positions[visualEffectName]);
         _sizeBuffers[visualEffectName].SetData(_sizes[visualEffectName]);
 
-        var visualEffect = _visualEffects[(byte)visualEffectName - 1];
+        var visualEffect = _visualEffects[(sbyte)visualEffectName];
         visualEffect.SetGraphicsBuffer("PositionBuffer", _positionBuffers[visualEffectName]);
         visualEffect.SetGraphicsBuffer("SizeBuffer", _positionBuffers[visualEffectName]);
 
+        // 生成を開始
         visualEffect.SendEvent("OnPlay");
     }
 }

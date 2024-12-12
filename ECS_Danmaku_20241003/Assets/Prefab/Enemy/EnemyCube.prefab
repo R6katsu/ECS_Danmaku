@@ -115,7 +115,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5cbaeac001b19d34dbaac4956954ca8d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _visualEffectName: 1
+  _visualEffectName: 0
   _size: 1
 --- !u!114 &-5616618894178967048
 MonoBehaviour:
