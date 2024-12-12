@@ -16,11 +16,16 @@ public class RetryEvent : MonoBehaviour
     [SerializeField, Header("シーン遷移のトランジションの名称")]
     private TransitionName _transitionName = 0;
 
+    private bool _isDisposed = false;
+
     /// <summary>
     /// シーン再読み込み
     /// </summary>
     public void Retry()
     {
+        if (_isDisposed) { return; }
+        _isDisposed = true;
+
         // 現在のシーンのインデックスを取得
         int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
 
@@ -33,6 +38,6 @@ public class RetryEvent : MonoBehaviour
 #endif
         }
 
-        transition.StartTransition(currentSceneIndex);
+        transition?.StartTransition(currentSceneIndex);
     }
 }
