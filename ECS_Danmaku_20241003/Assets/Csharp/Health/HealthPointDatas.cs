@@ -40,6 +40,9 @@ static public class HealthPointDatas
         [Tooltip("自身の識別番号")]
         private int _myNumber;
 
+        [Tooltip("最後に接触した相手")]
+        private Entity _lastHitEntity;
+
         /// <summary>
         /// 最大体力
         /// </summary>
@@ -85,11 +88,18 @@ static public class HealthPointDatas
             _currentHP = this.maxHP;
             currentNumber++;
             _myNumber = 0;
+            _lastHitEntity = Entity.Null;
         }
 
         // IHealthPoint
         public void DamageHP(float damage, Entity entity)
         {
+            // 前回と同じ相手だった
+            if (_lastHitEntity == entity) { return; }
+            
+            // 最後に接触した相手を更新
+            _lastHitEntity = entity;
+
             _currentHP -= damage;
         }
 

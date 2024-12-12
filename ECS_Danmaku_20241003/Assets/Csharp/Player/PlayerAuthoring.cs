@@ -10,7 +10,6 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
 using Unity.Transforms;
-using static TriggerHelper;
 using static EntityCampsHelper;
 using UnityEngine.Events;
 using static DanmakuJobs;
