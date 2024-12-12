@@ -12,11 +12,16 @@ using System.Collections.Generic;
 /// </summary>
 public class GameEndEvent : MonoBehaviour
 {
+    private bool _isDisposed = false;
+
     /// <summary>
     /// ゲームを終了する
     /// </summary>
     public void GameEnd()
     {
+        if (_isDisposed) { return; }
+        _isDisposed = true;
+
 #if UNITY_EDITOR
         // プレイモードを終了
         UnityEditor.EditorApplication.isPlaying = false;
