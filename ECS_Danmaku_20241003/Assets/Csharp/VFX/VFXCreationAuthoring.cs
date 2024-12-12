@@ -1,16 +1,17 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 using static VFXCreationBridge;
-using UnityEngine.UIElements;
-
 
 #if UNITY_EDITOR
+using UnityEngine.UIElements;
+using System.Collections;
+using System.Collections.Generic;
 using System.Runtime.InteropServices.ComTypes;
 using static BulletHelper;
 #endif
+
+// リファクタリング済み
 
 /// <summary>
 /// VFXCreationの引数の情報
@@ -57,11 +58,11 @@ public struct VFXCreationData : IComponentData
         this.size = size;
 
         position = new float3
-            (
-                float.NegativeInfinity,
-                float.NegativeInfinity,
-                float.NegativeInfinity
-            );
+        (
+            float.NegativeInfinity,
+            float.NegativeInfinity,
+            float.NegativeInfinity
+        );
         isCreatable = false;
     }
 
@@ -71,15 +72,18 @@ public struct VFXCreationData : IComponentData
     public void DisableCreation()
     {
         position = new float3
-            (
-                float.NegativeInfinity,
-                float.NegativeInfinity,
-                float.NegativeInfinity
-            );
+        (
+            float.NegativeInfinity,
+            float.NegativeInfinity,
+            float.NegativeInfinity
+        );
         isCreatable = false;
     }
 }
 
+/// <summary>
+/// VFXCreationの引数に必要な設定
+/// </summary>
 public class VFXCreationAuthoring : MonoBehaviour
 {
     private const float MIN_SIZE = 0.1f;

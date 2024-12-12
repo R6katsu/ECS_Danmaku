@@ -12,8 +12,11 @@ using static UnityEngine.EventSystems.EventTrigger;
 using Unity.VisualScripting.FullSerializer;
 #endif
 
+// リファクタリング済み
+
 /// <summary>
-/// VFXを生成する
+/// VFXを生成する。<br/>
+/// メインスレッドで関数を呼び出す為のSystem。
 /// </summary>
 public partial struct VFXCreationSystem : ISystem
 {
@@ -21,7 +24,7 @@ public partial struct VFXCreationSystem : ISystem
     {
         var entityManager = state.EntityManager;
 
-        // メインスレッドで関数を呼び出す為のSystem
+        // VFXを生成する
         foreach (var (vfxCreation, localTfm) in
                  SystemAPI.Query<RefRO<VFXCreationData>,
                                  RefRW<LocalTransform>>())
