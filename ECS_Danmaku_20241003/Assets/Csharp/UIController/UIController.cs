@@ -1,47 +1,56 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Events;
 using System.Linq;
 
 #if UNITY_EDITOR
+using System.Collections;
+using System.Collections.Generic;
 using Unity.VisualScripting;
 using static UnityEditor.Searcher.SearcherWindow.Alignment;
 using UnityEngine.InputSystem;
 #endif
+
+// リファクタリング済み
+
+/// <summary>
+/// 水平、垂直の入力回数とUnityEventの情報
+/// </summary>
+[Serializable]
+public struct AxisInputEventInfo
+{
+    [SerializeField, Header("水平垂直の入力回数")]
+    private int2 _axisInput;
+
+    [SerializeField, Header("ボタン画像")]
+    private RectTransform _buttonImage;
+
+    [SerializeField, Header("水平垂直の入力回数と紐つけて呼び出される関数")]
+    private UnityEvent _axisInputEvent;
+
+    public int2 AxisInput => _axisInput;
+    public RectTransform ButtonImage => _buttonImage;
+    public UnityEvent AxisInputEvent => _axisInputEvent;
+    public (RectTransform, UnityEvent) ButtonImage_AxisInputEvent => (_buttonImage, _axisInputEvent);
+}
 
 /// <summary>
 /// UI選択
 /// </summary>
 public class UIController : MonoBehaviour, IDisposable
 {
-    /// <summary>
-    /// 水平垂直の入力回数とUnityEventの情報
-    /// </summary>
-    [Serializable]
-    public struct AxisInputEventInfo
-    {
-        [SerializeField, Header("水平垂直の入力回数")]
-        private int2 _axisInput;
+    [Tooltip("デフォルトのUIの大きさ")]
+    private readonly Vector2 _defaultUIScale = Vector2.one;
 
-        [SerializeField, Header("ボタン画像")]
-        private RectTransform _buttonImage;
-
-        [SerializeField, Header("水平垂直の入力回数と紐つけて呼び出される関数")]
-        private UnityEvent _axisInputEvent;
-
-        public int2 AxisInput => _axisInput;
-        public RectTransform ButtonImage => _buttonImage;
-        public UnityEvent AxisInputEvent => _axisInputEvent;
-        public (RectTransform, UnityEvent) ButtonImage_AxisInputEvent => (_buttonImage, _axisInputEvent);
-    }
-
-    [SerializeField, Header("水平垂直の入力回数とUnityEventの情報の配列")]
+    [SerializeField, Header("水平垂直の入力回数とUnityEventの構造体の配列")]
     private AxisInputEventInfo[] _axisInputEventInfos = null;
 
-    private (RectTransform, UnityEvent)[,] _unityEvents = null;
+    [SerializeField, Min(0.0f), Header("選択中のUIの大きさ")]
+    private float _selectedUIScale = 0.0f;
+
+    [Tooltip("UIとUnityEventを紐つけた多次元配列")]
+    private (RectTransform, UnityEvent)[,] _uiAndUnityEvents = null;
 
     [Tooltip("入力方向に負の値が含まれているか")]
     private bool _hasNegativeValue = false;
@@ -62,25 +71,25 @@ public class UIController : MonoBehaviour, IDisposable
     private int _yValueMin = 0;
 
     /// <summary>
-    /// 水平垂直の入力回数とUnityEventの情報の多次元配列
+    /// UIとUnityEventを紐つけた多次元配列
     /// </summary>
-    private (RectTransform, UnityEvent)[,] AxisInputEventInfos
+    private (RectTransform, UnityEvent)[,] UIAndUnityEvents
     {
         get
         {
             // 多次元配列がnullだった
-            if (_unityEvents == null)
+            if (_uiAndUnityEvents == null)
             {
                 // 多次元配列を作成し、構造体内のint2を多次元配列に置き換える
-                _unityEvents = new (RectTransform, UnityEvent)[_xValueMax, _yValueMax];
+                _uiAndUnityEvents = new (RectTransform, UnityEvent)[_xValueMax, _yValueMax];
 
                 foreach (var info in _axisInputEventInfos)
                 {
-                    _unityEvents[info.AxisInput.x, info.AxisInput.y] = info.ButtonImage_AxisInputEvent;
+                    _uiAndUnityEvents[info.AxisInput.x, info.AxisInput.y] = info.ButtonImage_AxisInputEvent;
                 }
             }
 
-            return _unityEvents;
+            return _uiAndUnityEvents;
         }
     }
 
@@ -127,7 +136,7 @@ public class UIController : MonoBehaviour, IDisposable
             var confirm = _playerInput.UI.Confirm;
             confirm.started += (context) =>
             {
-                UnityEvent uiEvent = GetANHFAJON().Value.Item2;
+                UnityEvent uiEvent = GetUIAndUnityEvent().Value.Item2;
 
                 // メインスレッドで処理するActionに登録
                 MainThreadExecutor.Instance.Enqueue
@@ -202,10 +211,10 @@ public class UIController : MonoBehaviour, IDisposable
     }
 
     /// <summary>
-    /// 
+    /// 現在選択中の位置に紐つけられたUIとUnityEventを返す
     /// </summary>
-    /// <returns></returns>
-    public (RectTransform, UnityEvent)? GetANHFAJON()
+    /// <returns>現在選択中の位置に紐つけられたUIとUnityEvent</returns>
+    public (RectTransform, UnityEvent)? GetUIAndUnityEvent()
     {
         // UIの操作が無効だった
         if (!_isUIEnabled) { return null; }
@@ -231,7 +240,7 @@ public class UIController : MonoBehaviour, IDisposable
         else
         {
             // 多次元配列を作成して返す、検索した要素が初期値の場合はnullを返す
-            return AxisInputEventInfos[_selectedUIEvent.x, _selectedUIEvent.y];
+            return UIAndUnityEvents[_selectedUIEvent.x, _selectedUIEvent.y];
         }
     }
 
@@ -240,14 +249,14 @@ public class UIController : MonoBehaviour, IDisposable
     /// </summary>
     public void SelectedHorizontalIncrement()
     {
-        AAAAA();
+        SetDefaultUIScale();
 
         _selectedUIEvent.x++;
 
         // x方向の最大値を超過した場合は最小値を代入
         _selectedUIEvent.x = (_selectedUIEvent.x > _xValueMax) ? _xValueMin : _selectedUIEvent.x;
 
-        BBBBB();
+        SetSelectedUIScale();
     }
 
     /// <summary>
@@ -255,14 +264,14 @@ public class UIController : MonoBehaviour, IDisposable
     /// </summary>
     public void SelectedHorizontalDecrement()
     {
-        AAAAA();
+        SetDefaultUIScale();
 
         _selectedUIEvent.x--;
 
         // x方向の最小値未満だった場合は最大値を代入
         _selectedUIEvent.x = (_selectedUIEvent.x < _xValueMin) ? _xValueMax : _selectedUIEvent.x;
 
-        BBBBB();
+        SetSelectedUIScale();
     }
 
     /// <summary>
@@ -270,14 +279,14 @@ public class UIController : MonoBehaviour, IDisposable
     /// </summary>
     public void SelectedVerticalIncrement()
     {
-        AAAAA();
+        SetDefaultUIScale();
 
         _selectedUIEvent.y++;
 
         // y方向の最大値を超過した場合は最小値を代入
         _selectedUIEvent.y = (_selectedUIEvent.y > _yValueMax) ? _yValueMin : _selectedUIEvent.y;
 
-        BBBBB();
+        SetSelectedUIScale();
     }
 
     /// <summary>
@@ -285,27 +294,31 @@ public class UIController : MonoBehaviour, IDisposable
     /// </summary>
     public void SelectedVerticalDecrement()
     {
-        AAAAA();
+        SetDefaultUIScale();
 
         _selectedUIEvent.y--;
 
         // y方向の最小値未満だった場合は最大値を代入
         _selectedUIEvent.y = (_selectedUIEvent.y < _yValueMin) ? _yValueMax : _selectedUIEvent.y;
 
-        BBBBB();
+        SetSelectedUIScale();
     }
 
-    private void AAAAA()
+    /// <summary>
+    /// UIの大きさをデフォルトの値に設定する
+    /// </summary>
+    private void SetDefaultUIScale()
     {
-        RectTransform buttonImage = GetANHFAJON().Value.Item1;
-        buttonImage.localScale = Vector2.one;
+        RectTransform uiTransform = GetUIAndUnityEvent().Value.Item1;
+        uiTransform.localScale = _defaultUIScale;
     }
 
-    private void BBBBB()
+    /// <summary>
+    /// UIの大きさを選択時の拡大値に設定する
+    /// </summary>
+    private void SetSelectedUIScale()
     {
-        // 前回選択していた画像を求めて大きさを元に戻す
-        // 今回選択中のボタンを大きくする
-        RectTransform buttonImage = GetANHFAJON().Value.Item1;
-        buttonImage.localScale = Vector2.one * 1.5f;
+        RectTransform uiTransform = GetUIAndUnityEvent().Value.Item1;
+        uiTransform.localScale = _defaultUIScale * _selectedUIScale;
     }
 }

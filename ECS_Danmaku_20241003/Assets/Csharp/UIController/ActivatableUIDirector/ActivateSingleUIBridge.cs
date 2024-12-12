@@ -1,9 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 #if UNITY_EDITOR
+using UnityEngine.InputSystem.XR;
+using System.Collections;
+using System.Collections.Generic;
 #endif
+
+// リファクタリング済み
 
 /// <summary>
 /// トランジションで実行する関数汎用
@@ -11,13 +14,16 @@ using UnityEngine;
 [RequireComponent(typeof(AudioSource))]
 public class ActivateSingleUIBridge : MonoBehaviour
 {
+    [SerializeField, Header("有効化可能なUI要素")]
+    private UIController _activatableUIElement = null;
+
     [SerializeField]
     private AudioClip[] _seClips = null;
 
     private AudioSource _audioSource = null;
 
     /// <summary>
-    /// 自身のAudioSourceを取得、Get
+    /// 自身のAudioSourceを取得
     /// </summary>
     private AudioSource AudioSource
     {
@@ -25,6 +31,7 @@ public class ActivateSingleUIBridge : MonoBehaviour
         {
             if (_audioSource == null)
             {
+                // RequireComponent
                 _audioSource = GetComponent<AudioSource>();
             }
 
@@ -33,19 +40,18 @@ public class ActivateSingleUIBridge : MonoBehaviour
     }
 
     /// <summary>
-    /// 
+    /// UIを有効にする
     /// </summary>
-    public void ActivateUIBridge()
+    private void ActivateUI()
     {
-        // マジックナンバー、あとで(int)enumに置き換える
-        GameSceneUIDirector.Instance.ActivateSingleUIControllerElement(0);
+        _activatableUIElement?.Enable();
     }
 
     /// <summary>
     /// SEをPlayOneShotで再生
     /// </summary>
     /// <param name="seNumber">再生するSEの要素番号</param>
-    public void PlaySE(int seNumber)
+    private void PlaySE(int seNumber)
     {
         AudioSource.PlayOneShot(_seClips[seNumber]);
     }
