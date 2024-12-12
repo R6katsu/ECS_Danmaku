@@ -6,6 +6,8 @@ using System.Collections;
 using System.Collections.Generic;
 #endif
 
+// リファクタリング済み
+
 /// <summary>
 /// シングルトン用のMonoBehaviour
 /// </summary>
@@ -34,11 +36,16 @@ public class SingletonMonoBehaviour<T> : MonoBehaviour where T : MonoBehaviour
     }
     virtual protected void Awake()
     {
-        //他のゲームオブジェクトにアタッチされているか調べる
-        //アタッチされている場合は破棄する
+        // 他のゲームオブジェクトにアタッチされているか調べる
+        // アタッチされている場合は破棄する
         CheckInstance();
     }
 
+    /// <summary>
+    /// 他のゲームオブジェクトにアタッチされているか調べる。<br/>
+    /// アタッチされている場合は破棄する。
+    /// </summary>
+    /// <returns>アタッチされていなかったらtrue</returns>
     protected bool CheckInstance()
     {
         if (instance == null)

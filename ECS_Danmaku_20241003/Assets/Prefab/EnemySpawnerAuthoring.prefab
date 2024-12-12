@@ -46,3 +46,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _enemySpawnSettingSO: {fileID: 11400000, guid: 8e7d118878d53684688653c4d319ec7b,
     type: 2}
+  _leftPoint:
+    x: -8.5
+    y: 0
+    z: 15
+  _rightPoint:
+    x: 8.5
+    y: 0
+    z: 15
