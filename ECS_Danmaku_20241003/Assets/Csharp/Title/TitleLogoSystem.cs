@@ -11,7 +11,6 @@ using UnityEngine;
 using static EntityCampsHelper;
 using static HealthHelper;
 using static HealthPointDatas;
-using static TriggerJobs;
 using EventTrigger = UnityEngine.EventSystems.EventTrigger;
 #endif
 

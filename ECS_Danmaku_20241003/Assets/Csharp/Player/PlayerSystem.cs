@@ -3,6 +3,11 @@ using Unity.Transforms;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Unity.Mathematics;
+using static BulletHelper;
+using Unity.Physics;
+using static EntityCampsHelper;
+using static HealthPointDatas;
+using Unity.Burst;
 
 #if UNITY_EDITOR
 using static UnityEngine.Rendering.DebugUI;
@@ -29,6 +34,15 @@ public partial class PlayerSystem : SystemBase
     // 入力
     private float _horizontalValue = 0.0f;
     private float _verticalValue = 0.0f;
+
+    private ComponentLookup<PlayerSingletonData> _playerSingletonLookup = new();
+    private ComponentLookup<HealthPointData> _healthPointLookup = new();
+    private ComponentLookup<BulletIDealDamageData> _dealDamageLookup = new();
+    private ComponentLookup<DestroyableData> _destroyableLookup = new();
+    private ComponentLookup<RemainingPierceCountData> _remainingPierceCountLookup = new();
+    private ComponentLookup<LocalTransform> _localTransformLookup = new();
+    private ComponentLookup<VFXCreationData> _vfxCreationLookup = new();
+    private ComponentLookup<AudioPlayData> _audioPlayLookup = new();
 
     [Tooltip("溜め攻撃中")]
     private bool _isChargeShot = false;
@@ -64,6 +78,16 @@ public partial class PlayerSystem : SystemBase
 
     protected override void OnCreate()
     {
+        // 取得する
+        _playerSingletonLookup = GetComponentLookup<PlayerSingletonData>(false);
+        _healthPointLookup = GetComponentLookup<HealthPointData>(false);
+        _dealDamageLookup = GetComponentLookup<BulletIDealDamageData>(false);
+        _destroyableLookup = GetComponentLookup<DestroyableData>(false);
+        _remainingPierceCountLookup = GetComponentLookup<RemainingPierceCountData>(false);
+        _localTransformLookup = GetComponentLookup<LocalTransform>(false);
+        _vfxCreationLookup = GetComponentLookup<VFXCreationData>(false);
+        _audioPlayLookup = GetComponentLookup<AudioPlayData>(false);
+
         // ShooterControlsをインスタンス化し、有効にする
         // リソース解放の為にフィールド変数として保持する
         _playerInput = new PlayerControls();
@@ -125,6 +149,9 @@ public partial class PlayerSystem : SystemBase
             // 射撃処理
             PlayerShot(elapsed, playerEntity, playerSingleton, playerTransform);
         }
+
+        // PLの被弾時の処理
+        PlayerDamageTriggerJob();
     }
 
     protected override void OnDestroy()
@@ -300,5 +327,116 @@ public partial class PlayerSystem : SystemBase
 
         // 変更を適用
         SystemAPI.SetComponent(modelEntity, playerTransform);
+    }
+
+    /// <summary>
+    /// PLの被弾時の処理を呼び出す
+    /// </summary>
+    private void PlayerDamageTriggerJob()
+    {
+        // 更新する
+        _playerSingletonLookup.Update(this);
+        _healthPointLookup.Update(this);
+        _dealDamageLookup.Update(this);
+        _destroyableLookup.Update(this);
+        _remainingPierceCountLookup.Update(this);
+        _localTransformLookup.Update(this);
+        _vfxCreationLookup.Update(this);
+        _audioPlayLookup.Update(this);
+
+        // PLに弾が当たった時の処理を呼び出す
+        var playerDamage = new PlayerDamageTriggerJob()
+        {
+            playerSingletonLookup = _playerSingletonLookup,
+            dealDamageLookup = _dealDamageLookup,
+            destroyableLookup = _destroyableLookup,
+            localTransformLookup = _localTransformLookup,
+            vfxCreationLookup = _vfxCreationLookup,
+            audioPlayLookup = _audioPlayLookup
+        };
+
+        // 前のジョブを完了する
+        Dependency.Complete();
+
+        var playerJobHandle = playerDamage.Schedule(SystemAPI.GetSingleton<SimulationSingleton>(), Dependency);
+
+        // ジョブの依存関係を更新する
+        Dependency = playerJobHandle;
+    }
+}
+
+/// <summary>
+/// 接触時にダメージを受ける
+/// </summary>
+public partial struct PlayerDamageTriggerJob : ITriggerEventsJob
+{
+    // インスタンスの取得に必要な変数
+    public ComponentLookup<PlayerSingletonData> playerSingletonLookup;
+    public ComponentLookup<BulletIDealDamageData> dealDamageLookup;
+    public ComponentLookup<DestroyableData> destroyableLookup;
+    public ComponentLookup<LocalTransform> localTransformLookup;
+    public ComponentLookup<VFXCreationData> vfxCreationLookup;
+    public ComponentLookup<AudioPlayData> audioPlayLookup;
+
+    public void Execute(TriggerEvent triggerEvent)
+    {
+        var entityA = triggerEvent.EntityA; // 接触対象
+        var entityB = triggerEvent.EntityB; // isTriggerを有効にしている方
+
+        // entityBがLocalTransformを有しているか
+        if (!localTransformLookup.HasComponent(entityB)) { return; }
+
+        // isTriggerが有効である以上、LocalTransformは絶対にある
+        var localTransform = localTransformLookup[entityB];
+        var position = localTransform.Position;
+
+        // entityAがBulletIDealDamageDataを有していない。
+        // あるいは、entityBがPlayerSingletonDataを有していなければ切り上げる
+        if (!dealDamageLookup.HasComponent(entityA) || !playerSingletonLookup.HasComponent(entityB)) { return; }
+
+        // entityBからPlayerHealthPointDataを取得
+        var playerSingleton = playerSingletonLookup[entityB];
+
+        // entityAからBulletIDealDamageDataを取得
+        var dealDamage = dealDamageLookup[entityA];
+
+        // ダメージ源の陣営の種類がPlayerだったら切り上げる
+        if (dealDamage.campsType == EntityCampsType.Player) { return; }
+
+        // 攻撃を受けた対象がDestroyableDataを有していた
+        if (destroyableLookup.HasComponent(entityB))
+        {
+            var destroyable = destroyableLookup[entityB];
+
+            // 削除フラグを代入する
+            destroyable.isKilled = true;
+
+            // 変更を反映
+            destroyableLookup[entityB] = destroyable;
+
+            // 削除フラグが立った
+            // これはEntityが削除される時の処理として追加できないか
+            if (destroyable.isKilled)
+            {
+                // ゲームオーバー処理を開始する
+                GameManager.Instance.MyGameState = GameState.GameOver;
+
+                // EntityBがVFXCreationDataを有していた
+                if (vfxCreationLookup.HasComponent(entityB))
+                {
+                    var vfxCreation = vfxCreationLookup[entityB];
+                    vfxCreation.Position = position;
+                    vfxCreationLookup[entityB] = vfxCreation;
+                }
+
+                // EntityBがAudioPlayDataを有していた
+                if (audioPlayLookup.HasComponent(entityB))
+                {
+                    var audioPlay = audioPlayLookup[entityB];
+                    audioPlay.AudioNumber = playerSingleton.killedSENumber;
+                    audioPlayLookup[entityB] = audioPlay;
+                }
+            }
+        }
     }
 }
