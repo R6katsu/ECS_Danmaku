@@ -19,8 +19,7 @@ public enum GameState : byte
     [Tooltip("ゲーム開始")] Start,
     [Tooltip("ゲーム中")] Game,
     [Tooltip("ゲームクリア")] GameClear,
-    [Tooltip("ゲームオーバー")] GameOver,
-    [Tooltip("ゲーム終了")] End
+    [Tooltip("ゲームオーバー")] GameOver
 }
 
 /// <summary>
@@ -61,7 +60,11 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
         {
             if (_gameState != value)
             {
-                _gameState = value;
+                // 既にGameClear、またはGameOverだったら変更しない
+                _gameState = 
+                    (_gameState == GameState.GameClear 
+                    || _gameState == GameState.GameOver) ?
+                    _gameState : value;
 
                 // 変化があった
                 ChangeGameState();
@@ -109,9 +112,6 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
                 {
                     AudioPlayManager.Instance.PauseBGM();
                 });
-                break;
-
-            case GameState.End:
                 break;
 
             case GameState.Loading:
