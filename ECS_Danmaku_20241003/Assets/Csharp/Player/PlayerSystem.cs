@@ -5,11 +5,12 @@ using UnityEngine.InputSystem;
 using Unity.Mathematics;
 using static BulletHelper;
 using Unity.Physics;
-using static EntityCampsHelper;
 using static HealthPointDatas;
-using Unity.Burst;
 
 #if UNITY_EDITOR
+using UnityEngine.Rendering;
+using static EntityCampsHelper;
+using Unity.Burst;
 using static UnityEngine.Rendering.DebugUI;
 using Unity.Collections;
 using System;
@@ -18,7 +19,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using UnityEngine.SocialPlatforms.Impl;
 using static HealthHelper;
-using static PlayerHelper;
 #endif
 
 // リファクタリング済み
@@ -42,7 +42,6 @@ public partial class PlayerSystem : SystemBase
     private ComponentLookup<RemainingPierceCountData> _remainingPierceCountLookup = new();
     private ComponentLookup<LocalTransform> _localTransformLookup = new();
     private ComponentLookup<VFXCreationData> _vfxCreationLookup = new();
-    private ComponentLookup<AudioPlayData> _audioPlayLookup = new();
 
     [Tooltip("溜め攻撃中")]
     private bool _isChargeShot = false;
@@ -53,28 +52,8 @@ public partial class PlayerSystem : SystemBase
     [Tooltip("最後に攻撃が当たった時間")]
     private double _lastShotTime = 0.0f;
 
-    [Tooltip("現在のチャージ時間")]
-    private float _currentChargeTime = 0.0f;
-
-    /// <summary>
-    /// 現在のチャージ時間
-    /// </summary>
-    private float CurrentChargeTime
-    {
-        get => _currentChargeTime;
-        set
-        {
-            _currentChargeTime = value;
-
-            if (_currentChargeTime <= 0)
-            {
-                // チャージ最大
-                // いや、離したら0になるって感じでいいのでは？
-                // チャージ時間がn以上だった場合はチャージ完了のため離したら溜め攻撃！でいいか
-                // 段階分けできたらする
-            }
-        }
-    }
+    [Tooltip("チャージを開始した時間")]
+    private double _chargeStartTime = 0.0f;
 
     protected override void OnCreate()
     {
@@ -86,7 +65,6 @@ public partial class PlayerSystem : SystemBase
         _remainingPierceCountLookup = GetComponentLookup<RemainingPierceCountData>(false);
         _localTransformLookup = GetComponentLookup<LocalTransform>(false);
         _vfxCreationLookup = GetComponentLookup<VFXCreationData>(false);
-        _audioPlayLookup = GetComponentLookup<AudioPlayData>(false);
 
         // ShooterControlsをインスタンス化し、有効にする
         // リソース解放の為にフィールド変数として保持する
@@ -95,8 +73,8 @@ public partial class PlayerSystem : SystemBase
 
         // ChargeShotに割り当てる
         var chargeShot = _playerInput.Player.ChargeShot;
-        chargeShot.started += (context) => _isChargeShot = true;
-        chargeShot.canceled += (context) => _isChargeShot = false;
+        chargeShot.started += ChargeShotStarted;
+        chargeShot.canceled += ChargeShotCanceled;
 
         // Horizontalに割り当てる
         var horizontal = _playerInput.Player.Horizontal;
@@ -139,12 +117,7 @@ public partial class PlayerSystem : SystemBase
         // 移動処理
         PlayerMove(delta, playerEntity, playerSingleton, playerTransform);
 
-        if (_isChargeShot)
-        {
-            _currentChargeTime += delta;
-            //chargeTime
-        }
-        else
+        if (!_isChargeShot)
         {
             // 射撃処理
             PlayerShot(elapsed, playerEntity, playerSingleton, playerTransform);
@@ -158,6 +131,121 @@ public partial class PlayerSystem : SystemBase
     {
         _playerInput.Disable();
         _playerInput.Dispose();
+    }
+
+    /// <summary>
+    /// チャージを開始
+    /// </summary>
+    /// <param name="context"></param>
+    private void ChargeShotStarted(InputAction.CallbackContext context)
+    {
+        _isChargeShot = true;
+
+        // チャージを開始した時間を保持する
+        _chargeStartTime = SystemAPI.Time.ElapsedTime;
+
+        // PlayerSingletonDataが存在しなかった
+        if (!SystemAPI.HasSingleton<PlayerSingletonData>()) { return; }
+
+        // シングルトンデータの取得
+        var playerSingletonData = SystemAPI.GetSingleton<PlayerSingletonData>();
+
+        // チャージエフェクトを生成する処理を予約
+        // VFXCreationBridgeが存在しなければ生成できないのでMonoもInstanceから取得
+        VFXCreationBridge.Instance.StartCoroutine(VFXCreation(playerSingletonData.chargeTime));
+    }
+
+    /// <summary>
+    /// チャージエフェクトを生成する処理を呼び出す
+    /// </summary>
+    private IEnumerator VFXCreation(float wait)
+    {
+        float delta = 0.0f;
+
+        // 時間が経過するまで待機
+        while (wait >= delta)
+        {
+            yield return null;
+            delta += SystemAPI.Time.DeltaTime;
+
+            // 途中でチャージが終了した
+            if (!_isChargeShot) { yield break; }
+        }
+
+        // PlayerSingletonDataが存在しなかった
+        if (!SystemAPI.HasSingleton<PlayerSingletonData>()) { yield break; }
+
+        // シングルトンデータの取得
+        var playerSingletonData = SystemAPI.GetSingleton<PlayerSingletonData>();
+
+        // PlayerSingletonDataを持つEntityを取得
+        Entity playerEntity = SystemAPI.GetSingletonEntity<PlayerSingletonData>();
+
+        // LocalTransformを所持していなかった
+        if (!SystemAPI.HasComponent<LocalTransform>(playerEntity)) { yield break; }
+
+        var playerTfm = SystemAPI.GetComponent<LocalTransform>(playerEntity);
+
+        // チャージが完了した時のエフェクトを生成する
+        VFXCreationBridge.Instance.VFXCreation(VisualEffectName.Charge, playerTfm.Position);
+
+        // チャージが完了した時の効果音を再生する
+        AudioPlayManager.Instance.PlaySE(playerSingletonData.chargeFinishedSE);
+    }
+
+    /// <summary>
+    /// チャージを終了
+    /// </summary>
+    /// <param name="context"></param>
+    private void ChargeShotCanceled(InputAction.CallbackContext context)
+    {
+        _isChargeShot = false;
+
+        // チャージ時間の長さ
+        var chargeTime = SystemAPI.Time.ElapsedTime - _chargeStartTime;
+
+        // PlayerSingletonDataが存在しなかった
+        if (!SystemAPI.HasSingleton<PlayerSingletonData>()) { return; }
+
+        // シングルトンデータの取得
+        var playerSingletonData = SystemAPI.GetSingleton<PlayerSingletonData>();
+
+        // PlayerSingletonDataを持つEntityを取得
+        Entity playerEntity = SystemAPI.GetSingletonEntity<PlayerSingletonData>();
+
+        Entity bulletEntity = Entity.Null;
+
+        // チャージ時間が足りなかった
+        if (chargeTime < playerSingletonData.chargeTime)
+        {
+            // チャージショットが不発だった時の効果音を再生する
+            AudioPlayManager.Instance.PlaySE(playerSingletonData.chargeShotMissSE);
+            return;
+        }
+
+        bulletEntity = EntityManager.Instantiate(playerSingletonData.chargeBulletEntity);
+
+        // LocalTransformを所持していなかった
+        if (!SystemAPI.HasComponent<LocalTransform>(playerEntity)) { return; }
+
+        var playerTfm = SystemAPI.GetComponent<LocalTransform>(playerEntity);
+
+        // LocalTransformを所持していなかった
+        if (!SystemAPI.HasComponent<LocalTransform>(bulletEntity)) { return; }
+
+        var bulletTfm = SystemAPI.GetComponent<LocalTransform>(bulletEntity);
+
+        // 位置をPLの位置に設定
+        bulletTfm = new LocalTransform()
+        {
+            Position = playerTfm.Position,
+            Rotation = playerTfm.Rotation,
+            Scale = bulletTfm.Scale
+        };
+        EntityManager.SetComponentData(bulletEntity, bulletTfm);
+
+        // チャージショットの効果音を再生する
+        AudioPlayManager.Instance.PlaySE(playerSingletonData.chargeShotSE);
     }
 
     /// <summary>
@@ -342,7 +430,6 @@ public partial class PlayerSystem : SystemBase
         _remainingPierceCountLookup.Update(this);
         _localTransformLookup.Update(this);
         _vfxCreationLookup.Update(this);
-        _audioPlayLookup.Update(this);
 
         // PLに弾が当たった時の処理を呼び出す
         var playerDamage = new PlayerDamageTriggerJob()
@@ -351,8 +438,7 @@ public partial class PlayerSystem : SystemBase
             dealDamageLookup = _dealDamageLookup,
             destroyableLookup = _destroyableLookup,
             localTransformLookup = _localTransformLookup,
-            vfxCreationLookup = _vfxCreationLookup,
-            audioPlayLookup = _audioPlayLookup
+            vfxCreationLookup = _vfxCreationLookup
         };
 
         // 前のジョブを完了する
@@ -376,7 +462,6 @@ public partial struct PlayerDamageTriggerJob : ITriggerEventsJob
     public ComponentLookup<DestroyableData> destroyableLookup;
     public ComponentLookup<LocalTransform> localTransformLookup;
     public ComponentLookup<VFXCreationData> vfxCreationLookup;
-    public ComponentLookup<AudioPlayData> audioPlayLookup;
 
     public void Execute(TriggerEvent triggerEvent)
     {
@@ -427,14 +512,6 @@ public partial struct PlayerDamageTriggerJob : ITriggerEventsJob
                     var vfxCreation = vfxCreationLookup[entityB];
                     vfxCreation.Position = position;
                     vfxCreationLookup[entityB] = vfxCreation;
-                }
-
-                // EntityBがAudioPlayDataを有していた
-                if (audioPlayLookup.HasComponent(entityB))
-                {
-                    var audioPlay = audioPlayLookup[entityB];
-                    audioPlay.AudioNumber = playerSingleton.killedSENumber;
-                    audioPlayLookup[entityB] = audioPlay;
                 }
             }
         }

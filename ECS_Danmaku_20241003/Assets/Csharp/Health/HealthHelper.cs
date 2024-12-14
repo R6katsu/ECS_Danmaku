@@ -25,8 +25,9 @@ static public class HealthHelper
         /// ダメージを受ける
         /// </summary>
         /// <param name="damage">被ダメージ</param>
-        /// <param name="entity">相手</param>
-        public void DamageHP(float damage, Entity entity);
+        /// <param name="entity">接触した相手</param>
+        /// <param name="frameCount">接触したフレーム</param>
+        public void DamageHP(float damage, Entity entity, int frameCount);
 
         /// <summary>
         /// HPを回復する
@@ -47,7 +48,8 @@ static public class HealthHelper
         /// <typeparam name="T">IHealthPointを継承した型</typeparam>
         /// <param name="healthPoint">実装されたHP</param>
         /// <param name="entity">自身</param>
+        /// <param name="frameCount">接触したフレーム</param>
         /// <returns>変更を適用したインスタンス</returns>
-        public T DealDamage<T>(T healthPoint, Entity entity) where T : IHealthPoint;
+        public T DealDamage<T>(T healthPoint, Entity entity, int frameCount) where T : IHealthPoint;
     }
 }

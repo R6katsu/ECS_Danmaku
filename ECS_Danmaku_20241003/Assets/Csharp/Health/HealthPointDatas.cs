@@ -5,7 +5,6 @@ using static HealthHelper;
 #if UNITY_EDITOR
 using System.Collections.Generic;
 using static HealthPointDatas;
-using static EnemyHelper;
 using Unity.Collections;
 using System.Collections;
 #endif
@@ -42,6 +41,9 @@ static public class HealthPointDatas
 
         [Tooltip("最後に接触した相手")]
         private Entity _lastHitEntity;
+
+        [Tooltip("最後に接触したフレーム")]
+        private int _lastFrameCount;
 
         /// <summary>
         /// 最大体力
@@ -89,16 +91,20 @@ static public class HealthPointDatas
             currentNumber++;
             _myNumber = 0;
             _lastHitEntity = Entity.Null;
+            _lastFrameCount = int.MinValue;
         }
 
         // IHealthPoint
-        public void DamageHP(float damage, Entity entity)
+        public void DamageHP(float damage, Entity entity, int frameCount)
         {
             // 前回と同じ相手だった
-            if (_lastHitEntity == entity) { return; }
+            if (_lastHitEntity == entity && frameCount <= _lastFrameCount) { return; }
             
             // 最後に接触した相手を更新
             _lastHitEntity = entity;
+
+            // 最後に接触したフレームを更新
+            _lastFrameCount = frameCount;
 
             _currentHP -= damage;
         }

@@ -33,11 +33,11 @@ public partial struct VFXCreationSystem : ISystem
             if (!vfxCreation.ValueRO.IsCreatable) { continue; }
 
             VFXCreationBridge.Instance.VFXCreation
-                (
-                    vfxCreation.ValueRO.visualEffectName,
-                    vfxCreation.ValueRO.Position,
-                    vfxCreation.ValueRO.size
-                );
+           (
+               vfxCreation.ValueRO.visualEffectName,
+               vfxCreation.ValueRO.Position,
+               vfxCreation.ValueRO.size
+           );
 
             // ê∂ê¨Çñ≥å¯Ç…Ç∑ÇÈ
             vfxCreation.ValueRO.DisableCreation();

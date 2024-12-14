@@ -4,9 +4,10 @@ using Unity.Entities;
 using Unity.Mathematics;
 using Unity.Transforms;
 using UnityEngine;
-using static EnemyHelper;
 
 using Random = UnityEngine.Random;
+using static EntityCampsHelper;
+
 
 #if UNITY_EDITOR
 using Unity.Physics;
@@ -147,7 +148,7 @@ public partial struct EnemySpawnerSystem : ISystem
     /// <returns>ìGÇ™ë∂ç›Ç∑ÇÈÇ©</returns>
     private bool HasEnemy(ref SystemState state)
     {
-        foreach (var enemyTag in SystemAPI.Query<EnemyTag>())
+        foreach (var enemyTag in SystemAPI.Query<EnemyCampsTag>())
         {
             return true;
         }

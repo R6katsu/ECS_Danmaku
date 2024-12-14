@@ -14,7 +14,6 @@ using Unity.Entities.UniversalDelegates;
 using System.Reflection;
 using System.Linq;
 using System.Net;
-using static EnemyHelper;
 using static UnityEngine.EventSystems.EventTrigger;
 #endif
 

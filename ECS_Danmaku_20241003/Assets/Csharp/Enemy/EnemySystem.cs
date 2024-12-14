@@ -1,18 +1,15 @@
 using Unity.Burst;
 using Unity.Entities;
 using Unity.Transforms;
-using static EnemyHelper;
 using static EntityCampsHelper;
 using static HealthPointDatas;
-
+using static BulletHelper;
 using Unity.Physics;
-
+using UnityEngine;
 
 #if UNITY_EDITOR
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using static BulletHelper;
 #endif
 
 // リファクタリング済み
@@ -69,7 +66,7 @@ public partial struct EnemySystem : ISystem
         // 移動可能範囲外だったら削除フラグを立てる
         foreach (var (enemy, destroyable, localTfm) in
                  SystemAPI.Query
-                 <RefRW<EnemyTag>,
+                 <RefRW<EnemyCampsTag>,
                  RefRW<DestroyableData>,
                  RefRW<LocalTransform>>())
         {
@@ -105,6 +102,8 @@ public partial struct EnemySystem : ISystem
         _audioPlayLookup.Update(ref state);
         _bossEnemyCampsLookup.Update(ref state);
 
+        int frameCount = Time.frameCount;
+
         // 敵に弾が当たった時の処理を呼び出す
         var enemyDamage = new EnemyDamageTriggerJob()
         {
@@ -115,7 +114,8 @@ public partial struct EnemySystem : ISystem
             localTransformLookup = _localTransformLookup,
             vfxCreationLookup = _vfxCreationLookup,
             audioPlayLookup = _audioPlayLookup,
-            bossEnemyCampsLookup = _bossEnemyCampsLookup
+            bossEnemyCampsLookup = _bossEnemyCampsLookup,
+            frameCount = frameCount
         };
 
         // 前のジョブを完了する
@@ -143,6 +143,9 @@ public partial struct EnemyDamageTriggerJob : ITriggerEventsJob
     public ComponentLookup<AudioPlayData> audioPlayLookup;
     public ComponentLookup<BossEnemyCampsTag> bossEnemyCampsLookup;
 
+    [Tooltip("接触したフレーム")]
+    public int frameCount;
+
     public void Execute(TriggerEvent triggerEvent)
     {
         var entityA = triggerEvent.EntityA; // 接触対象
@@ -168,7 +171,7 @@ public partial struct EnemyDamageTriggerJob : ITriggerEventsJob
         if (dealDamage.campsType == EntityCampsType.Enemy) { return; }
 
         // ダメージを与え、変更されたインスタンスを反映する
-        healthPoint = dealDamage.DealDamage(healthPoint, entityA);
+        healthPoint = dealDamage.DealDamage(healthPoint, entityA, frameCount);
         healthPointLookup[entityB] = healthPoint;
 
         // ダメージ源がRemainingPierceCountDataを有していた
