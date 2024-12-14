@@ -1,7 +1,7 @@
-using Unity.Entities;
 using UnityEngine;
 
 #if UNITY_EDITOR
+using Unity.Entities;
 using System.Collections.Generic;
 using Unity.Collections;
 using static HealthHelper;
@@ -20,15 +20,4 @@ public enum EnemyName : byte
 {
     [Tooltip("‘S•ûˆÊ’e")] AllDirectionBulletEnemy,
     [Tooltip("‰ñ“]Œ‚‚¿")] SpinShootingEnemy,
-}
-
-/// <summary>
-/// “G‚Ì•â•
-/// </summary>
-static public class EnemyHelper
-{
-    /// <summary>
-    /// “G
-    /// </summary>
-    public struct EnemyTag : IComponentData{ }
 }

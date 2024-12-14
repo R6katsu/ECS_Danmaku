@@ -1,6 +1,5 @@
 using Unity.Entities;
 using UnityEngine;
-using static EnemyHelper;
 using static HealthPointDatas;
 
 #if UNITY_EDITOR
@@ -46,7 +45,6 @@ public class EnemyAuthoring : MonoBehaviour
             );
 
             // Dataをアタッチ
-            AddComponent(entity, new EnemyTag());
             AddComponent(entity, new DestroyableData());
             AddComponent(entity, healthPointData);
 

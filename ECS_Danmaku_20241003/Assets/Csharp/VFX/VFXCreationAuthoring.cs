@@ -1,9 +1,9 @@
 using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
-using static VFXCreationBridge;
 
 #if UNITY_EDITOR
+using static VFXCreationBridge;
 using UnityEngine.UIElements;
 using System.Collections;
 using System.Collections.Generic;

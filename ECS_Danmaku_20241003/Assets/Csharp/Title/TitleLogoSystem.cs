@@ -26,6 +26,7 @@ public partial struct TitleLogoSystem : ISystem
     private ComponentLookup<BulletIDealDamageData> _dealDamageLookup;
     private ComponentLookup<DestroyableData> _destroyableLookup;
     private ComponentLookup<AudioPlayData> _audioPlayLookup;
+    private ComponentLookup<RemainingPierceCountData> _remainingPierceCountLookup;
 
     public void OnCreate(ref SystemState state)
     {
@@ -34,6 +35,7 @@ public partial struct TitleLogoSystem : ISystem
         _dealDamageLookup = state.GetComponentLookup<BulletIDealDamageData>(false);
         _destroyableLookup = state.GetComponentLookup<DestroyableData>(false);
         _audioPlayLookup = state.GetComponentLookup<AudioPlayData>(false);
+        _remainingPierceCountLookup = state.GetComponentLookup<RemainingPierceCountData>(false);
     }
 
     public void OnUpdate(ref SystemState state)
@@ -43,6 +45,7 @@ public partial struct TitleLogoSystem : ISystem
         _dealDamageLookup.Update(ref state);
         _destroyableLookup.Update(ref state);
         _audioPlayLookup.Update(ref state);
+        _remainingPierceCountLookup.Update(ref state);
 
         // タイトルロゴに弾が当たった時の処理を呼び出す
         var titleLogo = new TitleLogoTriggerJob()
@@ -50,7 +53,8 @@ public partial struct TitleLogoSystem : ISystem
             titleLogoSingletonLookup = _titleLogoSingletonLookup,
             dealDamageLookup = _dealDamageLookup,
             destroyableLookup = _destroyableLookup,
-            audioPlayLookup = _audioPlayLookup
+            audioPlayLookup = _audioPlayLookup,
+            remainingPierceCountLookup = _remainingPierceCountLookup
         };
 
         // TitleLogoTriggerJobをスケジュール
@@ -102,6 +106,7 @@ public partial struct TitleLogoTriggerJob : ITriggerEventsJob
     public ComponentLookup<BulletIDealDamageData> dealDamageLookup;
     public ComponentLookup<DestroyableData> destroyableLookup;
     public ComponentLookup<AudioPlayData> audioPlayLookup;
+    public ComponentLookup<RemainingPierceCountData> remainingPierceCountLookup;
 
     public void Execute(TriggerEvent triggerEvent)
     {
@@ -116,13 +121,26 @@ public partial struct TitleLogoTriggerJob : ITriggerEventsJob
 
         var titleLogoSingleton = titleLogoSingletonLookup[entityB];
 
-        // entityBがDestroyableDataを有しているか
-        if (!destroyableLookup.HasComponent(entityA)) { return; }
+        // ダメージ源がRemainingPierceCountDataを有していた
+        if (remainingPierceCountLookup.HasComponent(entityA))
+        {
+            // 残り貫通回数をデクリメント
+            var remainingPierceCount = remainingPierceCountLookup[entityA];
+            remainingPierceCount.remainingPierceCount--;
+            remainingPierceCountLookup[entityA] = remainingPierceCount;
 
-        // 弾の削除フラグを立てる
-        var destroyable = destroyableLookup[entityA];
-        destroyable.isKilled = true;
-        destroyableLookup[entityA] = destroyable;
+            // ダメージ源がDestroyableDataを有していた
+            if (destroyableLookup.HasComponent(entityA))
+            {
+                var destroyable = destroyableLookup[entityA];
+
+                // 残り貫通回数が0以下か
+                destroyable.isKilled = (remainingPierceCount.remainingPierceCount <= 0) ? true : false;
+
+                // 変更を反映
+                destroyableLookup[entityA] = destroyable;
+            }
+        }
 
         // EntityBがAudioPlayDataを有していた
         if (audioPlayLookup.HasComponent(entityB))

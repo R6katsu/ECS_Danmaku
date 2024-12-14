@@ -60,11 +60,8 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
         {
             if (_gameState != value)
             {
-                // Šù‚ÉGameClearA‚Ü‚½‚ÍGameOver‚¾‚Á‚½‚ç•ÏX‚µ‚È‚¢
-                _gameState = 
-                    (_gameState == GameState.GameClear 
-                    || _gameState == GameState.GameOver) ?
-                    _gameState : value;
+                // Šù‚ÉGameClear‚¾‚Á‚½‚ç•ÏX‚µ‚È‚¢
+                _gameState = (_gameState == GameState.GameClear) ? _gameState : value;
 
                 // •Ï‰»‚ª‚ ‚Á‚½
                 ChangeGameState();

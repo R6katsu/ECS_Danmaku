@@ -15,10 +15,23 @@ using static VFXCreationBridge;
 // リファクタリング済み
 
 /// <summary>
+/// VisualEffectの名称
+/// </summary>
+public enum VisualEffectName : sbyte
+{
+    None = -1,
+    Explosion,
+    Charge,
+}
+
+/// <summary>
 /// VFXを生成する。VFXとECSを連携させる架け橋となるclass
 /// </summary>
 public class VFXCreationBridge : SingletonMonoBehaviour<VFXCreationBridge>
 {
+    [Tooltip("デフォルトの大きさ")]
+    private const float DEFAULT_SIZE = 1.0f;
+
     [SerializeField, Header("VFXGraphの配列")]
     private VisualEffect[] _visualEffects = null;
 
@@ -33,15 +46,6 @@ public class VFXCreationBridge : SingletonMonoBehaviour<VFXCreationBridge>
 
     [Tooltip("大きさのGraphicsBufferの辞書")]
     private Dictionary<VisualEffectName, GraphicsBuffer> _sizeBuffers = new();
-
-    /// <summary>
-    /// VisualEffectの名称
-    /// </summary>
-    public enum VisualEffectName : sbyte
-    {
-        None = -1,
-        Explosion,
-    }
 
     private void OnDestroy()
     {
@@ -62,8 +66,8 @@ public class VFXCreationBridge : SingletonMonoBehaviour<VFXCreationBridge>
     /// </summary>
     /// <param name="visualEffectName">生成するVFXの名称</param>
     /// <param name="position">生成する位置</param>
-    /// <param name="size">生成時の大きさ（初期値は1）</param>
-    public void VFXCreation(VisualEffectName visualEffectName, Vector3 position, float size)
+    /// <param name="size">生成時の大きさ</param>
+    public void VFXCreation(VisualEffectName visualEffectName, Vector3 position, float size = DEFAULT_SIZE)
     {
         if (visualEffectName == VisualEffectName.None)
         {

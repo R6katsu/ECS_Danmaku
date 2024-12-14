@@ -1,6 +1,5 @@
 using Unity.Entities;
 using UnityEngine;
-using static PlayerHelper;
 
 #if UNITY_EDITOR
 using System;
@@ -42,14 +41,23 @@ public struct PlayerSingletonData : IComponentData
     [Tooltip("射撃間隔")]
     public readonly float firingInterval;
 
-    [Tooltip("チャージ時間")]
+    [Tooltip("チャージ完了までの時間")]
     public readonly float chargeTime;
 
-    [Tooltip("死亡時の効果音番号")]
-    public readonly int killedSENumber;
+    [Tooltip("チャージが完了した効果音")]
+    public readonly int chargeFinishedSE;
+
+    [Tooltip("チャージショットの効果音")]
+    public readonly int chargeShotSE;
+
+    [Tooltip("チャージショットが不発だった時の効果音")]
+    public readonly int chargeShotMissSE;
 
     [Tooltip("PLの弾のPrefabEntity")]
     public readonly Entity playerBulletEntity;
+
+    [Tooltip("チャージ弾のPrefabEntity")]
+    public readonly Entity chargeBulletEntity;
 
     [Tooltip("PLの見た目のEntity")]
     public readonly Entity playerModelEntity;
@@ -59,30 +67,40 @@ public struct PlayerSingletonData : IComponentData
     /// </summary>
     /// <param name="playerMoveTilt">移動速度</param>
     /// <param name="moveSpeed">移動速度</param>
-    /// <param name="moveSlowSpeed">減速中の移動速度</param>
+    /// <param name="slowMoveSpeed">減速中の移動速度</param>
     /// <param name="firingInterval">射撃間隔</param>
-    /// <param name="chargeTime">チャージ時間</param>
-    /// <param name="killedSENumber">死亡時の効果音番号</param>
+    /// <param name="chargeTime">チャージ完了までの時間</param>
+    /// <param name="chargeFinishedSE">チャージが完了した効果音</param>
+    /// <param name="chargeShotSE">チャージが完了した効果音</param>
+    /// <param name="chargeShotMissSE">チャージショットが不発だった時の効果音</param>
     /// <param name="playerBulletEntity">PLの弾のPrefabEntity</param>
+    /// <param name="maxChargeBulletEntity">チャージ弾のPrefabEntity</param>
+    /// <param name="playerModelEntity">PLの見た目のEntity</param>
     public PlayerSingletonData
         (
         int playerMoveTilt,
         float moveSpeed,
-        float moveSlowSpeed, 
+        float slowMoveSpeed,
         float firingInterval,
         float chargeTime,
-        int killedSENumber,
+        int chargeFinishedSE,
+        int chargeShotSE,
+        int chargeShotMissSE,
         Entity playerBulletEntity,
+        Entity maxChargeBulletEntity,
         Entity playerModelEntity
         )
     {
         this.playerMoveTilt = playerMoveTilt;
         this.moveSpeed = moveSpeed;
-        this.slowMoveSpeed = moveSlowSpeed;
+        this.slowMoveSpeed = slowMoveSpeed;
         this.firingInterval = firingInterval;
         this.chargeTime = chargeTime;
-        this.killedSENumber = killedSENumber;
+        this.chargeFinishedSE = chargeFinishedSE;
+        this.chargeShotSE = chargeShotSE;
+        this.chargeShotMissSE = chargeShotMissSE;
         this.playerBulletEntity = playerBulletEntity;
+        this.chargeBulletEntity = maxChargeBulletEntity;
         this.playerModelEntity = playerModelEntity;
     }
 }
@@ -104,14 +122,23 @@ public class PlayerAuthoring : SingletonMonoBehaviour<PlayerAuthoring>
     [SerializeField, Min(0.0f), Header("射撃間隔")]
     private float _firingInterval = 0.0f;
 
-    [SerializeField, Min(0.0f), Header("チャージ時間")]
+    [SerializeField, Min(0.0f), Header("チャージ完了までの時間")]
     private float _chargeTime = 0.0f;
 
-    [SerializeField, Min(0), Header("死亡時の効果音番号")]
-    private int _killedSENumber = 0;
+    [SerializeField, Min(0), Header("チャージが完了した効果音")]
+    private int _chargeFinishedSE = 0;
+
+    [SerializeField, Min(0), Header("チャージショットの効果音")]
+    private int _chargeShotSE = 0;
+
+    [SerializeField, Min(0), Header("チャージショットが不発だった時の効果音")]
+    private int _chargeShotMissSE = 0;
 
     [SerializeField, Header("PLの弾のPrefab")]
     private Transform _playerBulletPrefab = null;
+
+    [SerializeField, Header("チャージ弾のPrefab")]
+    private Transform _chargeBulletPrefab;
 
     [SerializeField, Header("PLの見た目のEntity")]
     private Transform _playerModelTransform = null;
@@ -130,6 +157,7 @@ public class PlayerAuthoring : SingletonMonoBehaviour<PlayerAuthoring>
 
             // PrefabをEntityに変換
             var playerBulletEntity = GetEntity(src._playerBulletPrefab, TransformUsageFlags.Dynamic);
+            var chargeBulletEntity = GetEntity(src._chargeBulletPrefab, TransformUsageFlags.Dynamic);
             var playerModelEntity = GetEntity(src._playerModelTransform, TransformUsageFlags.Dynamic);
 
             var playerData = new PlayerSingletonData
@@ -139,14 +167,16 @@ public class PlayerAuthoring : SingletonMonoBehaviour<PlayerAuthoring>
                 src._slowMoveSpeed,
                 src._firingInterval,
                 src._chargeTime,
-                src._killedSENumber,
+                src._chargeFinishedSE,
+                src._chargeShotSE,
+                src._chargeShotMissSE,
                 playerBulletEntity,
+                chargeBulletEntity,
                 playerModelEntity
             );
 
             // Dataをアタッチ
             AddComponent(entity, playerData);
-            AddComponent(entity, new PlayerTag());
             AddComponent(entity, new DestroyableData());
 
             // 陣営とカテゴリのTagをアタッチ

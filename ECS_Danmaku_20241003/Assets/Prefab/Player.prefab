@@ -325,7 +325,6 @@ GameObject:
   - component: {fileID: 8489273655645186021}
   - component: {fileID: 5090324790465553204}
   - component: {fileID: 6196584760294591319}
-  - component: {fileID: 6057144802344607085}
   - component: {fileID: 2121748039706882479}
   m_Layer: 0
   m_Name: Player
@@ -367,9 +366,13 @@ MonoBehaviour:
   _moveSpeed: 5
   _slowMoveSpeed: 2.5
   _firingInterval: 0.1
-  _chargeTime: 0
-  _killedSENumber: 2
+  _chargeTime: 3
+  _chargeFinishedSE: 3
+  _chargeShotSE: 4
+  _chargeShotMissSE: 5
   _playerBulletPrefab: {fileID: 5686516524955122670, guid: 3955ac77ee2c9374caa42be77715c017,
+    type: 3}
+  _chargeBulletPrefab: {fileID: 9157187649940164045, guid: 202f2b8fb2e61b6428aeb878c6eb279e,
     type: 3}
   _playerModelTransform: {fileID: 511444684355333386}
   _campsType: 2
@@ -388,19 +391,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _visualEffectName: 0
   _size: 1
---- !u!114 &6057144802344607085
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8199440536032002476}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: efc42c4b17fc57b40abda17d1784d481, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _audioType: 1
 --- !u!135 &2121748039706882479
 SphereCollider:
   m_ObjectHideFlags: 0

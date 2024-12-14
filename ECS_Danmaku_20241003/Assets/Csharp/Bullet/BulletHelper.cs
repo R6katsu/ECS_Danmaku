@@ -58,9 +58,9 @@ static public class BulletHelper
         }
 
         // IDealDamage
-        public T DealDamage<T>(T healthPoint, Entity entity) where T : IHealthPoint
+        public T DealDamage<T>(T healthPoint, Entity entity, int frameCount) where T : IHealthPoint
         {
-            healthPoint.DamageHP(damageAmount, entity);
+            healthPoint.DamageHP(damageAmount, entity, frameCount);
 
             // IHealthPointのインスタンス更新の為に返す
             return healthPoint;
