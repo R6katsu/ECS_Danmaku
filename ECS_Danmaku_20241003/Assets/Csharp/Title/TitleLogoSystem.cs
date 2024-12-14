@@ -40,6 +40,10 @@ public partial struct TitleLogoSystem : ISystem
 
     public void OnUpdate(ref SystemState state)
     {
+        // タイトルロゴの当たり判定が無効だった
+        if (TitleSceneManager.Instance == null 
+            || !TitleSceneManager.Instance.HasTitleLogoCollision) { return; }
+
         // 更新する
         _titleLogoSingletonLookup.Update(ref state);
         _dealDamageLookup.Update(ref state);
