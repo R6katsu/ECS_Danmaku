@@ -28,7 +28,9 @@ public class SingletonMonoBehaviour<T> : MonoBehaviour where T : MonoBehaviour
 
                 if (instance == null)
                 {
+#if UNITY_EDITOR
                     Debug.LogError($"現在のシーンに{t}をアタッチしているGameObjectはありません");
+#endif
                 }
             }
             return instance;

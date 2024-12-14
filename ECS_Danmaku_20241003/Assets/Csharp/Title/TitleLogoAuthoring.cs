@@ -49,13 +49,13 @@ public struct TitleLogoSingletonData : IComponentData
         if (!isNextImage) { return; }
 
         // ‰æ‘œ‚ğØ‚è‘Ö‚¦‚é
-        var isTitleLogoBreak = TitleLogoSingleton.Instance.NextImage();
+        var isTitleLogoBreak = TitleSceneManager.Instance.NextImage();
 
         // ƒ^ƒCƒgƒ‹ƒƒS‚Ì”j‰ó‚ªŠ®—¹‚µ‚½
         if (isTitleLogoBreak != null && !(bool)isTitleLogoBreak)
         {
             // ”j‰ó‚ªŠ®—¹‚µ‚½Œã‚Ìˆ—‚ª“o˜^‚³‚ê‚Ä‚¢‚½‚çÀs‚·‚é
-            TitleLogoSingleton.Instance.breakAction?.Invoke();
+            TitleSceneManager.Instance.breakAction?.Invoke();
         }
 
         isNextImage = false;

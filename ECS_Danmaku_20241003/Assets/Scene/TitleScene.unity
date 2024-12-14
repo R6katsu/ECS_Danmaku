@@ -996,52 +996,6 @@ MonoBehaviour:
       enableFptlForForwardOpaque: 0
       enableBigTilePrepass: 0
       isFptlEnabled: 0
---- !u!1 &856406339
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 856406341}
-  - component: {fileID: 856406340}
-  m_Layer: 0
-  m_Name: TitleScene
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 2147483647
-  m_IsActive: 1
---- !u!114 &856406340
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 856406339}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e81677d93923356468b682595be0eb8a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _titleBGMNumber: 1
-  _transitionName: 0
---- !u!4 &856406341
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 856406339}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &967734344
 GameObject:
   m_ObjectHideFlags: 0
@@ -1529,9 +1483,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1585129469}
-  - component: {fileID: 1585129467}
   - component: {fileID: 1585129466}
   - component: {fileID: 1585129470}
+  - component: {fileID: 1585129471}
   m_Layer: 0
   m_Name: TitleLogoSingleton
   m_TagString: Untagged
@@ -1560,24 +1514,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!114 &1585129467
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1585129465}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5ba57a5458d282e42bf43d84cc438054, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _titleLogoBreakImages:
-  - {fileID: 21612494}
-  - {fileID: 715357384}
-  - {fileID: 2053948565}
-  _titleLogoTriggerName: TitleLogoTrigger
-  _titleLogoBreakTriggerName: TitleLogoBreakTrigger
 --- !u!4 &1585129469
 Transform:
   m_ObjectHideFlags: 0
@@ -1648,6 +1584,26 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!114 &1585129471
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1585129465}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e81677d93923356468b682595be0eb8a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _titleLogoBreakImages:
+  - {fileID: 21612494}
+  - {fileID: 715357384}
+  - {fileID: 2053948565}
+  _titleLogoTriggerName: TitleLogoTrigger
+  _titleLogoBreakTriggerName: TitleLogoBreakTrigger
+  _titleBGMNumber: 1
+  _transitionName: 0
 --- !u!1 &1606267031
 GameObject:
   m_ObjectHideFlags: 0
@@ -2221,7 +2177,6 @@ SceneRoots:
   - {fileID: 760935331}
   - {fileID: 381993461}
   - {fileID: 1278241297}
-  - {fileID: 856406341}
   - {fileID: 1158904463}
   - {fileID: 1551663865}
   - {fileID: 1290929610}
