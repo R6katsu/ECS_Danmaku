@@ -12,7 +12,7 @@ using System.Collections.Generic;
 /// トランジションで実行する関数汎用
 /// </summary>
 [RequireComponent(typeof(AudioSource))]
-public class ActivateSingleUIBridge : MonoBehaviour
+public class TransitionHandler : MonoBehaviour
 {
     [SerializeField, Header("有効化可能なUI要素")]
     private UIController _activatableUIElement = null;

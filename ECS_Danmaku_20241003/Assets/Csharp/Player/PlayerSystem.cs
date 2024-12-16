@@ -6,6 +6,7 @@ using Unity.Mathematics;
 using static BulletHelper;
 using Unity.Physics;
 using static HealthPointDatas;
+using System.Collections;
 
 #if UNITY_EDITOR
 using UnityEngine.Rendering;
@@ -14,7 +15,6 @@ using Unity.Burst;
 using static UnityEngine.Rendering.DebugUI;
 using Unity.Collections;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using UnityEngine.SocialPlatforms.Impl;
@@ -66,7 +66,7 @@ public partial class PlayerSystem : SystemBase
         _localTransformLookup = GetComponentLookup<LocalTransform>(false);
         _vfxCreationLookup = GetComponentLookup<VFXCreationData>(false);
 
-        // ShooterControlsをインスタンス化し、有効にする
+        // PlayerControlsをインスタンス化し、有効にする
         // リソース解放の為にフィールド変数として保持する
         _playerInput = new PlayerControls();
         _playerInput.Enable();
@@ -213,8 +213,6 @@ public partial class PlayerSystem : SystemBase
         // PlayerSingletonDataを持つEntityを取得
         Entity playerEntity = SystemAPI.GetSingletonEntity<PlayerSingletonData>();
 
-        Entity bulletEntity = Entity.Null;
-
         // チャージ時間が足りなかった
         if (chargeTime < playerSingletonData.chargeTime)
         {
@@ -223,7 +221,7 @@ public partial class PlayerSystem : SystemBase
             return;
         }
 
-        bulletEntity = EntityManager.Instantiate(playerSingletonData.chargeBulletEntity);
+        var bulletEntity = EntityManager.Instantiate(playerSingletonData.chargeBulletEntity);
 
         // LocalTransformを所持していなかった
         if (!SystemAPI.HasComponent<LocalTransform>(playerEntity)) { return; }

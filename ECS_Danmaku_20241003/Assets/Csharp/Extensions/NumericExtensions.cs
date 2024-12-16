@@ -9,7 +9,7 @@ using System.Collections.Generic;
 // リファクタリング済み
 
 /// <summary>
-/// 数値の拡張関数
+/// 数値系の拡張関数
 /// </summary>
 public static class NumericExtensions
 {

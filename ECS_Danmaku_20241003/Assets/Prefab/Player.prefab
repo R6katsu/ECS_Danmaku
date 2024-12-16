@@ -366,7 +366,7 @@ MonoBehaviour:
   _moveSpeed: 5
   _slowMoveSpeed: 2.5
   _firingInterval: 0.1
-  _chargeTime: 3
+  _chargeTime: 2
   _chargeFinishedSE: 3
   _chargeShotSE: 4
   _chargeShotMissSE: 5
