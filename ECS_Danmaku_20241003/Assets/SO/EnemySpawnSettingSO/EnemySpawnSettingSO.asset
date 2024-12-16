@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _bossEnemyPrefab: {fileID: 3532004193051288537, guid: 636e984adad873b40bec88be066ba522,
     type: 3}
-  _countdownBossSpawn: 0
+  _countdownBossSpawn: 5
   _patternArrays:
   - infos:
     - _enemyName: 0
