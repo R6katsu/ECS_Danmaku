@@ -24,17 +24,78 @@ using static HealthHelper;
 // リファクタリング済み
 
 /// <summary>
+/// 接触時にダメージを受ける
+/// </summary>
+public partial struct PlayerDamageTriggerJob : ITriggerEventsJob
+{
+    // JobでDataを取得、変更する為のComponentLookup
+    public ComponentLookup<PlayerSingletonData> playerSingletonLookup;
+    public ComponentLookup<BulletIDealDamageData> dealDamageLookup;
+    public ComponentLookup<DestroyableData> destroyableLookup;
+    public ComponentLookup<LocalTransform> localTransformLookup;
+    public ComponentLookup<VFXCreationData> vfxCreationLookup;
+
+    public void Execute(TriggerEvent triggerEvent)
+    {
+        var entityA = triggerEvent.EntityA; // 接触対象
+        var entityB = triggerEvent.EntityB; // isTriggerを有効にしている方
+
+        // entityBがLocalTransformを有しているか
+        if (!localTransformLookup.HasComponent(entityB)) { return; }
+
+        // isTriggerが有効である以上、LocalTransformは絶対にある
+        var localTransform = localTransformLookup[entityB];
+        var position = localTransform.Position;
+
+        // entityAがBulletIDealDamageDataを有していない。
+        // あるいは、entityBがPlayerSingletonDataを有していなければ切り上げる
+        if (!dealDamageLookup.HasComponent(entityA) || !playerSingletonLookup.HasComponent(entityB)) { return; }
+
+        // entityBからPlayerHealthPointDataを取得
+        var playerSingleton = playerSingletonLookup[entityB];
+
+        // entityAからBulletIDealDamageDataを取得
+        var dealDamage = dealDamageLookup[entityA];
+
+        // ダメージ源の陣営の種類がPlayerだったら切り上げる
+        if (dealDamage.campsType == EntityCampsType.Player) { return; }
+
+        // 攻撃を受けた対象がDestroyableDataを有していた
+        if (destroyableLookup.HasComponent(entityB))
+        {
+            var destroyable = destroyableLookup[entityB];
+
+            // 削除フラグを代入する
+            destroyable.isKilled = true;
+
+            // 変更を反映
+            destroyableLookup[entityB] = destroyable;
+
+            // 削除フラグが立った
+            // これはEntityが削除される時の処理として追加できないか
+            if (destroyable.isKilled)
+            {
+                // ゲームオーバー処理を開始する
+                GameManager.Instance.MyGameState = GameState.GameOver;
+
+                // EntityBがVFXCreationDataを有していた
+                if (vfxCreationLookup.HasComponent(entityB))
+                {
+                    var vfxCreation = vfxCreationLookup[entityB];
+                    vfxCreation.Position = position;
+                    vfxCreationLookup[entityB] = vfxCreation;
+                }
+            }
+        }
+    }
+}
+
+/// <summary>
 /// PLの処理
 /// </summary>
 public partial class PlayerSystem : SystemBase
 {
-    // InputSystem
-    private PlayerControls _playerInput = null;
-
-    // 入力
-    private float _horizontalValue = 0.0f;
-    private float _verticalValue = 0.0f;
-
+    // JobでDataを取得、変更する為のComponentLookup
     private ComponentLookup<PlayerSingletonData> _playerSingletonLookup = new();
     private ComponentLookup<HealthPointData> _healthPointLookup = new();
     private ComponentLookup<BulletIDealDamageData> _dealDamageLookup = new();
@@ -42,6 +103,15 @@ public partial class PlayerSystem : SystemBase
     private ComponentLookup<RemainingPierceCountData> _remainingPierceCountLookup = new();
     private ComponentLookup<LocalTransform> _localTransformLookup = new();
     private ComponentLookup<VFXCreationData> _vfxCreationLookup = new();
+
+    [Tooltip("PL入力のInputSystem")]
+    private PlayerControls _playerInput = null;
+
+    [Tooltip("水平入力")]
+    private float _horizontalValue = 0.0f;
+
+    [Tooltip("垂直入力")]
+    private float _verticalValue = 0.0f;
 
     [Tooltip("溜め攻撃中")]
     private bool _isChargeShot = false;
@@ -55,6 +125,10 @@ public partial class PlayerSystem : SystemBase
     [Tooltip("チャージを開始した時間")]
     private double _chargeStartTime = 0.0f;
 
+    /// <summary>
+    /// Jobの為のGetComponentLookupを作成。<br/>
+    /// PlayerInputのインスタンス作成と入力時の関数を登録。
+    /// </summary>
     protected override void OnCreate()
     {
         // 取得する
@@ -94,6 +168,9 @@ public partial class PlayerSystem : SystemBase
         slowdown.canceled += (context) => _isSlowdown = false;
     }
 
+    /// <summary>
+    /// ISystemを継承していると呼び出されるUpdate
+    /// </summary>
     protected override void OnUpdate()
     {
         // PlayerSingletonDataが存在しなかった
@@ -103,7 +180,7 @@ public partial class PlayerSystem : SystemBase
         var playerSingleton = SystemAPI.GetSingleton<PlayerSingletonData>();
 
         // PlayerSingletonDataを持つEntityを取得
-        Entity playerEntity = SystemAPI.GetSingletonEntity<PlayerSingletonData>();
+        var playerEntity = SystemAPI.GetSingletonEntity<PlayerSingletonData>();
 
         // LocalTransformを所持していなかった
         if (!SystemAPI.HasComponent<LocalTransform>(playerEntity)) { return; }
@@ -127,10 +204,13 @@ public partial class PlayerSystem : SystemBase
         PlayerDamageTriggerJob();
     }
 
+    /// <summary>
+    /// インスタンスが破棄される時に呼び出される
+    /// </summary>
     protected override void OnDestroy()
     {
-        _playerInput.Disable();
-        _playerInput.Dispose();
+        _playerInput.Disable();     // 非有効化
+        _playerInput.Dispose();     // リソース解放
     }
 
     /// <summary>
@@ -139,6 +219,7 @@ public partial class PlayerSystem : SystemBase
     /// <param name="context"></param>
     private void ChargeShotStarted(InputAction.CallbackContext context)
     {
+        // チャージショットのフラグを有効化
         _isChargeShot = true;
 
         // チャージを開始した時間を保持する
@@ -160,12 +241,15 @@ public partial class PlayerSystem : SystemBase
     /// </summary>
     private IEnumerator VFXCreation(float wait)
     {
-        float delta = 0.0f;
+        // フレーム秒
+        var delta = 0.0f;
 
         // 時間が経過するまで待機
         while (wait >= delta)
         {
             yield return null;
+
+            // フレーム秒を加算代入
             delta += SystemAPI.Time.DeltaTime;
 
             // 途中でチャージが終了した
@@ -179,15 +263,16 @@ public partial class PlayerSystem : SystemBase
         var playerSingletonData = SystemAPI.GetSingleton<PlayerSingletonData>();
 
         // PlayerSingletonDataを持つEntityを取得
-        Entity playerEntity = SystemAPI.GetSingletonEntity<PlayerSingletonData>();
+        var playerEntity = SystemAPI.GetSingletonEntity<PlayerSingletonData>();
 
-        // LocalTransformを所持していなかった
+        // PLがLocalTransformを所持していなかった
         if (!SystemAPI.HasComponent<LocalTransform>(playerEntity)) { yield break; }
 
+        // PLのLocalTransformを取得
         var playerTfm = SystemAPI.GetComponent<LocalTransform>(playerEntity);
 
         // チャージが完了した時のエフェクトを生成する
-        VFXCreationBridge.Instance.VFXCreation(VisualEffectName.Charge, playerTfm.Position);
+        VFXCreationBridge.Instance.VFXCreation(VisualEffectType.Charge, playerTfm.Position);
 
         // チャージが完了した時の効果音を再生する
         AudioPlayManager.Instance.PlaySE(playerSingletonData.chargeFinishedSE);
@@ -199,6 +284,7 @@ public partial class PlayerSystem : SystemBase
     /// <param name="context"></param>
     private void ChargeShotCanceled(InputAction.CallbackContext context)
     {
+        // チャージショットのフラグを無効化
         _isChargeShot = false;
 
         // チャージ時間の長さ
@@ -211,7 +297,7 @@ public partial class PlayerSystem : SystemBase
         var playerSingletonData = SystemAPI.GetSingleton<PlayerSingletonData>();
 
         // PlayerSingletonDataを持つEntityを取得
-        Entity playerEntity = SystemAPI.GetSingletonEntity<PlayerSingletonData>();
+        var playerEntity = SystemAPI.GetSingletonEntity<PlayerSingletonData>();
 
         // チャージ時間が足りなかった
         if (chargeTime < playerSingletonData.chargeTime)
@@ -221,16 +307,19 @@ public partial class PlayerSystem : SystemBase
             return;
         }
 
+        // 弾を生成
         var bulletEntity = EntityManager.Instantiate(playerSingletonData.chargeBulletEntity);
 
-        // LocalTransformを所持していなかった
+        // PLがLocalTransformを所持していなかった
         if (!SystemAPI.HasComponent<LocalTransform>(playerEntity)) { return; }
 
+        // PLのLocalTransformを取得
         var playerTfm = SystemAPI.GetComponent<LocalTransform>(playerEntity);
 
-        // LocalTransformを所持していなかった
+        // 弾がLocalTransformを所持していなかった
         if (!SystemAPI.HasComponent<LocalTransform>(bulletEntity)) { return; }
 
+        // 弾のLocalTransformを取得
         var bulletTfm = SystemAPI.GetComponent<LocalTransform>(bulletEntity);
 
         // 位置をPLの位置に設定
@@ -240,6 +329,8 @@ public partial class PlayerSystem : SystemBase
             Rotation = playerTfm.Rotation,
             Scale = bulletTfm.Scale
         };
+
+        // 弾の変更を反映
         EntityManager.SetComponentData(bulletEntity, bulletTfm);
 
         // チャージショットの効果音を再生する
@@ -309,7 +400,7 @@ public partial class PlayerSystem : SystemBase
                 math.normalize(movementDirection) : movementDirection;
 
         // 移動量を算出
-        Vector3 scaledMovement = movementDirection * speed * delta;
+        var scaledMovement = movementDirection * speed * delta;
 
         // 移動を加算代入
         currentPosition += (float3)scaledMovement;
@@ -319,10 +410,10 @@ public partial class PlayerSystem : SystemBase
         currentPosition.y = Mathf.Clamp(currentPosition.y, minMovementRange.y, maxMovementRange.y);
         currentPosition.z = Mathf.Clamp(currentPosition.z, minMovementRange.z, maxMovementRange.z);
 
-        // 反映
+        // PLの位置を範囲内に収める
         playerTransform.Position = currentPosition;
 
-        // 変更を反映
+        // PLの変更を反映
         SystemAPI.SetComponent(playerEntity, playerTransform);
     }
 
@@ -353,7 +444,7 @@ public partial class PlayerSystem : SystemBase
         // 現在の回転を代入
         bulletTfm.Rotation = playerTransform.Rotation;
 
-        // 変更を適用
+        // PLとPLの弾の変更を適用
         SystemAPI.SetComponent(playerBulletEntity, bulletTfm);
         SystemAPI.SetComponent(playerEntity, playerSingleton);
     }
@@ -371,7 +462,7 @@ public partial class PlayerSystem : SystemBase
         var playerSingleton = SystemAPI.GetSingleton<PlayerSingletonData>();
 
         // PlayerSingletonDataが持つEntityを取得
-        Entity modelEntity = playerSingleton.playerModelEntity;
+        var modelEntity = playerSingleton.playerModelEntity;
 
         // LocalTransformを所持していなかった
         if (!SystemAPI.HasComponent<LocalTransform>(modelEntity)) { return; }
@@ -400,7 +491,7 @@ public partial class PlayerSystem : SystemBase
         var playerSingleton = SystemAPI.GetSingleton<PlayerSingletonData>();
 
         // PlayerSingletonDataが持つEntityを取得
-        Entity modelEntity = playerSingleton.playerModelEntity;
+        var modelEntity = playerSingleton.playerModelEntity;
 
         // LocalTransformを所持していなかった
         if (!SystemAPI.HasComponent<LocalTransform>(modelEntity)) { return; }
@@ -446,72 +537,5 @@ public partial class PlayerSystem : SystemBase
 
         // ジョブの依存関係を更新する
         Dependency = playerJobHandle;
-    }
-}
-
-/// <summary>
-/// 接触時にダメージを受ける
-/// </summary>
-public partial struct PlayerDamageTriggerJob : ITriggerEventsJob
-{
-    // インスタンスの取得に必要な変数
-    public ComponentLookup<PlayerSingletonData> playerSingletonLookup;
-    public ComponentLookup<BulletIDealDamageData> dealDamageLookup;
-    public ComponentLookup<DestroyableData> destroyableLookup;
-    public ComponentLookup<LocalTransform> localTransformLookup;
-    public ComponentLookup<VFXCreationData> vfxCreationLookup;
-
-    public void Execute(TriggerEvent triggerEvent)
-    {
-        var entityA = triggerEvent.EntityA; // 接触対象
-        var entityB = triggerEvent.EntityB; // isTriggerを有効にしている方
-
-        // entityBがLocalTransformを有しているか
-        if (!localTransformLookup.HasComponent(entityB)) { return; }
-
-        // isTriggerが有効である以上、LocalTransformは絶対にある
-        var localTransform = localTransformLookup[entityB];
-        var position = localTransform.Position;
-
-        // entityAがBulletIDealDamageDataを有していない。
-        // あるいは、entityBがPlayerSingletonDataを有していなければ切り上げる
-        if (!dealDamageLookup.HasComponent(entityA) || !playerSingletonLookup.HasComponent(entityB)) { return; }
-
-        // entityBからPlayerHealthPointDataを取得
-        var playerSingleton = playerSingletonLookup[entityB];
-
-        // entityAからBulletIDealDamageDataを取得
-        var dealDamage = dealDamageLookup[entityA];
-
-        // ダメージ源の陣営の種類がPlayerだったら切り上げる
-        if (dealDamage.campsType == EntityCampsType.Player) { return; }
-
-        // 攻撃を受けた対象がDestroyableDataを有していた
-        if (destroyableLookup.HasComponent(entityB))
-        {
-            var destroyable = destroyableLookup[entityB];
-
-            // 削除フラグを代入する
-            destroyable.isKilled = true;
-
-            // 変更を反映
-            destroyableLookup[entityB] = destroyable;
-
-            // 削除フラグが立った
-            // これはEntityが削除される時の処理として追加できないか
-            if (destroyable.isKilled)
-            {
-                // ゲームオーバー処理を開始する
-                GameManager.Instance.MyGameState = GameState.GameOver;
-
-                // EntityBがVFXCreationDataを有していた
-                if (vfxCreationLookup.HasComponent(entityB))
-                {
-                    var vfxCreation = vfxCreationLookup[entityB];
-                    vfxCreation.Position = position;
-                    vfxCreationLookup[entityB] = vfxCreation;
-                }
-            }
-        }
     }
 }

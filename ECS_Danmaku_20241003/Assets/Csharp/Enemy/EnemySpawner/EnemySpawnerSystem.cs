@@ -8,7 +8,6 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 using static EntityCampsHelper;
 
-
 #if UNITY_EDITOR
 using Unity.Physics;
 using static SpawnPointSingletonData;
@@ -37,8 +36,13 @@ public partial struct EnemySpawnerSystem : ISystem
     [Tooltip("未設定の値")]
     private const int UNSET_VALUE = int.MinValue;
 
+    [Tooltip("敵生成設定の情報の配列")]
     private EnemySpawnPattern _currentPattern;
+
+    [Tooltip("生成中の敵番号")]
     private int _currentInfoNumber;
+
+    [Tooltip("経過時間")]
     private float _elapsed;
 
     [Tooltip("ボス生成までのカウントダウン")]
@@ -60,9 +64,9 @@ public partial struct EnemySpawnerSystem : ISystem
         var ecb = new EntityCommandBuffer(Allocator.Temp);
 
         // 敵が存在するか
-        bool hasEnemy = HasEnemy(ref state);
+        var isEnemyPresent = IsEnemyPresent(ref state);
 
-        // EntityとDataを取得する
+        // 敵を生成する
         foreach (var (array, entity)
             in SystemAPI.Query<EnemySpawnPatternArraySingletonData>()
             .WithEntityAccess())
@@ -81,22 +85,14 @@ public partial struct EnemySpawnerSystem : ISystem
 
             // _currentPatternがdefault、
             // またはenemySpawnInfosの長さを_currentInfoNumberが超過していたら初期化
-            if (_currentPattern.Equals(default) 
+            if (_currentPattern.Equals(default)
                 || _currentPattern.enemySpawnInfos.Length <= _currentInfoNumber)
             {
                 // EnemyTagを持つEntityが1体以上存在する場合はコンテニュー
-                if (hasEnemy) { continue; }
-
-                // 次に生成する敵パターンを抽選
-                var patternNumber = Random.Range(0, array.enemySpawnPatterns.Length);
-                _currentPattern = array.enemySpawnPatterns[patternNumber];
-
-                // ボス生成までのカウントダウンをデクリメント
-                _countdownBossSpawn--;
-
-                // 初期化
-                _currentInfoNumber = 0;
-                _elapsed = 0.0f;
+                if (isEnemyPresent) { continue; }
+                
+                // 敵の生成パターンを初期化
+                InitializeSpawnPattern(array);
             }
 
             // ボス生成までのカウントダウンが 0以下になった
@@ -104,14 +100,6 @@ public partial struct EnemySpawnerSystem : ISystem
             {
                 // ボス敵を生成
                 BossEnemyInstantiate(ref state, ecb, array);
-
-                // EnemySpawnPatternArraySingletonDataが存在していた
-                if (SystemAPI.HasSingleton<EnemySpawnPatternArraySingletonData>())
-                {
-                    // EnemySpawnPatternArraySingletonDataをアタッチされたEntityから削除する
-                    var enemySpawnPatternArraySingletonDataEntity = SystemAPI.GetSingletonEntity<EnemySpawnPatternArraySingletonData>();
-                    ecb.RemoveComponent<EnemySpawnPatternArraySingletonData>(enemySpawnPatternArraySingletonDataEntity);
-                }
                 break;
             }
 
@@ -119,6 +107,7 @@ public partial struct EnemySpawnerSystem : ISystem
             EnemyInstantiate(ref state, ecb, array);
         }
 
+        // 変更を反映
         ecb.Playback(state.EntityManager);
         ecb.Dispose();
     }
@@ -128,7 +117,7 @@ public partial struct EnemySpawnerSystem : ISystem
     /// </summary>
     /// <param name="enemyName">敵Entityの名称</param>
     /// <returns>EnemyNameに対応する敵Entity</returns>
-    private Entity GetEnemyEntity(ref SystemState systemState, EnemyName enemyName)
+    private Entity GetEnemyEntity(ref SystemState systemState, EnemyType enemyName)
     {
         foreach (var enemyEntityData in SystemAPI.Query<EnemyEntityData>())
         {
@@ -138,7 +127,9 @@ public partial struct EnemySpawnerSystem : ISystem
             }
         }
 
-        // 見つからなかった
+#if UNITY_EDITOR
+        Debug.LogError("見つからなかった");
+#endif
         return Entity.Null;
     }
 
@@ -146,10 +137,11 @@ public partial struct EnemySpawnerSystem : ISystem
     /// 敵が存在するかのフラグを返す
     /// </summary>
     /// <returns>敵が存在するか</returns>
-    private bool HasEnemy(ref SystemState state)
+    private bool IsEnemyPresent(ref SystemState state)
     {
         foreach (var enemyTag in SystemAPI.Query<EnemyCampsTag>())
         {
+            // 一つ以上存在していた
             return true;
         }
         return false;
@@ -185,6 +177,14 @@ public partial struct EnemySpawnerSystem : ISystem
                 Rotation = quaternion.identity,
                 Scale = DEFAULT_SCALE
             });
+        }
+
+        // EnemySpawnPatternArraySingletonDataが存在していた
+        if (SystemAPI.HasSingleton<EnemySpawnPatternArraySingletonData>())
+        {
+            // EnemySpawnPatternArraySingletonDataをアタッチされたEntityから削除する
+            var enemySpawnPatternArraySingletonDataEntity = SystemAPI.GetSingletonEntity<EnemySpawnPatternArraySingletonData>();
+            ecb.RemoveComponent<EnemySpawnPatternArraySingletonData>(enemySpawnPatternArraySingletonDataEntity);
         }
     }
 
@@ -237,6 +237,24 @@ public partial struct EnemySpawnerSystem : ISystem
                 Scale = DEFAULT_SCALE
             });
         }
+    }
+
+    /// <summary>
+    /// 敵の生成パターンを初期化
+    /// </summary>
+    /// <param name="array">敵生成設定の情報の配列</param>
+    private void InitializeSpawnPattern(EnemySpawnPatternArraySingletonData array)
+    {
+        // 次に生成する敵パターンを抽選
+        var patternNumber = Random.Range(0, array.enemySpawnPatterns.Length);
+        _currentPattern = array.enemySpawnPatterns[patternNumber];
+
+        // ボス生成までのカウントダウンをデクリメント
+        _countdownBossSpawn--;
+
+        // 初期化
+        _currentInfoNumber = 0;
+        _elapsed = 0.0f;
     }
 
     /// <summary>

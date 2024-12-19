@@ -86,7 +86,7 @@ public struct EnemySpawnPatternArraySingletonData : IComponentData
         this.countdownBossSpawn = countdownBossSpawn;
 
         // ‰ŠúŠ„‚è“–‚Ä
-        this.enemySpawnPatterns = new();
+        enemySpawnPatterns = new();
 
         if (enemySpawnPatternArrays == null)
         {
@@ -96,12 +96,12 @@ public struct EnemySpawnPatternArraySingletonData : IComponentData
             return;
         }
 
-        for (int i = 0; i < enemySpawnPatternArrays.Length; i++)
+        for (var i = 0; i < enemySpawnPatternArrays.Length; i++)
         {
             var currentArraysLength = enemySpawnPatternArrays[i].infos.Length;
             var enemySpawnInfo = new EnemySpawnInfo[currentArraysLength];
 
-            for (int j = 0; j < currentArraysLength; j++)
+            for (var j = 0; j < currentArraysLength; j++)
             {
                 enemySpawnInfo[j] = enemySpawnPatternArrays[i].infos[j];
             }

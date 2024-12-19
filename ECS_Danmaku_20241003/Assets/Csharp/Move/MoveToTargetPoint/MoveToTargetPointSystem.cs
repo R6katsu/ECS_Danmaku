@@ -32,22 +32,22 @@ public partial struct MoveToTargetPointSystem : ISystem
                                  .WithEntityAccess())
         {
             // 現在位置を取得
-            float3 currentPosition = localTfm.ValueRW.Position;
+            var currentPosition = localTfm.ValueRW.Position;
 
             // 目標位置を取得
-            float3 targetPosition = moveToTargetPoint.ValueRO.TargetPoint;
+            var targetPosition = moveToTargetPoint.ValueRO.TargetPoint;
 
             // 移動速度を取得
-            float moveSpeed = moveToTargetPoint.ValueRO.MoveParameter.Speed;
+            var moveSpeed = moveToTargetPoint.ValueRO.MoveParameter.Speed;
 
             // 移動方向を計算
-            float3 direction = math.normalize(targetPosition - currentPosition);
+            var direction = math.normalize(targetPosition - currentPosition);
 
             // フレームごとに移動距離を計算
-            float deltaMove = moveSpeed * delta;
+            var deltaMove = moveSpeed * delta;
 
             // 新しい位置を計算
-            float3 newPosition = currentPosition + direction * deltaMove;
+            var newPosition = currentPosition + direction * deltaMove;
 
             // 目標地点を超えた
             if (math.distance(newPosition, targetPosition) < deltaMove)

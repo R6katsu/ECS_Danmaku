@@ -25,7 +25,7 @@ public struct AudioPlayData : IComponentData
 
     /// <summary>
     /// 再生する音源の番号。<br/>
-    /// 下限から変更があった場合に「音源再生」のフラグを立てる
+    /// 下限から変更があった場合に"音源再生"のフラグを立てる
     /// </summary>
     public int AudioNumber
     {
@@ -41,7 +41,7 @@ public struct AudioPlayData : IComponentData
         }
         set
         {
-            // 下限から変更があった場合に「生成可能」のフラグを立てる
+            // 下限から変更があった場合に"生成可能"のフラグを立てる
             if (_audioNumber != value && value != LOWER_LIMIT)
             {
                 _audioNumber = value;

@@ -52,27 +52,27 @@ static public partial class DanmakuJobs
             // Œo‰ßŠÔ‚Ì‰Šú‰»‚ğ”½‰f
             commandBuffer.SetComponent(index, entity, n_Way_DanmakuData);
 
-            float fanAngle = n_Way_DanmakuData.fanAngle;
-            int amountBullets = n_Way_DanmakuData.amountBullets;
+            var fanAngle = n_Way_DanmakuData.fanAngle;
+            var amountBullets = n_Way_DanmakuData.amountBullets;
 
             // ”­Ë‚·‚é’e‚Ì‰ŠúŠp“x
-            float startAngle = -fanAngle.Halve();
+            var startAngle = -fanAngle.Halve();
 
             // 1‚Â‚Ì’e‚²‚Æ‚ÌŠp“x‚Ì‘‰Á
-            float angleStep = fanAngle / (amountBullets);
+            var angleStep = fanAngle / (amountBullets);
 
             // n-Way’e‚ğ¶¬‚·‚é
-            for (int i = 0; i < amountBullets; i++)
+            for (var i = 0; i < amountBullets; i++)
             {
                 // ’e‚Ì”­ËŠp“x‚ğŒvZ
-                float angle = startAngle + angleStep * i;
-                quaternion rotation = (quaternion)Quaternion.Euler(0.0f, angle, 0.0f);
+                var angle = startAngle + angleStep * i;
+                var rotation = (quaternion)Quaternion.Euler(0.0f, angle, 0.0f);
 
                 // ’e‚ğ¶¬
-                Entity bulletEntity = commandBuffer.Instantiate(index, n_Way_DanmakuData.bulletEntity);
+                var bulletEntity = commandBuffer.Instantiate(index, n_Way_DanmakuData.bulletEntity);
 
                 // ³‹K‰»
-                quaternion normalizedRotation = math.normalize(localToWorld.Rotation);
+                var normalizedRotation = math.normalize(localToWorld.Rotation);
 
                 // Transform‚ğİ’è
                 commandBuffer.SetComponent(index, bulletEntity, new LocalTransform

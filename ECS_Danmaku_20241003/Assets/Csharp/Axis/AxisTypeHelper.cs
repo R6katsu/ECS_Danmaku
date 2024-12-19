@@ -33,9 +33,6 @@ static public class AxisTypeHelper
             case AxisType.Z:
                 return position.z;
 
-            case AxisType.MinusZ:
-                return position.z;
-
             case AxisType.None:
             default:
 #if UNITY_EDITOR
@@ -62,9 +59,6 @@ static public class AxisTypeHelper
 
             case AxisType.Z:
                 return Vector3.forward;
-
-            case AxisType.MinusZ:
-                return Vector3.back;
 
             default:
 #if UNITY_EDITOR

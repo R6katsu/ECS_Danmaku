@@ -29,9 +29,24 @@ public struct AxisInputEventInfo
     [SerializeField, Header("水平垂直の入力回数と紐つけて呼び出される関数")]
     private UnityEvent _axisInputEvent;
 
+    /// <summary>
+    /// 水平垂直の入力回数
+    /// </summary>
     public int2 AxisInput => _axisInput;
+
+    /// <summary>
+    /// ボタン画像
+    /// </summary>
     public RectTransform ButtonImage => _buttonImage;
+
+    /// <summary>
+    /// 水平垂直の入力回数と紐つけて呼び出される関数
+    /// </summary>
     public UnityEvent AxisInputEvent => _axisInputEvent;
+
+    /// <summary>
+    /// UIと関数のタプル
+    /// </summary>
     public (RectTransform, UnityEvent) ButtonImage_AxisInputEvent => (_buttonImage, _axisInputEvent);
 }
 
@@ -151,7 +166,7 @@ public class UIController : MonoBehaviour, IDisposable
             var horizontal = _playerInput.UI.Horizontal;
             horizontal.started += (context) =>
             {
-                float inputValue = context.ReadValue<float>();
+                var inputValue = context.ReadValue<float>();
 
                 if (inputValue > 0)
                 { // 右方向の入力
@@ -167,7 +182,7 @@ public class UIController : MonoBehaviour, IDisposable
             var vertical = _playerInput.UI.Vertical;
             vertical.started += (context) =>
             {
-                float inputValue = context.ReadValue<float>();
+                var inputValue = context.ReadValue<float>();
 
                 if (inputValue > 0)
                 { // 上方向の入力
@@ -309,7 +324,7 @@ public class UIController : MonoBehaviour, IDisposable
     /// </summary>
     private void SetDefaultUIScale()
     {
-        RectTransform uiTransform = GetUIAndUnityEvent().Value.Item1;
+        var uiTransform = GetUIAndUnityEvent().Value.Item1;
         uiTransform.localScale = _defaultUIScale;
     }
 
@@ -318,7 +333,7 @@ public class UIController : MonoBehaviour, IDisposable
     /// </summary>
     private void SetSelectedUIScale()
     {
-        RectTransform uiTransform = GetUIAndUnityEvent().Value.Item1;
+        var uiTransform = GetUIAndUnityEvent().Value.Item1;
         uiTransform.localScale = _defaultUIScale * _selectedUIScale;
     }
 }

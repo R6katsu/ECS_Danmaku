@@ -18,10 +18,10 @@ public class LookingUpQuadCreator
     static void CreateLookingUpQuadPrefab()
     {
         // LookingUpQuad.prefabの相対パスを定義
-        string prefabPath = "Assets/Prefab/OriginalPrimitive/LookingUpQuad.prefab";
+        var prefabPath = "Assets/Prefab/OriginalPrimitive/LookingUpQuad.prefab";
 
         // LookingUpQuadをAssetから取得
-        GameObject prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
+        var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(prefabPath);
 
         // nullだったら取得できていない
         if (prefab == null)
@@ -31,7 +31,7 @@ public class LookingUpQuadCreator
         }
 
         // ヒエラルキー上にPrefabをインスタンス化
-        GameObject instance = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
+        var instance = PrefabUtility.InstantiatePrefab(prefab) as GameObject;
 
         // インスタンスを選択
         Selection.activeGameObject = instance;

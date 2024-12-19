@@ -46,7 +46,7 @@ public class UIAnimationAndEndAction : SingletonMonoBehaviour<UIAnimationAndEndA
         yield return null;
 
         // アニメーション情報の取得
-        AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
+        var stateInfo = animator.GetCurrentAnimatorStateInfo(0);
 
         // 正しい長さが取得できるまで待機
         while (animator.GetCurrentAnimatorStateInfo(0).length == DEFAULT_ANIMATION_LENGTH)
@@ -56,7 +56,7 @@ public class UIAnimationAndEndAction : SingletonMonoBehaviour<UIAnimationAndEndA
         }
 
         // アニメーション終了まで待機
-        float animationLength = stateInfo.length;
+        var animationLength = stateInfo.length;
         yield return new WaitForSeconds(animationLength);
 
         // アニメーション終了時に登録された処理を実行

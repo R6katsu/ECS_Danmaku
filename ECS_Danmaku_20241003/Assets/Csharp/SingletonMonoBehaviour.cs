@@ -22,7 +22,7 @@ public class SingletonMonoBehaviour<T> : MonoBehaviour where T : MonoBehaviour
         {
             if (instance == null)
             {
-                Type t = typeof(T);
+                var t = typeof(T);
 
                 instance = (T)FindObjectOfType(t);
 

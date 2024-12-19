@@ -93,7 +93,7 @@ public partial struct TitleLogoSystem : ISystem
         titleLogoSingleton.NextImage();
 
         // TitleLogoSingletonDataを持つEntityを取得
-        Entity playerEntity = SystemAPI.GetSingletonEntity<TitleLogoSingletonData>();
+        var playerEntity = SystemAPI.GetSingletonEntity<TitleLogoSingletonData>();
 
         // isNextImageの値を実際のエンティティに反映
         state.EntityManager.SetComponentData(playerEntity, titleLogoSingleton);

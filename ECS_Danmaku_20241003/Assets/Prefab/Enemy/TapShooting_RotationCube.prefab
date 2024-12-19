@@ -144,8 +144,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _straightMoveData:
     _moveParam:
-      _speed: 6
-    _axisType: 4
+      _speed: -6
+    _axisType: 3
 --- !u!135 &7489738364080410858
 SphereCollider:
   m_ObjectHideFlags: 0

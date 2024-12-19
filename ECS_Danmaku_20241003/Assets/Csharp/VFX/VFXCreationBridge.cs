@@ -15,9 +15,9 @@ using static VFXCreationBridge;
 // リファクタリング済み
 
 /// <summary>
-/// VisualEffectの名称
+/// VisualEffectの種類
 /// </summary>
-public enum VisualEffectName : sbyte
+public enum VisualEffectType : sbyte
 {
     None = -1,
     Explosion,
@@ -36,16 +36,16 @@ public class VFXCreationBridge : SingletonMonoBehaviour<VFXCreationBridge>
     private VisualEffect[] _visualEffects = null;
 
     [Tooltip("位置のリストの辞書")]
-    private Dictionary<VisualEffectName, List<Vector3>> _positions = new();
+    private Dictionary<VisualEffectType, List<Vector3>> _positions = new();
 
     [Tooltip("大きさのリストの辞書")]
-    private Dictionary<VisualEffectName, List<float>> _sizes = new();
+    private Dictionary<VisualEffectType, List<float>> _sizes = new();
 
     [Tooltip("位置のGraphicsBufferの辞書")]
-    private Dictionary<VisualEffectName, GraphicsBuffer> _positionBuffers = new();
+    private Dictionary<VisualEffectType, GraphicsBuffer> _positionBuffers = new();
 
     [Tooltip("大きさのGraphicsBufferの辞書")]
-    private Dictionary<VisualEffectName, GraphicsBuffer> _sizeBuffers = new();
+    private Dictionary<VisualEffectType, GraphicsBuffer> _sizeBuffers = new();
 
     private void OnDestroy()
     {
@@ -64,12 +64,12 @@ public class VFXCreationBridge : SingletonMonoBehaviour<VFXCreationBridge>
     /// <summary>
     /// VFXGraphを生成する
     /// </summary>
-    /// <param name="visualEffectName">生成するVFXの名称</param>
+    /// <param name="visualEffectName">生成するVFXの種類</param>
     /// <param name="position">生成する位置</param>
     /// <param name="size">生成時の大きさ</param>
-    public void VFXCreation(VisualEffectName visualEffectName, Vector3 position, float size = DEFAULT_SIZE)
+    public void VFXCreation(VisualEffectType visualEffectName, Vector3 position, float size = DEFAULT_SIZE)
     {
-        if (visualEffectName == VisualEffectName.None)
+        if (visualEffectName == VisualEffectType.None)
         {
 #if UNITY_EDITOR
             Debug.LogWarning("Noneが渡されました");
@@ -79,10 +79,14 @@ public class VFXCreationBridge : SingletonMonoBehaviour<VFXCreationBridge>
 
         // 既に追加されていたら追加しない
         if (!_positions.ContainsKey(visualEffectName))
-        { _positions.Add(visualEffectName, new List<Vector3>()); }
+        {
+            _positions.Add(visualEffectName, new List<Vector3>()); 
+        }
 
         if (!_sizes.ContainsKey(visualEffectName))
-        { _sizes.Add(visualEffectName, new List<float>()); }
+        { 
+            _sizes.Add(visualEffectName, new List<float>());
+        }
 
         // 書き込む為のリストに追加
         _positions[visualEffectName].Add(position);
