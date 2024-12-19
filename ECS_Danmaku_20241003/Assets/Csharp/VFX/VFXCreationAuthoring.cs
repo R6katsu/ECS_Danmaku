@@ -18,7 +18,7 @@ using static BulletHelper;
 /// </summary>
 public struct VFXCreationData : IComponentData
 {
-    public readonly VisualEffectName visualEffectName;
+    public readonly VisualEffectType visualEffectName;
     public readonly float size;
 
     private float3 position;
@@ -52,7 +52,7 @@ public struct VFXCreationData : IComponentData
     /// </summary>
     /// <param name="visualEffectName">VisualEffectÇÃñºèÃ</param>
     /// <param name="size">ëÂÇ´Ç≥</param>
-    public VFXCreationData(VisualEffectName visualEffectName, float size)
+    public VFXCreationData(VisualEffectType visualEffectName, float size)
     {
         this.visualEffectName = visualEffectName;
         this.size = size;
@@ -89,7 +89,7 @@ public class VFXCreationAuthoring : MonoBehaviour
     private const float MIN_SIZE = 0.1f;
 
     [SerializeField, Header("VFXÇÃñºèÃ")]
-    private VisualEffectName _visualEffectName = 0;
+    private VisualEffectType _visualEffectName = 0;
 
     [SerializeField, Min(MIN_SIZE), Header("VFXÇÃëÂÇ´Ç≥")]
     private float _size = MIN_SIZE;

@@ -24,6 +24,9 @@ using System.Net.Security;
 /// </summary>
 public partial class BossEnemySystem : SystemBase
 {
+    [Tooltip("円周のラジアン値")]
+    private const float FULL_CIRCLE_RADIANS = Mathf.PI * 2;
+
     /// <summary>
     /// ボス敵の状態
     /// </summary>
@@ -34,9 +37,6 @@ public partial class BossEnemySystem : SystemBase
         [Tooltip("回転n-Way弾")] RotationNWay,
         [Tooltip("ランダムに弾をばら撒く")] RandomSpreadBullets
     }
-
-    [Tooltip("円周のラジアン値")]
-    private const float FULL_CIRCLE_RADIANS = Mathf.PI * 2;
 
     [Tooltip("ボス敵の状態")]
     private BossEnemyState _bossEnemyState = BossEnemyState.None;
@@ -92,7 +92,7 @@ public partial class BossEnemySystem : SystemBase
         var bossEnemySingleton = SystemAPI.GetSingleton<BossEnemySingletonData>();
 
         // Entityを取得
-        Entity entity = SystemAPI.GetSingletonEntity<BossEnemySingletonData>();
+        var entity = SystemAPI.GetSingletonEntity<BossEnemySingletonData>();
 
         // 移動中だった
         if (SystemAPI.HasComponent<MoveToTargetPointData>(entity)) { return; }
@@ -121,7 +121,6 @@ public partial class BossEnemySystem : SystemBase
 
             case BossEnemyState.RotationNWay:
                 // 回転n-Way弾
-                RotationNWay();
                 break;
 
             case BossEnemyState.RandomSpreadBullets:
@@ -150,9 +149,9 @@ public partial class BossEnemySystem : SystemBase
         var bossEnemySingleton = SystemAPI.GetSingleton<BossEnemySingletonData>();
 
         // Entityを取得
-        Entity entity = SystemAPI.GetSingletonEntity<BossEnemySingletonData>();
+        var entity = SystemAPI.GetSingletonEntity<BossEnemySingletonData>();
 
-        EntityCommandBuffer ecb = _ecbSystem.CreateCommandBuffer();
+        var ecb = _ecbSystem.CreateCommandBuffer();
 
         switch (bossEnemyState)
         {
@@ -207,7 +206,7 @@ public partial class BossEnemySystem : SystemBase
         var bossEnemySingleton = SystemAPI.GetSingleton<BossEnemySingletonData>();
 
         // Entityを取得
-        Entity entity = SystemAPI.GetSingletonEntity<BossEnemySingletonData>();
+        var entity = SystemAPI.GetSingletonEntity<BossEnemySingletonData>();
 
         switch (bossEnemyState)
         {
@@ -326,7 +325,7 @@ public partial class BossEnemySystem : SystemBase
         var bossEnemySingleton = SystemAPI.GetSingleton<BossEnemySingletonData>();
 
         // Entityを取得
-        Entity bossEntity = SystemAPI.GetSingletonEntity<BossEnemySingletonData>();
+        var bossEntity = SystemAPI.GetSingletonEntity<BossEnemySingletonData>();
 
         // PlayerSingletonDataが存在していなかった
         if (!SystemAPI.HasSingleton<PlayerSingletonData>()) { return; }
@@ -335,7 +334,7 @@ public partial class BossEnemySystem : SystemBase
         var playerSingleton = SystemAPI.GetSingleton<PlayerSingletonData>();
 
         // Entityを取得
-        Entity playerEntity = SystemAPI.GetSingletonEntity<PlayerSingletonData>();
+        var playerEntity = SystemAPI.GetSingletonEntity<PlayerSingletonData>();
 
         // LocalTransformを所持していなかった
         if (!SystemAPI.HasComponent<LocalTransform>(playerEntity)) { return; }
@@ -350,19 +349,9 @@ public partial class BossEnemySystem : SystemBase
         var bossTfm = SystemAPI.GetComponent<LocalTransform>(bossEntity);
 
         // 回転を適用
-        Quaternion targetRotation = Quaternion.LookRotation(playerTfm.Position - bossTfm.Position);
+        var targetRotation = Quaternion.LookRotation(playerTfm.Position - bossTfm.Position);
         bossTfm.Rotation = targetRotation;
         EntityManager.SetComponentData(bossEntity, bossTfm);
-    }
-
-    /// <summary>
-    /// 回転しながらn-Way弾
-    /// </summary>
-    private void RotationNWay()
-    {
-#if UNITY_EDITOR
-        Debug.Log("回転しながらn-Way弾");
-#endif
     }
 
     /// <summary>
@@ -377,7 +366,7 @@ public partial class BossEnemySystem : SystemBase
         var bossEnemySingleton = SystemAPI.GetSingleton<BossEnemySingletonData>();
 
         // Entityを取得
-        Entity entity = SystemAPI.GetSingletonEntity<BossEnemySingletonData>();
+        var entity = SystemAPI.GetSingletonEntity<BossEnemySingletonData>();
 
         // LocalTransformを所持していなかった
         if (!SystemAPI.HasComponent<LocalTransform>(entity)) { return; }
@@ -386,14 +375,14 @@ public partial class BossEnemySystem : SystemBase
         var localTfm = SystemAPI.GetComponent<LocalTransform>(entity);
 
         // 円周のランダムな位置を計算
-        float theta = Random.Range(0f, FULL_CIRCLE_RADIANS);    // 0度から360度までのランダムな角度
-        float x = Mathf.Cos(theta);                             // Cos値を計算（余弦）
-        float y = 0.0f;                                         // 高さを定義
-        float z = Mathf.Sin(theta);                             // Sin値を計算（正弦）
-        Vector3 randomDirection = new Vector3(x, y, z);
+        var theta = Random.Range(0f, FULL_CIRCLE_RADIANS);    // 0度から360度までのランダムな角度
+        var x = Mathf.Cos(theta);                             // Cos値を計算（余弦）
+        var y = 0.0f;                                         // 高さを定義
+        var z = Mathf.Sin(theta);                             // Sin値を計算（正弦）
+        var randomDirection = new Vector3(x, y, z);
 
         // 回転を適用
-        Quaternion targetRotation = Quaternion.LookRotation(randomDirection);
+        var targetRotation = Quaternion.LookRotation(randomDirection);
         localTfm.Rotation = targetRotation;
         EntityManager.SetComponentData(entity, localTfm);
     }

@@ -14,9 +14,9 @@ using Unity.Core;
 // リファクタリング済み
 
 /// <summary>
-/// 敵Entityの名称
+/// 敵Entityの種類
 /// </summary>
-public enum EnemyName : byte
+public enum EnemyType : byte
 {
     [Tooltip("全方位弾")] AllDirectionBulletEnemy,
     [Tooltip("回転撃ち")] SpinShootingEnemy,

@@ -41,10 +41,10 @@ public partial struct BackGroundScrollSystem : ISystem
             var frameMovement = Time.deltaTime * backGroundScroll.ValueRO.moveDirection;
 
             // –Ú•W‚É“’B‚µ‚½‚©
-            bool hasReachedTarget = false;
+            var hasReachedTarget = false;
 
             // ˆÚ“®•ûŒü‚ª”½“]‚µ‚Ä‚¢‚é‚©
-            bool isMovingBackwards = math.length(startPosition) > 0.0f;
+            var isMovingBackwards = math.length(startPosition) > 0.0f;
 
             // ”½“]‚µ‚Ä‚¢‚½‚ç•„†‚ğ”½“]‚³‚¹‚é
             endLength *= (isMovingBackwards) ? -positiveOne : positiveOne;
@@ -55,8 +55,8 @@ public partial struct BackGroundScrollSystem : ISystem
             var frameMovementValue = AxisTypeHelper.GetAxisValue(axisType, frameMovement);
 
             // ˆÚ“®•ûŒü‚É‚æ‚Á‚ÄI—¹‹——£‚ÆŒ»İ‚ÌˆÚ“®‹——£‚ğ•Ï‚¦‚é
-            float end = (isMovingBackwards) ? initialPositionValue + endLength : localPositionValue + frameMovementValue;
-            float current = (isMovingBackwards) ? localPositionValue + frameMovementValue : initialPositionValue + endLength;
+            var end = (isMovingBackwards) ? initialPositionValue + endLength : localPositionValue + frameMovementValue;
+            var current = (isMovingBackwards) ? localPositionValue + frameMovementValue : initialPositionValue + endLength;
 
             // –Ú•W‚É“’B‚µ‚½‚©
             hasReachedTarget = end >= current;

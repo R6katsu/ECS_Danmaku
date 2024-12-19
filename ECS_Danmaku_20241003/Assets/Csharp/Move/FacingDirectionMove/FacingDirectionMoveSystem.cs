@@ -27,7 +27,7 @@ public partial struct FacingDirectionMoveSystem : ISystem
                                  RefRW<LocalTransform>>())
         {
             // ローカル座標系を使い、向いている方向への移動を計算
-            float3 forward = math.forward(localTfm.ValueRO.Rotation);
+            var forward = math.forward(localTfm.ValueRO.Rotation);
 
             // 移動を反映
             localTfm.ValueRW.Position += forward * facingDirection.ValueRO.MoveParameter.Speed * delta;

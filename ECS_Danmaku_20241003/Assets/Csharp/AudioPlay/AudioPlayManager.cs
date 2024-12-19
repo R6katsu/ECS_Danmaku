@@ -18,10 +18,10 @@ public class AudioPlayManager : SingletonMonoBehaviour<AudioPlayManager>
     [SerializeField]
     private AudioSource _seAudioSource = null;
 
-    [SerializeField, Tooltip("BGM")]
+    [SerializeField, Header("BGM配列")]
     private AudioClip[] _bgmClips = null;
 
-    [SerializeField, Tooltip("SE")]
+    [SerializeField, Header("SE配列")]
     private AudioClip[] _seClips = null;
 
     /// <summary>
@@ -30,6 +30,7 @@ public class AudioPlayManager : SingletonMonoBehaviour<AudioPlayManager>
     /// <param name="num">音源番号</param>
     public void PlayBGM(int num)
     {
+        // AudioSourceがnull、または引数が配列の要素数を超過していた
         if (_bgmAudioSource == null
             || _bgmClips.Length <= num) { return; }
 
@@ -44,6 +45,7 @@ public class AudioPlayManager : SingletonMonoBehaviour<AudioPlayManager>
     /// <param name="num">音源番号</param>
     public void PauseBGM()
     {
+        // AudioSourceがnullだった
         if (_bgmAudioSource == null) { return; }
 
         // 音源一時停止
@@ -56,6 +58,7 @@ public class AudioPlayManager : SingletonMonoBehaviour<AudioPlayManager>
     /// <param name="num">音源番号</param>
     public void PlaySE(int num)
     {
+        // AudioSourceがnull、または引数が配列の要素数を超過していた
         if (_seAudioSource == null 
             || _seClips.Length <= num) { return; }
 

@@ -19,7 +19,7 @@ public struct EnemyPrefabSetting
     private Transform _enemyPrefabs;
 
     [SerializeField, Header("“GEntity‚Ì–¼Ì")]
-    private EnemyName _enemyName;
+    private EnemyType _enemyName;
 
     /// <summary>
     /// Entity‚É•ÏŠ·‚·‚é“GPrefab
@@ -29,7 +29,7 @@ public struct EnemyPrefabSetting
     /// <summary>
     /// “GEntity‚Ì–¼Ì
     /// </summary>
-    public EnemyName MyEnemyName => _enemyName;
+    public EnemyType MyEnemyName => _enemyName;
 }
 
 /// <summary>
@@ -38,14 +38,14 @@ public struct EnemyPrefabSetting
 public struct EnemyEntityData : IComponentData
 {
     public readonly Entity enemyEntity;
-    public readonly EnemyName enemyName;
+    public readonly EnemyType enemyName;
 
     /// <summary>
     /// “GEntity‚Ìî•ñ‚ğ•Û
     /// </summary>
     /// <param name="enemyEntity">“GEntity</param>
     /// <param name="enemyName">“GEntity‚Ì–¼Ì</param>
-    public EnemyEntityData(Entity enemyEntity, EnemyName enemyName)
+    public EnemyEntityData(Entity enemyEntity, EnemyType enemyName)
     {
         this.enemyEntity = enemyEntity;
         this.enemyName = enemyName;

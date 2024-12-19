@@ -20,6 +20,7 @@ public class GameEndEvent : MonoBehaviour
     public void GameEnd()
     {
         if (_isDisposed) { return; }
+
         _isDisposed = true;
 
 #if UNITY_EDITOR

@@ -22,7 +22,7 @@ public struct EnemySpawnInfo
 {
     // ¶¬‚·‚é“GEntity‚Ì–¼Ì
     [SerializeField]
-    private EnemyName _enemyName;
+    private EnemyType _enemyName;
 
     // ¶¬‚Ü‚Å‚ÌŠÔ
     [SerializeField, Min(0)]
@@ -35,7 +35,7 @@ public struct EnemySpawnInfo
     /// <summary>
     /// ¶¬‚·‚é“GEntity‚Ì–¼Ì
     /// </summary>
-    public EnemyName MyEnemyName => _enemyName;
+    public EnemyType MyEnemyName => _enemyName;
 
     /// <summary>
     /// ¶¬‚Ü‚Å‚ÌŠÔ

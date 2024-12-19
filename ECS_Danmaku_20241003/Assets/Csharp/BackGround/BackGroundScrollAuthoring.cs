@@ -162,7 +162,7 @@ public class BackGroundScrollAuthoring : MonoBehaviour
         _moveDirection = axisValue * scrollSpeed;
 
          // 開始位置
-        Vector3 startPosition = -_endLength * axisValue;
+        var startPosition = -_endLength * axisValue;
 
         // 目標と開始位置の符号を反対にする
         _startPosition = (scrollSpeed < 0.0f) ? _initialPosition - startPosition : _initialPosition + startPosition;

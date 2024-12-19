@@ -183,7 +183,7 @@ public class TitleSceneManager : SingletonMonoBehaviour<TitleSceneManager>
         var transition = TransitionDirector.Instance.GetTransition(_transitionName);
 
         // 現在のシーンの番号を取得
-        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+        var currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
 
         // 現在のシーン番号をインクリメント
         currentSceneIndex++;

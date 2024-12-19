@@ -95,7 +95,7 @@ public class StarTransition : MonoBehaviour, ITransition
         yield return null;
 
         // アニメーション情報の取得
-        AnimatorStateInfo stateInfo = TransitionAnimator.GetCurrentAnimatorStateInfo(0);
+        var stateInfo = TransitionAnimator.GetCurrentAnimatorStateInfo(0);
 
         // 正しい長さが取得できるまで待機
         while (stateInfo.length == DEFAULT_ANIMATION_LENGTH)
@@ -105,7 +105,7 @@ public class StarTransition : MonoBehaviour, ITransition
         }
 
         // アニメーション終了まで待機
-        float animationLength = stateInfo.length;
+        var animationLength = stateInfo.length;
         yield return new WaitForSeconds(animationLength);
     }
 }

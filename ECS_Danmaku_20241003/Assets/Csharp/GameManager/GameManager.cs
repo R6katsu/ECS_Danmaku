@@ -1,8 +1,8 @@
-using System.Collections;
-using TMPro;
 using UnityEngine;
 
 #if UNITY_EDITOR
+using System.Collections;
+using TMPro;
 using System.Collections.Generic;
 using Unity.Entities;
 using Unity.Mathematics;
@@ -28,9 +28,9 @@ public enum GameState : byte
 public class GameManager : SingletonMonoBehaviour<GameManager>
 {
     /// <summary>
-    /// UIÇÃñºèÃ
+    /// UIÇÃéÌóﬁ
     /// </summary>
-    private enum UIName : int
+    private enum UIType : int
     {
         GameClearUI,
         GameOverUI
@@ -84,7 +84,7 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
                 break;
 
             case GameState.GameClear:
-                ActivatableUIDirector.Instance.ActivateSingleUIElement((int)UIName.GameClearUI);
+                ActivatableUIDirector.Instance.ActivateSingleUIElement((int)UIType.GameClearUI);
 
                 MainThreadExecutor.Instance.Enqueue(() =>
                 {
@@ -93,7 +93,7 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
                 break;
 
             case GameState.GameOver:
-                ActivatableUIDirector.Instance.ActivateSingleUIElement((int)UIName.GameOverUI);
+                ActivatableUIDirector.Instance.ActivateSingleUIElement((int)UIType.GameOverUI);
 
                 MainThreadExecutor.Instance.Enqueue (() =>
                 {

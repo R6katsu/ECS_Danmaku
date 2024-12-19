@@ -17,7 +17,7 @@ using System.Collections;
 static public class HealthPointDatas
 {
     /// <summary>
-    /// Œ»İ‚ÌIHealthPointî•ñ
+    /// IHealthPoint‚ğŒp³‚µ‚½HP‚Ìî•ñ
     /// </summary>
     public struct HealthPointData : IComponentData, IHealthPoint
     {
@@ -75,7 +75,7 @@ static public class HealthPointDatas
         }
 
         /// <summary>
-        /// Enemy‚ÌIHealthPointî•ñ
+        /// IHealthPoint‚ğŒp³‚µ‚½HP‚Ìî•ñ
         /// </summary>
         /// <param name="maxHP">Å‘å‘Ì—Í</param>
         /// <param name="hitSENumber">”í’e‚ÌŒø‰Ê‰¹”Ô†</param>

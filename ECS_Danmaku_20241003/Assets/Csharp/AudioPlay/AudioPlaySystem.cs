@@ -15,6 +15,10 @@ using System.Collections.Generic;
 /// </summary>
 public partial struct AudioPlaySystem : ISystem
 {
+    /// <summary>
+    /// ISystem‚ğŒp³‚µ‚Ä‚¢‚é‚ÆŒÄ‚Ño‚³‚ê‚éUpdate
+    /// </summary>
+    /// <param name="state"></param>
     public void OnUpdate(ref SystemState state)
     {
         var entityManager = state.EntityManager;

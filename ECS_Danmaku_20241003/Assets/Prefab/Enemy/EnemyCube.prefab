@@ -101,8 +101,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _straightMoveData:
     _moveParam:
-      _speed: 1.5
-    _axisType: 4
+      _speed: -1.5
+    _axisType: 3
 --- !u!114 &5046027235216254825
 MonoBehaviour:
   m_ObjectHideFlags: 0

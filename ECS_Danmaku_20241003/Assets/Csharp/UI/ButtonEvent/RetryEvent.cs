@@ -24,10 +24,11 @@ public class RetryEvent : MonoBehaviour
     public void Retry()
     {
         if (_isDisposed) { return; }
+
         _isDisposed = true;
 
         // 現在のシーンのインデックスを取得
-        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+        var currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
 
         var transition = TransitionDirector.Instance?.GetTransition(_transitionName);
 
